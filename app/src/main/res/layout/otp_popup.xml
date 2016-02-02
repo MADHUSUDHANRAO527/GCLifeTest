@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="20dp" >
+
+    <RelativeLayout
+        android:id="@+id/lay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_corner_signinpopup"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/otpTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="Registeration successfully done"
+            android:textColor="#000"
+            android:textSize="16sp" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/noteTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/otpTxt"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="Please Enter the registeration code sent on your resgistered emailId"
+            android:textColor="#000"
+            android:textSize="14sp" >
+        </TextView>
+
+        <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            android:id="@+id/otpEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/noteTxt"
+            android:layout_marginLeft="15dp"
+            float:fletPadding="5dp" >
+
+            <EditText
+                android:id="@+id/otpEditxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint="Enter OTP"
+                android:singleLine="true" />
+        </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+        <RelativeLayout
+            android:id="@+id/line1"
+            android:layout_width="fill_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@+id/otpEdit"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginTop="5dp"
+            android:background="#ccc"
+            android:orientation="horizontal" >
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/line1"
+            android:paddingBottom="10dp" >
+
+            <TextView
+                android:id="@+id/resendOtpTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="26dp"
+                android:layout_toLeftOf="@+id/submitTxt"
+                android:background="@drawable/btn_selector"
+                android:padding="5dp"
+                android:text="RESEND OTP"
+                android:textColor="#4169E1"
+                android:textSize="16sp" />
+
+            <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                android:id="@+id/progressBarResend"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginRight="27dp"
+                android:layout_marginTop="26dp"
+                android:layout_toLeftOf="@+id/submitTxt"
+                android:background="#1E88E5"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/submitTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="26dp"
+                android:background="@drawable/btn_selector"
+                android:padding="5dp"
+                android:text="SUBMIT"
+                android:textColor="#4169E1"
+                android:textSize="16sp" />
+
+            <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                android:id="@+id/progressBarCircularIndetermininate"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="27dp"
+                android:layout_marginTop="22dp"
+                android:background="#1E88E5"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

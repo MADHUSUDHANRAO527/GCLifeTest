@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:id="@+id/lay"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/flatDetailsLay"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="visible" >
+
+                <RelativeLayout
+                    android:id="@+id/avenueLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/avenueSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line11"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/societyLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/societySpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line111"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/buildingLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/buildingSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line22"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/flatNoLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:gravity="left" >
+
+                    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                        android:id="@+id/flatNo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                         android:cursorVisible="false"
+                        float:fletPadding="5dp" >
+
+                        <EditText
+                            android:id="@+id/flatNoEdit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="#00000000"
+                            android:cursorVisible="false"
+                            android:gravity="left"
+                            android:hint="Flat Number"
+                            android:phoneNumber="true"
+                            android:singleLine="true"
+                            android:textSize="16sp" />
+                    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line4"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/flatTypeLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/flatTypeSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line14"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/ownerLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/ownerSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line15"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/memberLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/memberSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line16"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/reltionwithOwnerLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone" >
+
+                    <Spinner
+                        android:id="@+id/reltionwithOwnerSpinner"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+
+                    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                        android:id="@+id/fromEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:visibility="gone"
+                        float:fletPadding="5dp" >
+
+                        <EditText
+                            android:id="@+id/datewithOwnerEdit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="#00000000"
+                            android:drawableLeft="@drawable/ic_calender"
+                            android:drawablePadding="5dp"
+                            android:focusable="false"
+                            android:focusableInTouchMode="true"
+                            android:gravity="left"
+                            android:hint="  Relationship with owner"
+                            android:singleLine="true"
+                            android:textSize="16dp" />
+                    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line6"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/dateToLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginTop="5dp"
+                    android:gravity="left" >
+
+                    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                        android:id="@+id/liscenseEndson"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        float:fletPadding="5dp" >
+
+                        <EditText
+                            android:id="@+id/lisecnseEndsOntxtEdit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="#00000000"
+                            android:drawableLeft="@drawable/ic_calender"
+                            android:drawablePadding="5dp"
+                            android:focusable="false"
+                            android:focusableInTouchMode="true"
+                            android:gravity="left"
+                            android:hint="  License Ends on"
+                            android:singleLine="true"
+                            android:textSize="16dp" />
+                    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layoutt"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp" >
+
+                    <TextView
+                        android:id="@+id/finishTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="22dp"
+                        android:padding="5dp"
+                        android:text="FINISH"
+                        android:textColor="#4169E1"
+                        android:textSize="16sp" />
+
+                    <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                        android:id="@+id/pDialog"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="27dp"
+                        android:layout_marginTop="22dp"
+                        android:background="#1E88E5"
+                        android:visibility="gone" />
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+        android:id="@+id/pDialog1"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="180dp"
+        android:background="#1E88E5"
+        android:visibility="gone" />
+
+</RelativeLayout>

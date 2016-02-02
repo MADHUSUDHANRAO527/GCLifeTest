@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:compat="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/profile"
+        compat:showAsAction="never"
+        android:title=" My Profile "/>
+    <item
+        android:id="@+id/refreh"
+        compat:showAsAction="never"
+        android:title=" Refresh "/>
+    <item
+        android:id="@+id/logOut"
+        compat:showAsAction="never"
+        android:title=" Logout "/>
+
+</menu>

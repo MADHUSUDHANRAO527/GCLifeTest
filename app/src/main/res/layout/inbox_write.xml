@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <RelativeLayout
+            android:id="@+id/layLogin"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corner_signinpopup"
+            android:orientation="vertical" >
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:id="@+id/userNameEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                float:fletPadding="5dp" >
+
+                <AutoCompleteTextView
+                    android:id="@+id/toEdit"
+                    android:layout_width="260dp"
+                    android:layout_height="fill_parent"
+                    android:background="#00000000"
+                    android:focusableInTouchMode="true"
+                    android:hint="To"
+                    android:inputType="textAutoComplete|textAutoCorrect"
+                    android:singleLine="false" />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <ImageView
+                android:id="@+id/searchImg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="25dp"
+                android:layout_toLeftOf="@+id/userNameEdit"
+                android:src="@drawable/ic_search"
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:id="@+id/line"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_below="@+id/userNameEdit"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:id="@+id/passEdt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/line"
+                android:layout_marginLeft="15dp"
+                float:fletPadding="5dp" >
+
+                <EditText
+                    android:id="@+id/fromEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:focusable="true"
+                    android:maxLength="180"
+                    android:focusableInTouchMode="true"
+                    android:hint="Subject"
+                    android:singleLine="true" />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <RelativeLayout
+                android:id="@+id/line1"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_below="@+id/passEdt"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+            <!-- add some padding -->
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:id="@+id/mobileNumLay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/line1"
+                android:layout_marginLeft="15dp"
+                float:fletPadding="5dp" >
+
+                <!-- float:fletPadding="10dp" -->
+
+                <EditText
+                    android:id="@+id/discrpEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="#00000000"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="top"
+                    android:hint="Discriprion" />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <RelativeLayout
+                android:id="@+id/line2"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_below="@+id/mobileNumLay"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/line2"
+                android:paddingBottom="10dp" >
+
+                <TextView
+                    android:id="@+id/sendTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="22dp"
+                    android:padding="5dp"
+                    android:text="Send"
+                    android:textColor="#4169E1"
+                    android:textSize="16sp" />
+
+                <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                    android:id="@+id/pDialog"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="19dp"
+                    android:layout_marginTop="27dp"
+                    android:background="#1E88E5"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>

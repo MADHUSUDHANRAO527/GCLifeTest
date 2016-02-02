@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:id="@+id/lay"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:orientation="vertical" >
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:id="@+id/mailEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                float:fletPadding="5dp" >
+
+                <EditText
+                    android:id="@+id/titleEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:hint="Title"
+                    android:singleLine="true" />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <RelativeLayout
+                android:id="@+id/line1"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+            <!-- add some padding -->
+
+            <RelativeLayout
+                android:id="@+id/layyy"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="40dp"
+                android:layout_marginTop="10dp" >
+
+                <TextView
+                    android:id="@+id/selectedMedia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginTop="3dp"
+                    android:text=""
+                    android:textSize="14sp" />
+
+                <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                    android:id="@+id/pDialogImg"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="42dp"
+                    android:background="#1E88E5"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/attachImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/attach" />
+
+                <TextView
+                    android:id="@+id/plusattach"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/attachImg"
+                    android:text="+"
+                    android:textSize="16sp" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/loginDetailsTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:padding="5dp"
+                android:text="Choose recipient"
+                android:textColor="#000"
+                android:textSize="16sp" />
+
+                    <RelativeLayout
+                android:id="@+id/avenueLay"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center" >
+
+                <TextView
+                    android:id="@+id/avenueTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="7dp"
+                    android:text="Select Avenue Name"
+                    android:textColor="#000"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="12dp"
+                    android:src="@drawable/arrow" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/line11"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/societyLay"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp" >
+
+                <TextView
+                    android:id="@+id/sociTxt"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="7dp"
+                    android:text="Select Society Name"
+                    android:textColor="#000"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="12dp"
+                    android:src="@drawable/arrow" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/line111"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/memberLay"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="10dp" >
+
+                <TextView
+                    android:id="@+id/memTxt"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="7dp"
+                    android:text="Select Member Type"
+                    android:textColor="#000"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="12dp"
+                    android:src="@drawable/arrow" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/line16"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/layoutt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp" >
+
+                <TextView
+                    android:id="@+id/finishTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="22dp"
+                    android:padding="5dp"
+                    android:text="SUBMIT"
+                    android:textColor="#4169E1"
+                    android:textSize="16sp" />
+
+                <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                    android:id="@+id/pDialog"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="29dp"
+                    android:layout_marginTop="22dp"
+                    android:background="#1E88E5"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

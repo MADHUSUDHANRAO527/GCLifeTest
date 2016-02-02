@@ -1,0 +1,153 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
+    xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/sign_in_bg"
+    android:gravity="center"
+    tools:context="mobile.apartment.activity.MainActivity" >
+
+    <RelativeLayout
+        android:id="@+id/lay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/loginwithEmailTxt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="25dp"
+            android:text="SIGN IN"
+            android:textStyle="bold"
+            android:textColor="#fff"
+            android:textSize="20sp" >
+        </TextView>
+
+        <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            android:id="@+id/mailEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/loginwithEmailTxt"
+            android:layout_marginLeft="15dp"
+            float:fletPadding="5dp" >
+
+            <EditText
+                android:id="@+id/emailSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:drawableLeft="@drawable/uname_icon"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint=" Email"
+                android:singleLine="true"
+                android:textColor="#fff"
+                android:textColorHint="#FFFFFF" />
+        </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+        <RelativeLayout
+            android:id="@+id/line1"
+            android:layout_width="fill_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@+id/mailEdit"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginTop="5dp"
+            android:background="#ccc"
+            android:orientation="horizontal" >
+        </RelativeLayout>
+        <!-- add some padding -->
+
+        <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            android:id="@+id/passEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/line1"
+            android:layout_marginLeft="15dp"
+            float:fletPadding="5dp" >
+
+            <!-- float:fletPadding="10dp" -->
+
+            <EditText
+                android:id="@+id/passwordSignIn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:drawableLeft="@drawable/password_icon"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint=" Password"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:textColor="#fff"
+                android:textColorHint="#FFFFFF" />
+        </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+        <RelativeLayout
+            android:id="@+id/line"
+            android:layout_width="fill_parent"
+            android:layout_height="0.8dp"
+            android:layout_below="@+id/passEdit"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginTop="5dp"
+            android:background="#fff"
+            android:orientation="horizontal" >
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/signUpTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:padding="8dp"
+            android:text="SIGNUP"
+            android:textColor="#fff"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/loginTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="25dp"
+            android:padding="8dp"
+            android:textStyle="bold"
+            android:text="LOGIN"
+            android:textColor="#fff"
+            android:textSize="16sp"
+            android:visibility="visible" />
+
+        <RelativeLayout
+            android:id="@+id/lane"
+            android:layout_width="0.8dp"
+            android:layout_height="28dp"
+            android:layout_marginTop="3dp"
+            android:layout_toRightOf="@+id/signUpTxt"
+            android:layout_marginLeft="60dp"
+            android:background="#ccc" >
+        </RelativeLayout>
+
+        <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+            android:id="@+id/progressBarCircularIndetermininate"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="33dp"
+            android:background="#fff"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/tabLoginLay"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#2979ff"
+        android:orientation="horizontal"
+        android:weightSum="2" >
+
+        <LinearLayout
+            android:id="@+id/loginTab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center|bottom"
+            android:orientation="vertical"
+            android:padding="5dp" >
+
+            <TextView
+                android:id="@+id/loginDetailsTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Login Details"
+                android:textColor="#fff"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/flatTab"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/flatDteailTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Flat Details"
+                android:textColor="#fff"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" 
+        android:layout_below="@+id/tabLoginLay">
+
+        <LinearLayout
+            android:id="@+id/lay"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#fff"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/layLogin"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_corner_signinpopup"
+                android:orientation="vertical" >
+
+                <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                    android:id="@+id/userNameEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    float:fletPadding="5dp" >
+
+                    <EditText
+                        android:id="@+id/userName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:hint="Full name"
+                        android:singleLine="true" />
+                </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+                <RelativeLayout
+                    android:id="@+id/line"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_below="@+id/userNameEdit"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                    android:id="@+id/mail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/line"
+                    android:layout_marginLeft="15dp"
+                    float:fletPadding="5dp" >
+
+                    <!-- float:fletPadding="10dp" -->
+
+                    <EditText
+                        android:id="@+id/mailEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:hint="Email Id"
+                        android:singleLine="true" />
+                </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+                <RelativeLayout
+                    android:id="@+id/line3"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_below="@+id/mail"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                    android:id="@+id/passEdt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/line3"
+                    android:layout_marginLeft="15dp"
+                    float:fletPadding="5dp" >
+
+                    <EditText
+                        android:id="@+id/passEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:singleLine="true" />
+                </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+                <RelativeLayout
+                    android:id="@+id/line1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_below="@+id/passEdt"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+                <!-- add some padding -->
+
+                <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                    android:id="@+id/mobileNumLay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/line1"
+                    android:layout_marginLeft="15dp"
+                    float:fletPadding="5dp" >
+
+                    <!-- float:fletPadding="10dp" -->
+
+                    <EditText
+                        android:id="@+id/mobileNumEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:hint="Mobile Number"
+                        android:inputType="number"
+                        android:maxLength="10"
+                        android:singleLine="true" />
+                </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+                <RelativeLayout
+                    android:id="@+id/line2"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_below="@+id/mobileNumLay"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layout"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/line2"
+                    android:paddingBottom="10dp" >
+
+                    <TextView
+                        android:id="@+id/nextTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="22dp"
+                        android:padding="5dp"
+                        android:text="NEXT"
+                        android:textColor="#4169E1"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/flatDetailsLay"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <RelativeLayout
+                    android:id="@+id/avenueLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/avenueSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line11"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/societyLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/societySpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line111"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/buildingLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/buildingSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line22"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/flatNoLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:gravity="left" >
+
+                    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                        android:id="@+id/flatNo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        float:fletPadding="5dp" >
+
+                        <EditText
+                            android:id="@+id/flatNoEdit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="#00000000"
+                            android:cursorVisible="false"
+                            android:focusableInTouchMode="true"
+                            android:gravity="left"
+                            android:hint="Flat Number"
+                            android:phoneNumber="true"
+                            android:singleLine="true"
+                            android:textSize="16sp" />
+                    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line4"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/flatTypeLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/flatTypeSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line14"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/ownerLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/ownerSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line15"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/memberLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp" >
+
+                    <Spinner
+                        android:id="@+id/memberSpin"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line16"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/reltionwithOwnerLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone" >
+
+                    <Spinner
+                        android:id="@+id/reltionwithOwnerSpinner"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:spinnerMode="dialog" />
+
+                    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                        android:id="@+id/fromEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        android:visibility="gone"
+                        float:fletPadding="5dp" >
+
+                        <EditText
+                            android:id="@+id/datewithOwnerEdit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="#00000000"
+                            android:drawableLeft="@drawable/ic_calender"
+                            android:drawablePadding="5dp"
+                            android:focusable="false"
+                            android:focusableInTouchMode="true"
+                            android:gravity="left"
+                            android:hint="  Relationship with owner"
+                            android:singleLine="true"
+                            android:textSize="16dp" />
+                    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/line6"
+                    android:layout_width="fill_parent"
+                    android:layout_height="0.8dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginTop="5dp"
+                    android:background="#ccc"
+                    android:orientation="horizontal" >
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/dateToLay"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginTop="5dp"
+                    android:gravity="left"
+                    android:visibility="gone" >
+
+                    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                        android:id="@+id/liscenseEndson"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp"
+                        float:fletPadding="5dp" >
+
+                        <EditText
+                            android:id="@+id/lisecnseEndsOntxtEdit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="#00000000"
+                            android:drawableLeft="@drawable/ic_calender"
+                            android:drawablePadding="5dp"
+                            android:focusable="false"
+                            android:focusableInTouchMode="true"
+                            android:gravity="left"
+                            android:hint="  License Ends on"
+                            android:singleLine="true"
+                            android:textSize="16dp" />
+                    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/layoutt"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp" >
+
+                    <TextView
+                        android:id="@+id/finishTxt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="22dp"
+                        android:padding="5dp"
+                        android:text="FINISH"
+                        android:textColor="#4169E1"
+                        android:textSize="16sp" />
+
+                    <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                        android:id="@+id/progressBarCircularIndetermininate"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="27dp"
+                        android:layout_marginTop="22dp"
+                        android:background="#1E88E5"
+                        android:visibility="gone" />
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

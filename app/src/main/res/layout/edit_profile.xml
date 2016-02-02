@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <LinearLayout
+            android:id="@+id/layLogin"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corner_signinpopup"
+            android:orientation="vertical" >
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:id="@+id/userNameEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="10dp"
+                float:fletPadding="5dp" >
+
+                <EditText
+                    android:id="@+id/userName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:hint="Full name"
+                    android:singleLine="true" />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <RelativeLayout
+                android:id="@+id/line"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:id="@+id/mail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                float:fletPadding="5dp" >
+
+                <!-- float:fletPadding="10dp" -->
+
+                <EditText
+                    android:id="@+id/mailEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:hint="Gmail Id"
+                    android:singleLine="true" />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <RelativeLayout
+                android:id="@+id/line3"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:id="@+id/mobileNumLay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                float:fletPadding="5dp" >
+
+                <!-- float:fletPadding="10dp" -->
+
+                <EditText
+                    android:id="@+id/mobileNumEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:hint="Mobile Number"
+                    android:inputType="number"
+                    android:maxLength="10"
+                    android:singleLine="true" />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <RelativeLayout
+                android:id="@+id/line2"
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:text="Gender"
+                android:textColor="#4169E1"
+                android:textSize="16sp" />
+
+            <RelativeLayout
+                android:id="@+id/lay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp" >
+
+                <RadioGroup
+                    android:id="@+id/radioGrp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp" >
+
+                    <RadioButton
+                        android:id="@+id/radioM"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:padding="5dp"
+                        android:text="Male"
+                        android:textSize="14dp" />
+
+                    <RadioButton
+                        android:id="@+id/radioF"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="false"
+                        android:padding="5dp"
+                        android:text="Female"
+                        android:textSize="14dp" />
+                </RadioGroup>
+            </RelativeLayout>
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                float:fletPadding="5dp" >
+
+                <!-- float:fletPadding="10dp" -->
+
+                <EditText
+                    android:id="@+id/emeContaNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:hint="Emergency contact Number"
+                    android:inputType="number"
+                    android:maxLength="10"
+                    android:singleLine="true" />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                float:fletPadding="5dp" >
+
+                <!-- float:fletPadding="10dp" -->
+
+                <EditText
+                    android:id="@+id/occupationNumEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00000000"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:hint="Occupation"
+                    android:singleLine="true" />
+            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/dateToLay"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:layout_marginTop="5dp"
+                android:gravity="left" >
+
+                <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                    android:id="@+id/liscenseEndson"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    float:fletPadding="5dp" >
+
+                    <EditText
+                        android:id="@+id/dobEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="#00000000"
+                        android:drawablePadding="5dp"
+                        android:focusable="false"
+                        android:focusableInTouchMode="true"
+                        android:gravity="left"
+                        android:hint="Date of birth"
+                        android:singleLine="true"
+                        android:textSize="16dp" />
+                </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0.8dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginTop="5dp"
+                android:background="#ccc"
+                android:orientation="horizontal" >
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_corner_signinpopup"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="5dp"
+                    android:padding="5dp"
+                    android:text="Privacy"
+                    android:textColor="#4169E1"
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/privacySwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginTop="7dp"
+                    android:text="" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/layoutt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:paddingBottom="5dp" >
+
+                <TextView
+                    android:id="@+id/submitTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="22dp"
+                    android:padding="5dp"
+                    android:text="SUBMIT"
+                    android:textColor="#4169E1"
+                    android:textSize="16sp" />
+
+                <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                    android:id="@+id/progressBarCircularIndetermininate"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="27dp"
+                    android:layout_marginTop="22dp"
+                    android:background="#1E88E5"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

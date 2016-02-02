@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:float="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/myPopLay"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#fff"
+    android:gravity="center" >
+
+    <TextView
+        android:id="@+id/loginwithEmailTxt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="25dp"
+        android:text="Do you want to?"
+        android:textColor="#000"
+        android:textSize="16sp" >
+    </TextView>
+
+    <LinearLayout
+        android:id="@+id/LtotLay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/loginwithEmailTxt"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:visibility="visible" >
+
+        <LinearLayout
+            android:id="@+id/accetptLay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible" >
+
+            <CheckBox
+                android:id="@+id/approveCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="center|right" >
+            </CheckBox>
+
+            <TextView
+                android:id="@+id/approveTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Approve" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/rejectLay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible" >
+
+            <CheckBox
+                android:id="@+id/rejectCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="center|right" >
+            </CheckBox>
+
+            <TextView
+                android:id="@+id/rejectTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Reject" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/deleteLay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible" >
+
+            <CheckBox
+                android:id="@+id/deleteCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="center|right" >
+            </CheckBox>
+
+            <TextView
+                android:id="@+id/deleteTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:text="Delete" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+        android:id="@+id/discEdit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/LtotLay"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:visibility="visible"
+        float:fletPadding="5dp" >
+
+        <EditText
+            android:id="@+id/discription"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="#00000000"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:hint="Reject/Delete Reason"
+            android:singleLine="true" />
+    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/discEdit"
+        android:layout_marginTop="15dp"
+        android:paddingBottom="15dp" >
+
+        <TextView
+            android:id="@+id/cancellTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="22dp"
+            android:layout_toLeftOf="@+id/submitTxt"
+            android:padding="5dp"
+            android:text="CANCEL"
+            android:textColor="#4169E1"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/submitTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="22dp"
+            android:padding="5dp"
+            android:text="SUBMIT"
+            android:textColor="#4169E1"
+            android:textSize="16sp" />
+
+        <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+            android:id="@+id/pDialog"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="#1E88E5"
+             android:layout_alignParentRight="true"
+            android:layout_marginRight="33dp"
+            android:layout_marginTop="22dp"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+</RelativeLayout>
