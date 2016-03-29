@@ -7,11 +7,41 @@
     android:background="#fff"
     android:gravity="center"
     android:orientation="vertical" >
+    <RelativeLayout
+        android:id="@+id/searchLay"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:visibility="gone">
 
+        <EditText
+            android:id="@+id/searchEdit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search your friends"
+            android:drawableLeft="@android:drawable/ic_menu_search"
+            android:layout_marginLeft="5dp"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:layout_marginRight="5dp"
+            />
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/progressBar"
+            android:layout_centerVertical="true"
+            android:layout_alignRight="@+id/searchEdit"
+            android:layout_marginRight="20dp"
+            android:layout_alignEnd="@+id/searchEdit"
+            android:visibility="gone"/>
+    </RelativeLayout>
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/activity_main_swipe_refresh_layout"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/searchLay">
 
         <ListView
             android:id="@+id/listview"
@@ -46,7 +76,7 @@
         materialdesign:animate="true"
         materialdesign:iconDrawable="@drawable/ic_action_new" />
 
-    <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+    <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
         android:id="@+id/pDialog"
         android:layout_width="32dp"
         android:layout_height="32dp"

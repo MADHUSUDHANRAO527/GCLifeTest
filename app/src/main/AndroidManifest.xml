@@ -1,18 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="mobile.gclife.activity"
+    package="mobile.gclifetest.activity"
     android:installLocation="auto">
+
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="18" />
 
     <supports-screens
         android:anyDensity="true"
         android:largeScreens="true"
         android:normalScreens="true"
-        android:smallScreens="true" />
-    <supports-screens android:largestWidthLimitDp="320" />
-
-    <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="23" />
+        android:resizeable="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -28,34 +30,47 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <permission
-        android:name="mobile.gclife.activity.permission.C2D_MESSAGE"
+        android:name="mobile.gclifetest.activity.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="mobile.gclife.activity.permission.C2D_MESSAGE" />
 
+    <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND" />
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
-        android:name="mobile.gclife.PojoGson.MyApplication"
+        android:name="mobile.gclifetest.Utils.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
         <activity
-            android:name="mobile.gclife.activity.Login"
+            android:name=".Login"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="mobile.gclife.activity.Register"
+            android:name=".Register"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="mobile.gclife.activity.HomeApp"
+            android:name=".HomeApp"
             android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OTP"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Splash"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -63,125 +78,121 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="mobile.gclife.activity.OTP"
+            android:name=".AdminGrid"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.AdminGrid"
+            android:name=".MemsList"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.MemsList"
+            android:name=".UserProfile"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.UserProfile"
+            android:name=".SocietyBillManagement"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.SocietyBillManagement"
+            android:name=".MySociety"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.MySociety"
+            android:name=".MySocietyBill"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.MySocietyBill"
+            android:name=".AdminBillManagement"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.AdminBillManagement"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="mobile.gclife.activity.AddFlats"
+            android:name=".AddFlats"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="mobile.gclife.activity.FlatDetail"
+            android:name=".FlatDetail"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.application.FilePicker"
-            android:screenOrientation="portrait"></activity>
+            android:name="mobile.gclifetest.Utils.FilePicker"
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.ViewBillDetail"
+            android:name=".ViewBillDetail"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.IdeasList"
+            android:name=".IdeasList"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.IdeasCreate"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
-        <activity
-            android:name="mobile.gclife.activity.IdeasDetail"
+            android:name=".IdeasCreate"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="mobile.gclife.custom.CustomImgGalleryActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="mobile.gclife.activity.GalleryImageViewer"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="mobile.gclife.activity.ImpContacts"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="mobile.gclife.activity.FrdsList"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="mobile.gclife.activity.FrdsDetail"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="mobile.gclife.activity.InBox"
+            android:name=".IdeasDetail"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="mobile.gclife.activity.PhotosList"
+            android:name="mobile.gclifetest.custom.CustomImgGalleryActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.custom.CustomVideoGalleryActivity"
+            android:name=".GalleryImageViewer"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.VideoPlay"
+            android:name=".ImpContacts"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
-            android:name="mobile.gclife.activity.EditProfile"
+            android:name=".FrdsList"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".FrdsDetail"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".InBox"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="mobile.gclife.activity.PhotosCreate"
+            android:name=".PhotosList"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="mobile.gclifetest.custom.CustomVideoGalleryActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".VideoPlay"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".EditProfile"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name="mobile.gclife.activity.InboxDetail"
+            android:name=".PhotosCreate"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".InboxDetail"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <receiver
-            android:name="mobile.gclife.gcm.GcmBroadcastReceiver"
+            android:name="mobile.gclifetest.gcm.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
@@ -190,14 +201,16 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="mobile.gclife.gcm.GcmMessagerHandler" />
+        <service android:name="mobile.gclifetest.gcm.GcmMessagerHandler" />
 
-   <!--  <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="true" />
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />-->
+        <!--
+              <meta-data
+                 android:name="com.google.android.gms.version"
+                 android:value="true" />
+             <meta-data
+                 android:name="com.google.android.gms.version"
+                 android:value="@integer/google_play_services_version" />
+        -->
     </application>
 
 </manifest>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/splashbg"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/wecomeTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:padding="3dp"
+        android:text="WELCOME TO"
+        android:textColor="#fff"
+        android:textSize="18sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wecomeTxt"
+        android:layout_centerInParent="true"
+        android:text="GC LIFE"
+        android:textColor="#fff"
+        android:textSize="28sp" />
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/signUpTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:text="SIGNUP"
+                android:gravity="center"
+                android:textColor="#fff"
+                android:textSize="18sp" />
+
+            <RelativeLayout
+                android:layout_width="1dp"
+                android:layout_height="20dp"
+                android:background="#fff"/>
+
+            <TextView
+                android:id="@+id/loginTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LOGIN"
+                android:layout_weight="1.5"
+                android:gravity="center"
+                android:textColor="#fff"
+                android:textSize="18sp"
+                android:visibility="visible" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

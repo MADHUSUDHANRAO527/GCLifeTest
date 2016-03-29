@@ -117,7 +117,7 @@
 
                     <com.wrapp.floatlabelededittext.FloatLabeledEditText
                         android:id="@+id/flatNo"
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:padding="10dp"
                          android:cursorVisible="false"
@@ -125,7 +125,7 @@
 
                         <EditText
                             android:id="@+id/flatNoEdit"
-                            android:layout_width="wrap_content"
+                            android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:background="#00000000"
                             android:cursorVisible="false"
@@ -329,7 +329,7 @@
                         android:textColor="#4169E1"
                         android:textSize="16sp" />
 
-                    <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                    <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
                         android:id="@+id/pDialog"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
@@ -343,7 +343,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+    <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
         android:id="@+id/pDialog1"
         android:layout_width="32dp"
         android:layout_height="32dp"

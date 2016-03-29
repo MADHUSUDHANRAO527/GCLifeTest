@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:gravity="center" >
 
-    <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+    <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
         android:id="@+id/pDialog"
         android:layout_width="32dp"
         android:layout_height="32dp"

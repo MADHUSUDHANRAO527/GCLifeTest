@@ -16,7 +16,17 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_corner_signinpopup"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <mobile.gclifetest.Utils.RoundedImageView
+                android:id="@+id/imageProfile"
+                android:layout_width="136dp"
+                android:layout_height="136dp"
+                android:layout_marginBottom="7dp"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/profilepic"
+                android:scaleType="centerInside" />
 
             <com.wrapp.floatlabelededittext.FloatLabeledEditText
                 android:id="@+id/userNameEdit"
@@ -301,7 +311,7 @@
                     android:textColor="#4169E1"
                     android:textSize="16sp" />
 
-                <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
                     android:id="@+id/progressBarCircularIndetermininate"
                     android:layout_width="32dp"
                     android:layout_height="32dp"

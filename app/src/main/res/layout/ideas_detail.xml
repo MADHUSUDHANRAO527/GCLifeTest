@@ -27,7 +27,7 @@
                 android:padding="60dp"
                 android:visibility="visible" >
 
-                <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+                <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
                     android:id="@+id/pDialog"
                     android:layout_width="32dp"
                     android:layout_height="32dp"

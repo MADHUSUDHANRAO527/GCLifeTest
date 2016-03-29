@@ -151,7 +151,7 @@
             android:textColor="#4169E1"
             android:textSize="16sp" />
 
-        <mobile.gclife.MaterialDesign.ProgressBarCircularIndeterminate
+        <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
             android:id="@+id/pDialog"
             android:layout_width="32dp"
             android:layout_height="32dp"

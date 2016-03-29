@@ -2,20 +2,47 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/view"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/backg"
+    android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <GridView
         android:id="@+id/grid"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:clickable="true"
-        android:columnWidth="100dp"
         android:gravity="center"
         android:numColumns="2"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="10dp" />
+        android:stretchMode="columnWidth" />
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/grid"
+        android:background="#E7474A"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="5dp"
+            android:layout_height="wrap_content"
+            android:text="."
+            android:textColor="#fff"
+            android:textSize="24sp" />
+
+        <TextView
+            android:layout_width="5dp"
+            android:layout_height="wrap_content"
+            android:text="."
+            android:textColor="#fff"
+            android:textSize="24sp" />
+
+        <TextView
+            android:layout_width="5dp"
+            android:layout_height="wrap_content"
+            android:text="."
+            android:textColor="#fff"
+            android:textSize="24sp" />
+
+    </LinearLayout>
 </RelativeLayout>
