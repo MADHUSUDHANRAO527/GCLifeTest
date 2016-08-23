@@ -1,13 +1,10 @@
 package mobile.gclifetest.activity;
 
-import mobile.gclifetest.Utils.MyApplication;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +18,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gc.materialdesign.widgets.SnackBar;
+import com.google.gson.Gson;
+
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
 
 public class MySociety extends BaseActivity {
 	GridView gv;
@@ -29,14 +29,18 @@ public class MySociety extends BaseActivity {
 	public static int[] prgmImages = { R.drawable.icon_news,
 			R.drawable.icon_noticeboard, R.drawable.icon_society};
 	static Typeface typefaceLight;
-
+	SharedPreferences userPref;
+	Gson gson=new Gson();
+	UserDetailsPojo user;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.admin_detail);
 		gv = (GridView) findViewById(R.id.grid);
 		gv.setAdapter(new CustomAdapter(this, prgmNameList, prgmImages));
-
+		userPref = getSharedPreferences("USER", MODE_PRIVATE);
+		String jsonUser = userPref.getString("USER_DATA", "NV");
+		user = gson.fromJson(jsonUser, UserDetailsPojo.class);
 		setUpActionBar("My Society");
 		typefaceLight = Typeface.createFromAsset(getAssets(),
 				"fonts/RobotoLight.ttf");
@@ -46,10 +50,16 @@ public class MySociety extends BaseActivity {
 					int position, long id) {
 				System.out.println(position + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 				if (position == 1) {
-					Intent soc = new Intent(MySociety.this, MySocietyBill.class);
-					startActivity(soc);
-					overridePendingTransition(R.anim.slide_in_left,
-							R.anim.slide_out_left);
+					if (user.getGclife_registration_flatdetails().get(0).getMember_type() == "Non_members" ||
+							user.getGclife_registration_flatdetails().get(0).getMember_type().equals("Non_members")){
+						showSnack(MySociety.this, "You are not authorized person!", "");
+					}else{
+						Intent soc = new Intent(MySociety.this, MySocietyBill.class);
+						startActivity(soc);
+						overridePendingTransition(R.anim.slide_in_left,
+								R.anim.slide_out_left);
+					}
+
 				} else {
 					showSnack(MySociety.this,
 							"Coming soon!",

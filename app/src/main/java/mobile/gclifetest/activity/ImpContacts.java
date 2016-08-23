@@ -1,31 +1,17 @@
 package mobile.gclifetest.activity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.ImpContactsPojo;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.db.DatabaseHandler;
-
-import org.json.JSONArray;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,6 +25,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -58,6 +45,18 @@ import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.ImpContactsPojo;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.db.DatabaseHandler;
+
 public class ImpContacts extends BaseActivity {
 	ButtonFloat addBtn;
 	ProgressBarCircularIndeterminate pDialog;
@@ -66,6 +65,7 @@ public class ImpContacts extends BaseActivity {
 	Typeface typefaceLight;
 	String name, phNo, email;
 	List<ImpContactsPojo> impContactPojo;
+    List<ImpContactsPojo> globalImpContactPojo=new ArrayList<>();
 	Gson gson=new Gson();
     SwipeRefreshLayout mSwipeRefreshLayout;
     Runnable run;
@@ -76,6 +76,8 @@ public class ImpContacts extends BaseActivity {
     ProgressBar progressBar;
     String searchStr="";
     boolean progressShow=true;
+    ImageView clearImg;
+	int count = 10, currentPosition;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -88,6 +90,7 @@ public class ImpContacts extends BaseActivity {
         searchEdit=(EditText)findViewById(R.id.searchEdit);
         progressBar=(ProgressBar)findViewById(R.id.progressBar);
 		searchLay=(RelativeLayout)findViewById(R.id.searchLay);
+        clearImg=(ImageView)findViewById(R.id.clearImg);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
                 R.color.green, R.color.blue);
 		listviewImp = (ListView) findViewById(R.id.listview);
@@ -150,7 +153,14 @@ public class ImpContacts extends BaseActivity {
                 return false;
             }
         });
-
+		clearImg.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				searchStr="";
+				callImpContsList();
+				searchEdit.setText("");
+			}
+		});
         if (db.getEventNews("ImpContacts") != "null") {
             Log.d("DB NOT NULL: " + "ImpContats", db.getEventNews("ImpContacts"));
             pDialog.setVisibility(View.GONE);
@@ -202,7 +212,7 @@ public class ImpContacts extends BaseActivity {
 	private void callImpContsList() {
 		try {
             pDialog.setVisibility(View.VISIBLE);
-            String hostt = MyApplication.HOSTNAME + "important_contacts.json?search_key="+searchStr;
+            String hostt = MyApplication.HOSTNAME + "important_contacts.json?limit=" + count+ "&search_key="+searchStr;
             hostt=hostt.replace(" ", "%20");
             JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, hostt,
                     (String) null, new Response.Listener<JSONArray>() {
@@ -228,15 +238,93 @@ public class ImpContacts extends BaseActivity {
                             adapterConts.notifyDataSetChanged();
                             listviewImp.setAdapter(adapterConts);
                         } else {
+                            globalImpContactPojo.addAll(impContactPojo);
+                            Log.d("SIZE", globalImpContactPojo.size() + "");
+                            currentPosition = listviewImp
+                                    .getLastVisiblePosition();
 
                             adapterConts = new ListImpContsBaseAdapter(
                                     ImpContacts.this, impContactPojo);
                             listviewImp.setAdapter(adapterConts);
+
                             pDialog.setVisibility(View.GONE);
                             progressBar.setVisibility(View.GONE);
                             db.addEventNews(response, "ImpContacts");
 							//for updating new data
 							db.updateEventNews(response, "ImpContacts");
+
+
+                            DisplayMetrics displayMetrics =
+                                    getResources().getDisplayMetrics();
+                            int height = displayMetrics.heightPixels;
+
+                            listviewImp.setSelectionFromTop(
+                                    currentPosition + 1, height - 220);
+
+                            listviewImp
+                                    .setOnScrollListener(new AbsListView.OnScrollListener() {
+
+                                        private int currentScrollState;
+                                        private int currentFirstVisibleItem;
+                                        private int currentVisibleItemCount;
+                                        private int totalItemCount;
+                                        private int mLastFirstVisibleItem;
+                                        private boolean mIsScrollingUp;
+
+                                        @Override
+                                        public void onScrollStateChanged(
+                                                AbsListView view, int scrollState) {
+                                            // TODO Auto-generated method stub
+                                            this.currentScrollState = scrollState;
+                                            if (view.getId() == listviewImp
+                                                    .getId()) {
+                                                final int currentFirstVisibleItem = listviewImp
+                                                        .getFirstVisiblePosition();
+
+                                                if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                                                    mIsScrollingUp = false;
+
+                                                } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+
+                                                    mIsScrollingUp = true;
+                                                }
+
+                                                mLastFirstVisibleItem = currentFirstVisibleItem;
+                                            }
+                                            this.isScrollCompleted();
+                                        }
+
+                                        @Override
+                                        public void onScroll(AbsListView view,
+                                                             int firstVisibleItem,
+                                                             int visibleItemCount,
+                                                             int totalItemCount) {
+                                            // TODO Auto-generated method stub
+
+                                            this.currentFirstVisibleItem = firstVisibleItem;
+                                            this.currentVisibleItemCount = visibleItemCount;
+                                            this.totalItemCount = totalItemCount;
+
+                                        }
+
+                                        private void isScrollCompleted() {
+                                            if (this.currentVisibleItemCount > 0
+                                                    && this.currentScrollState == SCROLL_STATE_IDLE
+                                                    && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
+                                                count = count + 10;
+                                                callImpContsList();
+                                            }
+                                        }
+                                    });
+
+
+
+
+
+
+
+
+
                         }
                     }
 
@@ -262,73 +350,7 @@ public class ImpContacts extends BaseActivity {
 			e.printStackTrace();
 		}
 	}
-	/*public class ImpContact extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            if(progressShow==true){
-                pDialog.setVisibility(View.VISIBLE);
-            }else{
-                progressBar.setVisibility(View.VISIBLE);
-                pDialog.setVisibility(View.GONE);
-            }
 
-        }
-
-
-        @Override
-		protected Void doInBackground(Void... params) {
-			// TODO Auto-generated method stub
-			try {
-				jsonResultArry = EvenstPost.makeRequestImpContList(host
-						.globalVariable(),searchStr);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void unused) {
-
-			System.out.println(jsonResultArry
-					+ "LIST OF IMP CONTS !!!!!!!!!!!!!!!!!!!!");
-            if (jsonResultArry != null) {
-			impContactPojo=gson.fromJson(jsonResultArry.toString(),new TypeToken<List<ImpContactsPojo>>() {
-			}.getType());
-
-				if (jsonResultArry.length() == 0
-						|| jsonResultArry.toString() == "[]"
-						|| jsonResultArry.toString() == ""
-						|| jsonResultArry.toString().equals("")) {
-					pDialog.setVisibility(View.GONE);
-                    progressBar.setVisibility(View.GONE);
-					showSnack(ImpContacts.this,
-                            "Oops! There is no contacts!",
-                            "OK");
-                    impContactPojo.clear();
-                    adapterConts = new ListImpContsBaseAdapter(
-                            ImpContacts.this, impContactPojo);
-                    adapterConts.notifyDataSetChanged();
-                    listviewImp.setAdapter(adapterConts);
-				} else {
-
-					 adapterConts = new ListImpContsBaseAdapter(
-							ImpContacts.this, impContactPojo);
-					listviewImp.setAdapter(adapterConts);
-					pDialog.setVisibility(View.GONE);
-                    progressBar.setVisibility(View.GONE);
-                    db.addEventNews(jsonResultArry, "ImpContacts");
-				}
-			} else {
-				pDialog.setVisibility(View.GONE);
-				showSnack(ImpContacts.this,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
-			}
-
-		}
-	}*/
 
 	public class ListImpContsBaseAdapter extends BaseAdapter {
         List<ImpContactsPojo> impContsPojo;

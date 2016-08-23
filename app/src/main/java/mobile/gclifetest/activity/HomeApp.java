@@ -1,14 +1,5 @@
 package mobile.gclifetest.activity;
 
-import java.lang.reflect.Field;
-
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.http.MemsPost;
-
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,6 +34,16 @@ import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONObject;
+
+import java.lang.reflect.Field;
+
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.Utils.InternetConnectionDetector;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.http.MemsPost;
+
 public class HomeApp extends ActionBarActivity {
     android.support.v7.app.ActionBar actionBar;
     GridView gv;
@@ -63,7 +65,6 @@ public class HomeApp extends ActionBarActivity {
     Boolean isInternetPresent = false;
     UserDetailsPojo user;
     RelativeLayout viewTouch;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +72,7 @@ public class HomeApp extends ActionBarActivity {
         gv = (GridView) findViewById(R.id.grid);
         gv.setAdapter(new CustomAdapter(HomeApp.this, prgmNameList, prgmImages));
         getOverflowMenu();
-
+        context = this;
         actionBar = getSupportActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setHomeButtonEnabled(true);
@@ -201,11 +202,18 @@ public class HomeApp extends ActionBarActivity {
                         overridePendingTransition(R.anim.slide_in_left,
                                 R.anim.slide_out_left);
                     } else if (position == 9) {
-                        Intent dash = new Intent(HomeApp.this,
-                                AdminGrid.class);
-                        startActivity(dash);
-                        overridePendingTransition(R.anim.slide_in_left,
-                                R.anim.slide_out_left);
+                        Log.d("MEM TYPE", user.getGclife_registration_flatdetails().get(0).getMember_type());
+                        if (user.getGclife_registration_flatdetails().get(0).getMember_type() == "Non_members" ||
+                                user.getGclife_registration_flatdetails().get(0).getMember_type().equals("Non_members") || user.getGclife_registration_flatdetails().get(0).getMember_type() == "Member" ||
+                                user.getGclife_registration_flatdetails().get(0).getMember_type().equals("Member")) {
+                            showSnack(HomeApp.this, "You are not authorized person!", "");
+                        } else {
+                            Intent dash = new Intent(HomeApp.this,
+                                    AdminGrid.class);
+                            startActivity(dash);
+                            overridePendingTransition(R.anim.slide_in_left,
+                                    R.anim.slide_out_left);
+                        }
                     } else {
                         showSnack(HomeApp.this, "Coming soon!", "OK");
                     }
@@ -385,6 +393,7 @@ public class HomeApp extends ActionBarActivity {
             case R.id.logOut:
                 editor.clear();
                 editor.commit();
+                context.deleteDatabase(DatabaseHandler.DATABASE_NAME);
                 showSnack(HomeApp.this, "You have been logged out!", "OK");
                 Intent i = new Intent(HomeApp.this, Login.class);
                 startActivity(i);

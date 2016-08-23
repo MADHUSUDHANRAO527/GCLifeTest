@@ -1,20 +1,5 @@
 package mobile.gclifetest.activity;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.InboxPojo;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.db.DatabaseHandler;
-import mobile.gclifetest.http.EvenstPost;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -23,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,7 +18,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -59,8 +42,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import mobile.gclifetest.MaterialDesign.PagerSlidingTabStrip;
-
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
@@ -70,320 +51,344 @@ import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import mobile.gclifetest.MaterialDesign.PagerSlidingTabStrip;
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.InboxPojo;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.http.EvenstPost;
+
 public class InBox extends BaseActivity {
-	
-	PagerSlidingTabStrip tabs;
-	ViewPager pager;
-	MyPagerAdapter adapter;
-	@SuppressLint("NewApi")
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.frds_detail_tabstrip);
-		setUpActionBar("Mail");
-		tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-		pager = (ViewPager) findViewById(R.id.pager);
-		adapter = new MyPagerAdapter(getSupportFragmentManager());
-		pager.setAdapter(adapter);
-		final int pageMargin = (int) TypedValue.applyDimension(
-				TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
-						.getDisplayMetrics());
-		pager.setPageMargin(pageMargin);
-		tabs.setViewPager(pager);
 
-		// Attach the page change listener to tab strip and **not** the view
-		// pager inside the activity
-		tabs.setOnPageChangeListener(new OnPageChangeListener() {
+    PagerSlidingTabStrip tabs;
+    ViewPager pager;
+    MyPagerAdapter adapter;
 
-			// This method will be invoked when a new page becomes selected.
-			@Override
-			public void onPageSelected(int position) {
+    @SuppressLint("NewApi")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.frds_detail_tabstrip);
+        setUpActionBar("Mail");
+        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        pager = (ViewPager) findViewById(R.id.pager);
+        adapter = new MyPagerAdapter(getSupportFragmentManager());
+        pager.setAdapter(adapter);
+        final int pageMargin = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 4, getResources()
+                        .getDisplayMetrics());
+        pager.setPageMargin(pageMargin);
+        tabs.setViewPager(pager);
 
-			}
+        // Attach the page change listener to tab strip and **not** the view
+        // pager inside the activity
+        tabs.setOnPageChangeListener(new OnPageChangeListener() {
 
-			// This method will be invoked when the current page is scrolled
-			@Override
-			public void onPageScrolled(int position, float positionOffset,
-					int positionOffsetPixels) {
-				// Code goes here
-			}
+            // This method will be invoked when a new page becomes selected.
+            @Override
+            public void onPageSelected(int position) {
 
-			// Called when the scroll state changes:
-			// SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING
-			@Override
-			public void onPageScrollStateChanged(int state) {
-				// Code goes here
-			}
-		});
+            }
 
-	}
+            // This method will be invoked when the current page is scrolled
+            @Override
+            public void onPageScrolled(int position, float positionOffset,
+                                       int positionOffsetPixels) {
+                // Code goes here
+            }
 
-	protected void callInboxRec() {
-		// TODO Auto-generated method stub
+            // Called when the scroll state changes:
+            // SCROLL_STATE_IDLE, SCROLL_STATE_DRAGGING, SCROLL_STATE_SETTLING
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Code goes here
+            }
+        });
 
-	}
+    }
 
-	public class MyPagerAdapter extends FragmentPagerAdapter {
+    protected void callInboxRec() {
+        // TODO Auto-generated method stub
 
-		private final String[] TITLES = { "     Write     ", "     Inbox    ",
-				"    Sent   " };
+    }
 
-		public MyPagerAdapter(FragmentManager fm) {
-			super(fm);
-		}
+    public class MyPagerAdapter extends FragmentPagerAdapter {
 
-		@Override
-		public CharSequence getPageTitle(int position) {
-			return TITLES[position];
-		}
+        private final String[] TITLES = {"     Write     ", "     Inbox    ",
+                "    Sent   "};
 
-		@Override
-		public int getCount() {
-			return TITLES.length;
-		}
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-		@Override
-		public Fragment getItem(int position) {
-			return InboxTabs.newInstance(position);
-		}
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return TITLES[position];
+        }
 
-	}
+        @Override
+        public int getCount() {
+            return TITLES.length;
+        }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
+        @Override
+        public Fragment getItem(int position) {
+            return InboxTabs.newInstance(position);
+        }
 
-		case android.R.id.home:
-			onBackPressed();
-			overridePendingTransition(R.anim.slide_right_in,
-					R.anim.slide_out_right);
-			return true;
-		default:
-			break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+    }
 
-	public static class InboxTabs extends Fragment {
-		private int position;
-		private static final String ARG_POSITION = "position";
-		EditText subEdit, discriptionEdit;
-		AutoCompleteTextView toEdit;
-		String toStr, subjectStr, discStr, unamesList,dbNameRcv="MAILRECV",dbNameSent="MAILSENT";
-		TextView sendTxt;
-		ImageView searchImg;
-		ListView listviewUsernames;
-		Runnable run;
-		JSONArray userNamesArr, sentMailsJArr;
-		JSONObject msgJObj;
-		Typeface typefaceLight;
-		 String hostname,mailid;
-		ArrayList<String> listUnames = new ArrayList<String>();
-		SharedPreferences userPref;
-		ProgressBarCircularIndeterminate pDialog, pDialog1;
-		ArrayList<String> selectedUnameList = new ArrayList<String>();
-		ArrayList<HashMap<String, String>> listSent = new ArrayList<HashMap<String, String>>();
-		String msgType;
-		ListUnamesBaseAdapter adapterUnames;
-		ListView listviewSent;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+                onBackPressed();
+                overridePendingTransition(R.anim.slide_right_in,
+                        R.anim.slide_out_right);
+                return true;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public static class InboxTabs extends Fragment {
+        private int position;
+        private static final String ARG_POSITION = "position";
+        EditText subEdit, discriptionEdit;
+        AutoCompleteTextView toEdit;
+        String toStr, subjectStr, discStr, unamesList, dbNameRcv = "MAILRECV", dbNameSent = "MAILSENT";
+        TextView sendTxt;
+        ImageView searchImg;
+        ListView listviewUsernames;
+        Runnable run;
+        JSONArray userNamesArr, sentMailsJArr;
+        JSONObject msgJObj;
+        Typeface typefaceLight;
+        String hostname, mailid;
+        ArrayList<String> listUnames = new ArrayList<String>();
+        SharedPreferences userPref;
+        ProgressBarCircularIndeterminate pDialog, pDialog1;
+        ArrayList<String> selectedUnameList = new ArrayList<String>();
+        ArrayList<HashMap<String, String>> listSent = new ArrayList<HashMap<String, String>>();
+        String msgType;
+        ListUnamesBaseAdapter adapterUnames;
+        ListView listviewSent;
         DatabaseHandler db;
         SwipeRefreshLayout mSwipeRefreshLayout;
-		// ArrayAdapter<String> adapter;
-		ListSendMailBaseAdapter adapterSentRcv;
-		AutoCompleteAdapter adapter;
-		ArrayList<String> strngArr = new ArrayList<String>();
-		JSONObject jsonDelete;
+        // ArrayAdapter<String> adapter;
+        ListSendMailBaseAdapter adapterSentRcv;
+        AutoCompleteAdapter adapter;
+        ArrayList<String> strngArr = new ArrayList<String>();
+        JSONObject jsonDelete;
         List<InboxPojo> inboxPojo;
         Gson gson;
-		public static InboxTabs newInstance(int position) {
-			InboxTabs f = new InboxTabs();
-			Bundle b = new Bundle();
-			b.putInt(ARG_POSITION, position);
-			f.setArguments(b);
-			return f;
-		}
 
-		@Override
-		public void onCreate(Bundle savedInstanceState) {
-			super.onCreate(savedInstanceState);
-			setHasOptionsMenu(true);
-			position = getArguments().getInt(ARG_POSITION);
+        public static InboxTabs newInstance(int position) {
+            InboxTabs f = new InboxTabs();
+            Bundle b = new Bundle();
+            b.putInt(ARG_POSITION, position);
+            f.setArguments(b);
+            return f;
+        }
 
-		}
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setHasOptionsMenu(true);
+            position = getArguments().getInt(ARG_POSITION);
 
-		@Override
-		public View onCreateView(final LayoutInflater infaltor,
-				final ViewGroup container, Bundle savedInstanceState) {
-			typefaceLight = Typeface.createFromAsset(getActivity().getAssets(),
-					"fonts/RobotoLight.ttf");
+        }
 
-			userPref = getActivity().getSharedPreferences("USER", 0);
+        @Override
+        public View onCreateView(final LayoutInflater infaltor,
+                                 final ViewGroup container, Bundle savedInstanceState) {
+            typefaceLight = Typeface.createFromAsset(getActivity().getAssets(),
+                    "fonts/RobotoLight.ttf");
+
+            userPref = getActivity().getSharedPreferences("USER", 0);
             gson = new Gson();
             db = new DatabaseHandler(getActivity());
-			View v;
+            View v;
 
-			if (position == 0) {
-				v = infaltor.inflate(R.layout.inbox_write, container, false);
+            if (position == 0) {
+                v = infaltor.inflate(R.layout.inbox_write, container, false);
 
-				toEdit = (AutoCompleteTextView) v.findViewById(R.id.toEdit);
-				subEdit = (EditText) v.findViewById(R.id.fromEdit);
-				discriptionEdit = (EditText) v.findViewById(R.id.discrpEdit);
-				sendTxt = (TextView) v.findViewById(R.id.sendTxt);
-				searchImg = (ImageView) v.findViewById(R.id.searchImg);
-				pDialog1 = (ProgressBarCircularIndeterminate) v
-						.findViewById(R.id.pDialog);
+                toEdit = (AutoCompleteTextView) v.findViewById(R.id.toEdit);
+                subEdit = (EditText) v.findViewById(R.id.fromEdit);
+                discriptionEdit = (EditText) v.findViewById(R.id.discrpEdit);
+                sendTxt = (TextView) v.findViewById(R.id.sendTxt);
+                searchImg = (ImageView) v.findViewById(R.id.searchImg);
+                pDialog1 = (ProgressBarCircularIndeterminate) v
+                        .findViewById(R.id.pDialog);
 
-				toEdit.setInputType(EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
+                toEdit.setInputType(EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
 
-				new ListUsernames().execute();
+                new ListUsernames().execute();
 
-				sendTxt.setOnClickListener(new OnClickListener() {
+                sendTxt.setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						toStr = toEdit.getText().toString();
-						System.out.println(toStr);
-						subjectStr = subEdit.getText().toString();
-						discStr = discriptionEdit.getText().toString();
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        toStr = toEdit.getText().toString();
+                        System.out.println(toStr);
+                        subjectStr = subEdit.getText().toString();
+                        discStr = discriptionEdit.getText().toString();
+                        try {
+                            discStr = URLEncoder.encode(discStr, "UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        if (toStr == "" || toStr.equals("") || toStr == null
+                                || toStr == "null") {
+                            showSnack(getActivity(), "Enter username!", "OK");
+                        } else if (subjectStr == "" || subjectStr.equals("")
+                                || subjectStr == null || subjectStr == "null") {
+                            showSnack(getActivity(), "Enter subject!", "OK");
+                        } else if (subjectStr.length() > 180) {
+                            showSnack(getActivity(), "Subject length should not be more than 180!", "OK");
+                        } else {
 
-						if (toStr == "" || toStr.equals("") || toStr == null
-								|| toStr == "null") {
-							showSnack(getActivity(), "Enter username!", "OK");
-						} else if (subjectStr == "" || subjectStr.equals("")
-								|| subjectStr == null || subjectStr == "null") {
-							showSnack(getActivity(), "Enter subject!", "OK");
-						} else if(subjectStr.length()>180){
-							showSnack(getActivity(), "Subject length should not be more than 180!", "OK");
-						}else {
+                            System.out
+                                    .println(selectedUnameList + "  " + toStr);
+                            selectedUnameList.add(toStr);
 
-							System.out
-									.println(selectedUnameList + "  " + toStr);
-							selectedUnameList.add(toStr);
+                            List<String> myList = new ArrayList<String>(Arrays
+                                    .asList(toStr.split(",")));
+                            System.out.println(myList.size()
+                                    + "    SIZE !!!!! ");
+                            for (int i = 0; i < myList.size(); i++) {
 
-							List<String> myList = new ArrayList<String>(Arrays
-									.asList(toStr.split(",")));
-							System.out.println(myList.size()
-									+ "    SIZE !!!!! ");
-							for (int i = 0; i < myList.size(); i++) {
+                                String uname = myList.get(i);
 
-								String uname = myList.get(i);
+                                if (listUnames.contains(uname)) {
 
-								if (listUnames.contains(uname)) {
+                                    System.out.println(selectedUnameList);
+                                    unamesList = selectedUnameList.toString()
+                                            .replaceAll("[\\[\\](){}]", "");
+                                    unamesList = unamesList.replaceAll("\\s",
+                                            "");
 
-									System.out.println(selectedUnameList);
-									unamesList = selectedUnameList.toString()
-											.replaceAll("[\\[\\](){}]", "");
-									unamesList = unamesList.replaceAll("\\s",
-											"");
+                                } else {
+                                    showSnack(getActivity(), uname
+                                            + " is not registered!", "OK");
+                                    break;
+                                }
+                                if (i < myList.size() - 1) {
 
-								} else {
-									showSnack(getActivity(), uname
-											+ " is not registered!", "OK");
-									break;
-								}
-								if (i < myList.size() - 1) {
+                                } else {
+                                    new SendEmail().execute();
+                                }
 
-								} else {
-									new SendEmail().execute();
-								}
+                            }
+                        }
+                    }
+                });
+                toEdit.addTextChangedListener(new TextWatcher() {
 
-							}
-						}
-					}
-				});
-				toEdit.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        selectedUnameList.remove(s);
+                    }
 
-					@Override
-					public void afterTextChanged(Editable s) {
-						selectedUnameList.remove(s);
-					}
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start,
+                                                  int count, int after) {
+                    }
 
-					@Override
-					public void beforeTextChanged(CharSequence s, int start,
-							int count, int after) {
-					}
+                    @Override
+                    public void onTextChanged(CharSequence s, int start,
+                                              int before, int count) {
+                        if (s.length() == 0) {
+                            strngArr = new ArrayList<String>();
+                            selectedUnameList = new ArrayList<String>();
+                        }
+                    }
+                });
 
-					@Override
-					public void onTextChanged(CharSequence s, int start,
-							int before, int count) {
-						if (s.length() == 0) {
-							strngArr = new ArrayList<String>();
-							selectedUnameList = new ArrayList<String>();
-						}
-					}
-				});
+                toEdit.setOnItemClickListener(new OnItemClickListener() {
 
-				toEdit.setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view,
+                                            int position, long id) {
+                        if (!strngArr.contains(adapter.getItem(position)
+                                .toString())) {
+                            strngArr.add(adapter.getItem(position).toString());
+                        }
+                        toEdit.setText(TextUtils.join(",", strngArr));
+                        toEdit.setSelection(toEdit.getText().length());
 
-					@Override
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-						if (!strngArr.contains(adapter.getItem(position)
-								.toString())) {
-							strngArr.add(adapter.getItem(position).toString());
-						}
-						toEdit.setText(TextUtils.join(",", strngArr));
-						toEdit.setSelection(toEdit.getText().length());
+                    }
+                });
 
-					}
-				});
+                searchImg.setOnClickListener(new OnClickListener() {
 
-				searchImg.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        final Dialog m_dialog = new Dialog(getActivity());
+                        m_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        m_dialog.setContentView(R.layout.imp_contacts_popup_listview);
+                        m_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
+                        listviewUsernames = (ListView) m_dialog
+                                .findViewById(R.id.listview);
 
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						final Dialog m_dialog = new Dialog(getActivity());
-						m_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-						m_dialog.setContentView(R.layout.imp_contacts_popup_listview);
-						m_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
-						listviewUsernames = (ListView) m_dialog
-								.findViewById(R.id.listview);
+                        adapterUnames = new ListUnamesBaseAdapter(
+                                getActivity(), listUnames);
+                        listviewUsernames.setAdapter(adapterUnames);
 
-						adapterUnames = new ListUnamesBaseAdapter(
-								getActivity(), listUnames);
-						listviewUsernames.setAdapter(adapterUnames);
+                        listviewUsernames
+                                .setOnItemClickListener(new OnItemClickListener() {
 
-						listviewUsernames
-								.setOnItemClickListener(new OnItemClickListener() {
+                                    @SuppressWarnings("unchecked")
+                                    @Override
+                                    public void onItemClick(
+                                            AdapterView<?> parent, View view,
+                                            int position, long id) {
+                                        // TODO Auto-generated method stub
 
-									@SuppressWarnings("unchecked")
-									@Override
-									public void onItemClick(
-											AdapterView<?> parent, View view,
-											int position, long id) {
-										// TODO Auto-generated method stub
+                                        String uname = listUnames.get(position);
 
-										String uname = listUnames.get(position);
+                                        if (!strngArr.contains(uname)) {
+                                            strngArr.add(uname);
+                                        }
+                                        toEdit.setText(TextUtils.join(",",
+                                                strngArr));
+                                        toEdit.setSelection(toEdit.getText()
+                                                .length());
 
-										if (!strngArr.contains(uname)) {
-											strngArr.add(uname);
-										}
-										toEdit.setText(TextUtils.join(",",
-												strngArr));
-										toEdit.setSelection(toEdit.getText()
-												.length());
+                                        m_dialog.dismiss();
+                                    }
+                                });
 
-										m_dialog.dismiss();
-									}
-								});
+                        m_dialog.show();
+                    }
+                });
 
-						m_dialog.show();
-					}
-				});
+            } else if (position == 1) {
+                v = infaltor.inflate(R.layout.ideas_list, container, false);
 
-			} else if (position == 1) {
-				v = infaltor.inflate(R.layout.ideas_list, container, false);
-
-				ButtonFloat addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
-				pDialog = (ProgressBarCircularIndeterminate) v
-						.findViewById(R.id.pDialog);
+                ButtonFloat addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+                pDialog = (ProgressBarCircularIndeterminate) v
+                        .findViewById(R.id.pDialog);
                 listviewSent = (ListView) v.findViewById(R.id.listview);
                 mSwipeRefreshLayout = (SwipeRefreshLayout) v
-						.findViewById(R.id.activity_main_swipe_refresh_layout);
+                        .findViewById(R.id.activity_main_swipe_refresh_layout);
 
-				mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
+                mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
                         R.color.green, R.color.blue);
 
                 listviewSent.setOnItemClickListener(new OnItemClickListener() {
@@ -395,47 +400,47 @@ public class InBox extends BaseActivity {
                         // TODO Auto-generated method stub
 
                         Intent i = new Intent(getActivity(), InboxDetail.class);
-						i.putExtra("position", position);
+                        i.putExtra("position", position);
                         i.putExtra("mailType", msgType);
                         startActivity(i);
-					}
+                    }
                 });
 
                 mSwipeRefreshLayout
-						.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-							@Override
-							public void onRefresh() {
-								new Handler().postDelayed(new Runnable() {
-									@Override
-									public void run() {
+                        .setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
 
-										listSent = new ArrayList<HashMap<String, String>>();
+                                        listSent = new ArrayList<HashMap<String, String>>();
                                         callSentListMail();
-										// setupAdapter();
-										// adapter.notifyDataSetChanged();
-										getActivity().runOnUiThread(run);
-										mSwipeRefreshLayout
-												.setRefreshing(false);
-									}
-								}, 2500);
-							}
-						});
-				run = new Runnable() {
-					public void run() {
-						// reload content
-						// list.clear();
-						if (listSent.toString() == "[]" || listSent.size() == 0) {
+                                        // setupAdapter();
+                                        // adapter.notifyDataSetChanged();
+                                        getActivity().runOnUiThread(run);
+                                        mSwipeRefreshLayout
+                                                .setRefreshing(false);
+                                    }
+                                }, 2500);
+                            }
+                        });
+                run = new Runnable() {
+                    public void run() {
+                        // reload content
+                        // list.clear();
+                        if (listSent.toString() == "[]" || listSent.size() == 0) {
 
-						} else {
-							adapterSentRcv.notifyDataSetChanged();
-							listviewSent.invalidateViews();
-						}
+                        } else {
+                            adapterSentRcv.notifyDataSetChanged();
+                            listviewSent.invalidateViews();
+                        }
 
-					}
-				};
+                    }
+                };
 
-				addBtn.setVisibility(View.GONE);
-				msgType = "receive";
+                addBtn.setVisibility(View.GONE);
+                msgType = "receive";
 
                 if (db.getEventNews(dbNameRcv) != "null") {
                     Log.d("DB NOT NULL: " + dbNameRcv, db.getEventNews(dbNameRcv));
@@ -455,21 +460,21 @@ public class InBox extends BaseActivity {
                 }
 
 
-			} else {
-				v = infaltor.inflate(R.layout.ideas_list, container, false);
+            } else {
+                v = infaltor.inflate(R.layout.ideas_list, container, false);
 
-				ButtonFloat addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
-				pDialog = (ProgressBarCircularIndeterminate) v
-						.findViewById(R.id.pDialog);
-				addBtn.setVisibility(View.GONE);
-				listviewSent = (ListView) v.findViewById(R.id.listview);
-				mSwipeRefreshLayout = (SwipeRefreshLayout) v
-						.findViewById(R.id.activity_main_swipe_refresh_layout);
+                ButtonFloat addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+                pDialog = (ProgressBarCircularIndeterminate) v
+                        .findViewById(R.id.pDialog);
+                addBtn.setVisibility(View.GONE);
+                listviewSent = (ListView) v.findViewById(R.id.listview);
+                mSwipeRefreshLayout = (SwipeRefreshLayout) v
+                        .findViewById(R.id.activity_main_swipe_refresh_layout);
 
-				mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
-						R.color.green, R.color.blue);
-				msgType = "sent";
-				listviewSent.setOnItemClickListener(new OnItemClickListener() {
+                mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
+                        R.color.green, R.color.blue);
+                msgType = "sent";
+                listviewSent.setOnItemClickListener(new OnItemClickListener() {
 
                     @SuppressWarnings("unchecked")
                     @Override
@@ -481,7 +486,7 @@ public class InBox extends BaseActivity {
                         i.putExtra("mailType", msgType);
                         startActivity(i);
                     }
-				});
+                });
 
                 if (db.getEventNews(dbNameSent) != "null") {
                     Log.d("DB NOT NULL: " + dbNameSent, db.getEventNews(dbNameSent));
@@ -501,327 +506,334 @@ public class InBox extends BaseActivity {
 
                 }
 
-				mSwipeRefreshLayout
-						.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-							@Override
-							public void onRefresh() {
-								new Handler().postDelayed(new Runnable() {
-									@Override
-									public void run() {
+                mSwipeRefreshLayout
+                        .setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                            @Override
+                            public void onRefresh() {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
 
-										listSent = new ArrayList<HashMap<String, String>>();
+                                        listSent = new ArrayList<HashMap<String, String>>();
                                         callSentListMail();
-										// setupAdapter();
-										// adapter.notifyDataSetChanged();
-										getActivity().runOnUiThread(run);
-										mSwipeRefreshLayout
-												.setRefreshing(false);
-									}
-								}, 2500);
-							}
-						});
-				run = new Runnable() {
-					public void run() {
-						// reload content
-						// list.clear();
-						if (listSent.toString() == "[]" || listSent.size() == 0) {
+                                        // setupAdapter();
+                                        // adapter.notifyDataSetChanged();
+                                        getActivity().runOnUiThread(run);
+                                        mSwipeRefreshLayout
+                                                .setRefreshing(false);
+                                    }
+                                }, 2500);
+                            }
+                        });
+                run = new Runnable() {
+                    public void run() {
+                        // reload content
+                        // list.clear();
+                        if (listSent.toString() == "[]" || listSent.size() == 0) {
 
-						} else {
-							adapterSentRcv.notifyDataSetChanged();
-							listviewSent.invalidateViews();
-						}
+                        } else {
+                            adapterSentRcv.notifyDataSetChanged();
+                            listviewSent.invalidateViews();
+                        }
 
-					}
-				};
+                    }
+                };
 
-			}
+            }
 
-			return v;
+            return v;
 
-		}
+        }
 
-		public class ListUsernames extends AsyncTask<Void, Void, Void> {
-			@Override
-			protected void onPreExecute() {
+        public class ListUsernames extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected void onPreExecute() {
 
-			}
+            }
 
-			@Override
-			protected Void doInBackground(Void... params) {
-				try {
-					userNamesArr = EvenstPost.makeRequestUserNamesList(MyApplication.HOSTNAME);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    userNamesArr = EvenstPost.makeRequestUserNamesList(MyApplication.HOSTNAME);
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return null;
 
-			}
+            }
 
-			@Override
-			protected void onPostExecute(Void unused) {
-				if (userNamesArr != null) {
-					for (int i = 0; i < userNamesArr.length(); i++) {
+            @Override
+            protected void onPostExecute(Void unused) {
+                if (userNamesArr != null) {
+                    for (int i = 0; i < userNamesArr.length(); i++) {
 
-						try {
-							listUnames.add(userNamesArr.get(i).toString());
-						} catch (JSONException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+                        try {
+                            listUnames.add(userNamesArr.get(i).toString());
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
 
-					}
-					if (getActivity() == null) {
+                    }
+                    if (getActivity() == null) {
 
-					} else {
-						adapter = new AutoCompleteAdapter(getActivity(),
-								R.layout.auto_suggestion_row, R.id.autoSugg,
-								listUnames);
-						toEdit.setAdapter(adapter);// setting the adapter data
-													// into the
-													// AutoCompleteTextView
-						toEdit.setTextColor(Color.BLACK);
-						toEdit.setThreshold(1);
+                    } else {
+                        adapter = new AutoCompleteAdapter(getActivity(),
+                                R.layout.auto_suggestion_row, R.id.autoSugg,
+                                listUnames);
+                        toEdit.setAdapter(adapter);// setting the adapter data
+                        // into the
+                        // AutoCompleteTextView
+                        toEdit.setTextColor(Color.BLACK);
+                        toEdit.setThreshold(1);
 
-					}
+                    }
 
-				} else {
+                } else {
 
-					showSnack(
-							getActivity(),
+                    showSnack(
+                            getActivity(),
                             "Oops! Something went wrong. Please check internet connection!",
                             "OK");
 
-				}
+                }
 
-			}
-		}
+            }
+        }
 
-		public class AutoCompleteAdapter extends ArrayAdapter<String> implements
-				Filterable {
+        public class AutoCompleteAdapter extends ArrayAdapter<String> implements
+                Filterable {
 
-			private ArrayList<String> fullList;
-			private ArrayList<String> mOriginalValues;
-			private ArrayFilter mFilter;
+            private ArrayList<String> fullList;
+            private ArrayList<String> mOriginalValues;
+            private ArrayFilter mFilter;
 
-			public AutoCompleteAdapter(FragmentActivity context, int resource,
-					int autosugg, ArrayList<String> fullList) {
+            public AutoCompleteAdapter(FragmentActivity context, int resource,
+                                       int autosugg, ArrayList<String> fullList) {
 
-				super(context, resource, autosugg, fullList);
-				this.fullList = fullList;
-				mOriginalValues = new ArrayList<String>(fullList);
+                super(context, resource, autosugg, fullList);
+                this.fullList = fullList;
+                mOriginalValues = new ArrayList<String>(fullList);
 
-			}
+            }
 
-			@Override
-			public int getCount() {
-				return fullList.size();
-			}
+            @Override
+            public int getCount() {
+                return fullList.size();
+            }
 
-			@Override
-			public String getItem(int position) {
-				return fullList.get(position);
-			}
+            @Override
+            public String getItem(int position) {
+                return fullList.get(position);
+            }
 
-			@Override
-			public Filter getFilter() {
-				if (mFilter == null) {
-					mFilter = new ArrayFilter();
-				}
-				return mFilter;
-			}
+            @Override
+            public Filter getFilter() {
+                if (mFilter == null) {
+                    mFilter = new ArrayFilter();
+                }
+                return mFilter;
+            }
 
-			private class ArrayFilter extends Filter {
-				private Object lock;
+            private class ArrayFilter extends Filter {
+                private Object lock;
 
-				@Override
-				protected FilterResults performFiltering(CharSequence prefix) {
-					String[] arr = prefix.toString().split(",");
-					prefix = arr[arr.length - 1];
+                @Override
+                protected FilterResults performFiltering(CharSequence prefix) {
+                    String[] arr = prefix.toString().split(",");
+                    prefix = arr[arr.length - 1];
 
-					FilterResults results = new FilterResults();
+                    FilterResults results = new FilterResults();
 
-					if (mOriginalValues == null) {
-						synchronized (lock) {
-							mOriginalValues = new ArrayList<String>(fullList);
-						}
-					}
+                    if (mOriginalValues == null) {
+                        synchronized (lock) {
+                            mOriginalValues = new ArrayList<String>(fullList);
+                        }
+                    }
 
-					if (prefix == null || prefix.length() == 0) {
-						synchronized (lock) {
-							ArrayList<String> list = new ArrayList<String>(
-									mOriginalValues);
-							results.values = list;
-							results.count = list.size();
-						}
-					} else {
-						final String prefixString = prefix.toString()
-								.toLowerCase();
+                    if (prefix == null || prefix.length() == 0) {
+                        synchronized (lock) {
+                            ArrayList<String> list = new ArrayList<String>(
+                                    mOriginalValues);
+                            results.values = list;
+                            results.count = list.size();
+                        }
+                    } else {
+                        final String prefixString = prefix.toString()
+                                .toLowerCase();
 
-						ArrayList<String> values = mOriginalValues;
-						int count = values.size();
+                        ArrayList<String> values = mOriginalValues;
+                        int count = values.size();
 
-						ArrayList<String> newValues = new ArrayList<String>(
-								count);
+                        ArrayList<String> newValues = new ArrayList<String>(
+                                count);
 
-						for (int i = 0; i < count; i++) {
-							String item = values.get(i);
-							if (item.toLowerCase().contains(prefixString)) {
-								newValues.add(item);
-							}
+                        for (int i = 0; i < count; i++) {
+                            String item = values.get(i);
+                            if (item.toLowerCase().contains(prefixString)) {
+                                newValues.add(item);
+                            }
 
-						}
+                        }
 
-						results.values = newValues;
-						results.count = newValues.size();
-					}
+                        results.values = newValues;
+                        results.count = newValues.size();
+                    }
 
-					return results;
-				}
+                    return results;
+                }
 
-				@SuppressWarnings("unchecked")
-				@Override
-				protected void publishResults(CharSequence constraint,
-						FilterResults results) {
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void publishResults(CharSequence constraint,
+                                              FilterResults results) {
 
-					if (results.values != null) {
-						fullList = (ArrayList<String>) results.values;
-					} else {
-						fullList = new ArrayList<String>();
-					}
-					if (results.count > 0) {
-						notifyDataSetChanged();
-					} else {
-						notifyDataSetInvalidated();
-					}
-				}
-			}
-		}
+                    if (results.values != null) {
+                        fullList = (ArrayList<String>) results.values;
+                    } else {
+                        fullList = new ArrayList<String>();
+                    }
+                    if (results.count > 0) {
+                        notifyDataSetChanged();
+                    } else {
+                        notifyDataSetInvalidated();
+                    }
+                }
+            }
+        }
 
-		public class ListUnamesBaseAdapter extends BaseAdapter {
-			ArrayList<String> list;
-			private LayoutInflater inflator;
-			private Context context;
+        public class ListUnamesBaseAdapter extends BaseAdapter {
+            ArrayList<String> list;
+            private LayoutInflater inflator;
+            private Context context;
 
-			public ListUnamesBaseAdapter(Activity activity,
-					ArrayList<String> listArticles) {
-				// TODO Auto-generated constructor stub
-				this.context = activity;
-				this.list = listArticles;
-				inflator = (LayoutInflater) activity
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			}
-			@Override
-			public int getCount() {
-				// TODO Auto-generated method stub
-				return list.size();
-			}
+            public ListUnamesBaseAdapter(Activity activity,
+                                         ArrayList<String> listArticles) {
+                // TODO Auto-generated constructor stub
+                this.context = activity;
+                this.list = listArticles;
+                inflator = (LayoutInflater) activity
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            }
 
-			@Override
-			public Object getItem(int pos) {
-				// TODO Auto-generated method stub
-				return list.get(pos);
-			}
+            @Override
+            public int getCount() {
+                // TODO Auto-generated method stub
+                return list.size();
+            }
 
-			@Override
-			public long getItemId(int pos) {
-				// TODO Auto-generated method stub
-				return pos;
-			}
+            @Override
+            public Object getItem(int pos) {
+                // TODO Auto-generated method stub
+                return list.get(pos);
+            }
 
-			@Override
-			public View getView(final int position, View convertView,
-					ViewGroup parent) {
-				// TODO Auto-generated method stub
-				ViewHolder holder;
-				if (convertView == null) {
-					convertView = inflator.inflate(R.layout.avenues_adapter_row,
-							parent, false);
-					holder = new ViewHolder();
-					holder.titleTxt = (TextView) convertView
-							.findViewById(R.id.titleTxt);
-					holder.titleTxt.setTypeface(typefaceLight);
-					convertView.setTag(holder);
-				} else {
-					holder = (ViewHolder) convertView.getTag();
-				}
+            @Override
+            public long getItemId(int pos) {
+                // TODO Auto-generated method stub
+                return pos;
+            }
 
-				holder.titleTxt.setText(list.get(position));
+            @Override
+            public View getView(final int position, View convertView,
+                                ViewGroup parent) {
+                // TODO Auto-generated method stub
+                ViewHolder holder;
+                if (convertView == null) {
+                    convertView = inflator.inflate(R.layout.avenues_adapter_row,
+                            parent, false);
+                    holder = new ViewHolder();
+                    holder.titleTxt = (TextView) convertView
+                            .findViewById(R.id.titleTxt);
+                    holder.titleTxt.setTypeface(typefaceLight);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder) convertView.getTag();
+                }
 
-				return convertView;
-			}
+                holder.titleTxt.setText(list.get(position));
 
-			public class ViewHolder {
-				TextView titleTxt;
-			}
-		}
+                return convertView;
+            }
 
-		public class SendEmail extends AsyncTask<Void, Void, Void> {
-			@Override
-			protected void onPreExecute() {
-				pDialog1.setVisibility(View.VISIBLE);
-				sendTxt.setVisibility(View.INVISIBLE);
-			}
+            public class ViewHolder {
+                TextView titleTxt;
+            }
+        }
 
-			@Override
-			protected Void doInBackground(Void... params) {
-				JSONObject jsonMsg = new JSONObject();
-				try {
-					JSONObject jsonMsgs = new JSONObject();
+        public class SendEmail extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected void onPreExecute() {
+                pDialog1.setVisibility(View.VISIBLE);
+                sendTxt.setVisibility(View.INVISIBLE);
+            }
 
-					jsonMsg.put("from_user_id",
-							userPref.getString("USERID", "NV"));
-					jsonMsg.put("to_user_id", "2");
-					jsonMsg.put("subject", subjectStr);
-					jsonMsg.put("message", discStr);
-					jsonMsg.put("read", "NO");
+            @Override
+            protected Void doInBackground(Void... params) {
+                JSONObject jsonMsg = new JSONObject();
+                try {
+                    JSONObject jsonMsgs = new JSONObject();
 
-					jsonMsgs.put("message", jsonMsg);
-					jsonMsgs.put("names", unamesList);
-					msgJObj = EvenstPost.makeRequestForPostMsg(jsonMsgs,
-							MyApplication.HOSTNAME);
+                    jsonMsg.put("from_user_id",
+                            userPref.getString("USERID", "NV"));
+                    jsonMsg.put("to_user_id", "2");
+                    jsonMsg.put("subject", subjectStr);
+                    jsonMsg.put("message", discStr);
+                    jsonMsg.put("read", "NO");
 
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
-			}
+                    jsonMsgs.put("message", jsonMsg);
+                    jsonMsgs.put("names", unamesList);
+                    msgJObj = EvenstPost.makeRequestForPostMsg(jsonMsgs,
+                            MyApplication.HOSTNAME);
 
-			@Override
-			protected void onPostExecute(Void unused) {
-				if (msgJObj != null) {
-					showSnack(getActivity(), "Mail has sent!", "OK");
-					subEdit.setText("");
-					discriptionEdit.setText("");
-					toEdit.setText("");
-					pDialog1.setVisibility(View.GONE);
-					sendTxt.setVisibility(View.VISIBLE);
-				} else {
-					sendTxt.setVisibility(View.VISIBLE);
-					pDialog1.setVisibility(View.GONE);
-					showSnack(
-							getActivity(),
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void unused) {
+                if (msgJObj.has("status")) {
+                    showSnack(
+                            getActivity(),
+                            "Oops! Internal Server Error",
+                            "OK");
+                } else if (msgJObj != null) {
+                    showSnack(getActivity(), "Mail has sent!", "OK");
+                    subEdit.setText("");
+                    discriptionEdit.setText("");
+                    toEdit.setText("");
+                    pDialog1.setVisibility(View.GONE);
+                    sendTxt.setVisibility(View.VISIBLE);
+                } else {
+                    sendTxt.setVisibility(View.VISIBLE);
+                    pDialog1.setVisibility(View.GONE);
+                    showSnack(
+                            getActivity(),
                             "Oops! Something went wrong. Please check internet connection!",
                             "OK");
-				}
-			}
-		}
+                }
+            }
+        }
+
         private void callSentListMail() {
             String hostt = MyApplication.HOSTNAME + "messages.json?user_id=" + userPref.getString("USERID", "NV") + "&type="
                     + msgType;
 
-            JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET,  hostt.replaceAll(" ", "%20"),
+            JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, hostt.replaceAll(" ", "%20"),
                     (String) null, new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
                     //    pDialog.hide();
 
                     Log.d("Reponse", response.toString());
-                    sentMailsJArr=response;
+                    sentMailsJArr = response;
                     if (response != null) {
                         inboxPojo = gson.fromJson(sentMailsJArr.toString(), new TypeToken<List<InboxPojo>>() {
                         }.getType());
@@ -835,15 +847,15 @@ public class InBox extends BaseActivity {
                                     getActivity(), inboxPojo);
                             listviewSent.setAdapter(adapterSentRcv);
                             pDialog.setVisibility(View.GONE);
-                            if(msgType=="receive"){
+                            if (msgType == "receive") {
                                 db.addEventNews(sentMailsJArr, dbNameRcv);
-								//for updating new data
-								db.updateEventNews(response, dbNameRcv);
-                            }else{
+                                //for updating new data
+                                db.updateEventNews(response, dbNameRcv);
+                            } else {
                                 db.addEventNews(sentMailsJArr, dbNameSent);
-								//for updating new data
-								db.updateEventNews(response,dbNameSent);
-							}
+                                //for updating new data
+                                db.updateEventNews(response, dbNameSent);
+                            }
 
                         }
                     }
@@ -858,67 +870,76 @@ public class InBox extends BaseActivity {
             });
             MyApplication.queue.add(request);
         }
-		public class ListSendMailBaseAdapter extends BaseAdapter {
+
+        public class ListSendMailBaseAdapter extends BaseAdapter {
             List<InboxPojo> inboxPojos;
-			private LayoutInflater inflator;
-			private Context context;
+            private LayoutInflater inflator;
+            private Context context;
 
-			public ListSendMailBaseAdapter(Context context2,
+            public ListSendMailBaseAdapter(Context context2,
                                            List<InboxPojo> inboxPojo) {
-				// TODO Auto-generated constructor stub
-				this.context = context2;
-				this.inboxPojos = inboxPojo;
-				inflator = (LayoutInflater) context2
-						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                // TODO Auto-generated constructor stub
+                this.context = context2;
+                this.inboxPojos = inboxPojo;
+                inflator = (LayoutInflater) context2
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-			}
+            }
 
-			@Override
-			public int getCount() {
-				// TODO Auto-generated method stub
-				return inboxPojos.size();
-			}
+            @Override
+            public int getCount() {
+                // TODO Auto-generated method stub
+                return inboxPojos.size();
+            }
 
-			@Override
-			public Object getItem(int pos) {
-				// TODO Auto-generated method stub
-				return inboxPojos.get(pos);
-			}
+            @Override
+            public Object getItem(int pos) {
+                // TODO Auto-generated method stub
+                return inboxPojos.get(pos);
+            }
 
-			@Override
-			public long getItemId(int pos) {
-				// TODO Auto-generated method stub
-				return pos;
-			}
+            @Override
+            public long getItemId(int pos) {
+                // TODO Auto-generated method stub
+                return pos;
+            }
 
-			@Override
-			public View getView(final int position, View convertView,
-					ViewGroup parent) {
-				// TODO Auto-generated method stub
-				ViewHolder holder;
-				if (convertView == null) {
-					convertView = inflator.inflate(R.layout.inbox_list, parent,
-							false);
-					holder = new ViewHolder();
-					holder.unameTxt = (TextView) convertView
-							.findViewById(R.id.unameTxt);
-					holder.subjectTxt = (TextView) convertView
-							.findViewById(R.id.subjectTxt);
-					holder.recvdDateTxt = (TextView) convertView
-							.findViewById(R.id.recvdDateTxt);
-					holder.deleteImg = (ImageView) convertView
-							.findViewById(R.id.deleteImg);
-					holder.unameTxt.setTypeface(typefaceLight);
-					holder.subjectTxt.setTypeface(typefaceLight);
-					holder.recvdDateTxt.setTypeface(typefaceLight);
-					convertView.setTag(holder);
-				} else {
-					holder = (ViewHolder) convertView.getTag();
-				}
-				holder.unameTxt.setText(inboxPojos.get(position).getSender_name());
-				holder.subjectTxt.setText(inboxPojos.get(position).getSubject());
+            @Override
+            public View getView(final int position, View convertView,
+                                ViewGroup parent) {
+                // TODO Auto-generated method stub
+                ViewHolder holder;
+                if (convertView == null) {
+                    convertView = inflator.inflate(R.layout.inbox_list, parent,
+                            false);
+                    holder = new ViewHolder();
+                    holder.unameTxt = (TextView) convertView
+                            .findViewById(R.id.unameTxt);
+                    holder.subjectTxt = (TextView) convertView
+                            .findViewById(R.id.subjectTxt);
+                    holder.recvdDateTxt = (TextView) convertView
+                            .findViewById(R.id.recvdDateTxt);
+                    holder.deleteImg = (ImageView) convertView
+                            .findViewById(R.id.deleteImg);
+                    holder.fromTxt = (TextView) convertView
+                            .findViewById(R.id.fromTxt);
+                    holder.unameTxt.setTypeface(typefaceLight);
+                    holder.subjectTxt.setTypeface(typefaceLight);
+                    holder.recvdDateTxt.setTypeface(typefaceLight);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (ViewHolder) convertView.getTag();
+                }
 
-				holder.deleteImg.setOnClickListener(new OnClickListener() {
+                holder.subjectTxt.setText(inboxPojos.get(position).getSubject());
+                if (msgType == "sent" || msgType.equals("sent")) {
+                    holder.fromTxt.setText("To");
+                    holder.unameTxt.setText(inboxPojos.get(position).getReceiver_name());
+                } else {
+                    holder.fromTxt.setText("From");
+                    holder.unameTxt.setText(inboxPojos.get(position).getSender_name());
+                }
+                holder.deleteImg.setOnClickListener(new OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
@@ -955,61 +976,62 @@ public class InBox extends BaseActivity {
                         m_dialog.show();
                     }
                 });
-
-                String createdAt=inboxPojos.get(position)
+                String createdAt = inboxPojos.get(position)
                         .getCreated_at();
-                MyApplication app=new MyApplication();
-                createdAt=app.convertDateEmail(createdAt);
-
-
-                String time=inboxPojos.get(position)
+                MyApplication app = new MyApplication();
+                createdAt = app.convertDateEmail(createdAt);
+                String time = inboxPojos.get(position)
                         .getCreated_at().substring(11, 19);
-                time=app.convertTimeEmail(time);
+                time = app.convertTimeEmail(time);
 
-                holder.recvdDateTxt.setText(createdAt +"," + time);
+                holder.recvdDateTxt.setText(createdAt + "," + time);
 
                 return convertView;
-			}
+            }
 
-			public class ViewHolder {
-				TextView unameTxt, subjectTxt, recvdDateTxt;
-				ImageView deleteImg;
-			}
-		}
+            public class ViewHolder {
+                TextView unameTxt, subjectTxt, recvdDateTxt, fromTxt;
+                ImageView deleteImg;
+            }
+        }
 
-		void showSnack(FragmentActivity flats, String stringMsg, String ok) {
-			new SnackBar(getActivity(), stringMsg, ok, new OnClickListener() {
+        void showSnack(FragmentActivity flats, String stringMsg, String ok) {
+            new SnackBar(getActivity(), stringMsg, ok, new OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
-				}
-			}).show();
-		}
-		public class DeleteEvent extends AsyncTask<Void, Void, Void> {
-			@Override
-			protected void onPreExecute() {
-			}
+                @Override
+                public void onClick(View v) {
+                }
+            }).show();
+        }
 
-			@Override
-			protected Void doInBackground(Void... params) {
-				// TODO Auto-generated method stub
-				try {
-					jsonDelete = EvenstPost.makeDelete(MyApplication.HOSTNAME, mailid,"messages");
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				return null;
-			}
+        public class DeleteEvent extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected void onPreExecute() {
+            }
 
-			@Override
-			protected void onPostExecute(Void unused) {
-				showSnack(getActivity(),
-						"Deleted!",
-						"OK");
-				adapterSentRcv.notifyDataSetChanged();
-			}
-		}
-	}
+            @Override
+            protected Void doInBackground(Void... params) {
+                // TODO Auto-generated method stub
+                try {
+                    jsonDelete = EvenstPost.makeDeleteInbox(MyApplication.HOSTNAME, mailid, "messages", userPref.getString("USERID", "NV"));
+                    Log.d("DELETE RESULT : ", jsonDelete + "");
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                    Log.d("DELETE EXCEPTION : ", e + "");
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void unused) {
+                showSnack(getActivity(),
+                        "Deleted!",
+                        "OK");
+                adapterSentRcv.notifyDataSetChanged();
+                callSentListMail();
+            }
+        }
+    }
 
 }

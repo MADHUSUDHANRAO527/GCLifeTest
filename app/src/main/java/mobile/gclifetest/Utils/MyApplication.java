@@ -1,20 +1,9 @@
 package mobile.gclifetest.Utils;
 
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -31,6 +20,14 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.parse.Parse;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 import mobile.gclifetest.PojoGson.UserDetailsPojo;
 
 public class MyApplication extends Application {
@@ -46,7 +43,7 @@ public class MyApplication extends Application {
     public static String gcmTokenid;
     public static RequestQueue queue;
     //HTTP Constants
-    public static String HOSTNAME="http://52.34.160.74:3000/";
+    public static String HOSTNAME="http://54.169.40.151:3000/";
     ActionBar actionBar;
     public void onCreate() {
         super.onCreate();
@@ -160,7 +157,7 @@ public class MyApplication extends Application {
     public String convertTimeComnts(String comntCreated) {
         comntCreated = comntCreated.substring(0, 10);
 
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        DateFormat df = new SimpleDateFormat(".-MM-dd");
         Date date;
         try {
             date = df.parse(comntCreated);

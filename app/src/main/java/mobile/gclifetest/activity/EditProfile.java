@@ -1,20 +1,5 @@
 package mobile.gclifetest.activity;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Calendar;
-
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.http.SignUpPost;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -23,8 +8,6 @@ import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,7 +20,6 @@ import android.view.View.OnTouchListener;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -45,17 +27,34 @@ import android.widget.TextView;
 import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Calendar;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.http.SignUpPost;
 
 public class EditProfile extends BaseActivity {
 	RelativeLayout dateToLay;
 	static final int DATE_DIALOG_FROMID = 0;
 	String  userName, email, mobileNum, genderName, emeNum,
 			occupation, dob, privacy = "false",ext,fileName,mediaUrl;
-	TextView submitTxt;
+	TextView submitTxt,uploadingTxt;
 	SharedPreferences userPref;
 	ProgressBarCircularIndeterminate pDialog;
 	EditText userNameEdit, emailEdit, mobileNumEdit, emeContaNum,
@@ -66,8 +65,10 @@ public class EditProfile extends BaseActivity {
 	Switch privacySwitch;
 	String checkPatternId = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-	ImageView profileImg;
+    de.hdodenhof.circleimageview.CircleImageView profileImg;
     byte[] bytes;
+	ImageLoader imageLoader;
+	DisplayImageOptions options;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -76,8 +77,9 @@ public class EditProfile extends BaseActivity {
 		pDialog = (ProgressBarCircularIndeterminate) findViewById(R.id.progressBarCircularIndetermininate);
 		dobEdit = (EditText) findViewById(R.id.dobEdit);
 		submitTxt = (TextView) findViewById(R.id.submitTxt);
-		profileImg=(ImageView)findViewById(R.id.imageProfile);
-		userNameEdit = (EditText) findViewById(R.id.userName);
+		uploadingTxt = (TextView) findViewById(R.id.uploadingTxt);
+        profileImg = (de.hdodenhof.circleimageview.CircleImageView) findViewById(R.id.imageProfile);
+        userNameEdit = (EditText) findViewById(R.id.userName);
 		emailEdit = (EditText) findViewById(R.id.mailEdit);
 		mobileNumEdit = (EditText) findViewById(R.id.mobileNumEdit);
 
@@ -87,6 +89,13 @@ public class EditProfile extends BaseActivity {
 		privacySwitch = (Switch) findViewById(R.id.privacySwitch);
 
 		setUpActionBar("Update Profile");
+		imageLoader = ImageLoader.getInstance();
+		options = new DisplayImageOptions.Builder().cacheInMemory(true)
+				.cacheOnDisc(true).resetViewBeforeLoading(true)
+				.showImageForEmptyUri(R.drawable.no_media)
+				.showImageOnFail(R.drawable.no_media)
+				.showImageOnLoading(R.drawable.no_media).build();
+
 
 		userPref = getSharedPreferences("USER", MODE_PRIVATE);
 		editor = userPref.edit();
@@ -94,7 +103,7 @@ public class EditProfile extends BaseActivity {
 		Gson gson = new Gson();
 		String jsonUser = userPref.getString("USER_DATA", "NV");
 		user = gson.fromJson(jsonUser, UserDetailsPojo.class);
-
+		imageLoader.displayImage(user.getProfile_url(), profileImg, options);
 		userNameEdit.setText(user.getUsername());
 		emailEdit.setText(user.getEmail());
 		mobileNumEdit.setText(user.getMobile());
@@ -280,15 +289,16 @@ public class EditProfile extends BaseActivity {
 					editor.putString("USER_DATA", json);
 					editor.commit();
 
-					Intent otp = new Intent(getApplicationContext(),
-							HomeApp.class);
-					otp.putExtra("EACH_USER_DET", json);
-					startActivity(otp);
-					overridePendingTransition(R.anim.slide_in_left,
+                    Intent intent = new Intent();
+                    intent.putExtra("EACH_USER_DET", json);
+                    setResult(1, intent);
+
+                    overridePendingTransition(R.anim.slide_in_left,
 							R.anim.slide_out_left);
 					showSnack(EditProfile.this,
 							"Profile has been updated!",
 							"OK");
+                    finish();
 				}
 
 			} else {
@@ -307,7 +317,8 @@ public class EditProfile extends BaseActivity {
 		switch (item.getItemId()) {
 
 		case android.R.id.home:
-			onBackPressed();
+            finish();
+            onBackPressed();
 			overridePendingTransition(R.anim.slide_right_in,
 					R.anim.slide_out_right);
 			return true;
@@ -332,6 +343,9 @@ public class EditProfile extends BaseActivity {
             case 1234:
                 if(resultCode == RESULT_OK){
                     Uri selectedImage = data.getData();
+					if(!selectedImage.equals(null)||selectedImage!=null){
+						uploadingTxt.setVisibility(View.VISIBLE);
+					}
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
                     Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
@@ -386,6 +400,7 @@ public class EditProfile extends BaseActivity {
                             mediaUrl = file.getUrl();// live url
                             System.err.println(mediaUrl
                                     + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+							uploadingTxt.setVisibility(View.GONE);
                         }
                         });
 

@@ -1,38 +1,19 @@
 package mobile.gclifetest.activity;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
-import mobile.gclifetest.db.DatabaseHandler;
-import mobile.gclifetest.http.SocietyNameGet;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -46,17 +27,20 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -67,9 +51,28 @@ import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.FlatDetailsPojo;
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.Utils.InternetConnectionDetector;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
+import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.http.SocietyNameGet;
+
 public class FrdsList extends BaseActivity {
     ButtonFloat addBtn;
-    ProgressBarCircularIndeterminate pDialog;
+    ProgressBarCircularIndeterminate pDialog,pDialogBtm;
     InternetConnectionDetector netConn;
     UserDetailsPojo user;
     Boolean isInternetPresent = false;
@@ -88,6 +91,7 @@ public class FrdsList extends BaseActivity {
     JSONObject jsonDetails;
     DatabaseHandler db;
     List<UserDetailsPojo> userListPojo;
+    List<UserDetailsPojo> globalUserListPojo=new ArrayList<>();
     ListFreindsBaseAdapter adapterfrds;
     SwipeRefreshLayout mSwipeRefreshLayout;
     Runnable run;
@@ -97,6 +101,8 @@ public class FrdsList extends BaseActivity {
     ProgressBar progressBar;
     String searchStr="";
     boolean progressShow=true;
+    ImageView clearImg;
+    int limit = 15, currentPosition,offset=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,11 +113,13 @@ public class FrdsList extends BaseActivity {
         listviewIdeas = (ListView) findViewById(R.id.listview);
         searchLay=(RelativeLayout)findViewById(R.id.searchLay);
         avenueSpinner = (Spinner) findViewById(R.id.avenueSpin);
+        pDialogBtm = (ProgressBarCircularIndeterminate) findViewById(R.id.pDialogBtm);
         societyNameSpinner = (Spinner) findViewById(R.id.societySpin);
         buildingSpinner = (Spinner) findViewById(R.id.buildingSpin);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.activity_main_swipe_refresh_layout);
         searchEdit=(EditText)findViewById(R.id.searchEdit);
         progressBar=(ProgressBar)findViewById(R.id.progressBar);
+        clearImg=(ImageView)findViewById(R.id.clearImg);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
                 R.color.green, R.color.blue);
         gson = new Gson();
@@ -124,8 +132,10 @@ public class FrdsList extends BaseActivity {
             pDialog.setVisibility(View.GONE);
             userListPojo = gson.fromJson(db.getEventNews(eventName), new TypeToken<List<UserDetailsPojo>>() {
             }.getType());
-            adapterfrds = new ListFreindsBaseAdapter(FrdsList.this, userListPojo);
+            globalUserListPojo.addAll(userListPojo);
+            adapterfrds = new ListFreindsBaseAdapter(FrdsList.this, globalUserListPojo);
             listviewIdeas.setAdapter(adapterfrds);
+            listviewIdeas.smoothScrollToPosition(0);
             progressShow=false;
             callFrdsList();
 
@@ -141,8 +151,8 @@ public class FrdsList extends BaseActivity {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-
-                                userListPojo = new ArrayList<UserDetailsPojo>();
+                                offset=0;
+                                globalUserListPojo = new ArrayList<UserDetailsPojo>();
                                 callFrdsList();
                                 runOnUiThread(run);
                                 mSwipeRefreshLayout
@@ -161,21 +171,58 @@ public class FrdsList extends BaseActivity {
                 }
             }
         };
+        searchEdit.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+                if(searchStr.length()==2){
+                    Toast.makeText(getApplicationContext(),"Type atleast three characters",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
         searchEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     searchStr = searchEdit.getText().toString();
-                    progressShow=false;
-                    callFrdsList();
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(searchEdit.getWindowToken(), 0);
+                    System.out.println(searchStr);
+                   if(searchStr.length()>=3){
+                       globalUserListPojo=new ArrayList<UserDetailsPojo>();
+                       offset=0;
+                       adapterfrds.notifyDataSetChanged();
+                        progressShow=false;
+                        callFrdsList();
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(searchEdit.getWindowToken(), 0);
+                   }else{
+                       Toast.makeText(getApplicationContext(),"Type atleast three characters",Toast.LENGTH_LONG).show();
+                   }
+
                     return true;
                 }
                 return false;
             }
         });
         addBtn.setVisibility(View.GONE);
+        clearImg.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalUserListPojo=new ArrayList<UserDetailsPojo>();
+                offset=0;
+                searchStr="";
+                callFrdsList();
+                searchEdit.setText("");
+            }
+        });
         addBtn.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -239,12 +286,7 @@ public class FrdsList extends BaseActivity {
                             .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     sociAdapter
                             .setDropDownViewResource(R.layout.multiline_spinner_dropdown_item);
-                    /*
-					 * avenueSpinner .setAdapter(new
-					 * NothingSelectedSpinnerAdapter1( avenueAdapter,
-					 * R.layout.avenue_spinner_nothing_selected,
-					 * FrdsList.this));
-					 */
+
                     societyNameSpinner
                             .setAdapter(new NothingSelectedSpinnerAdapter1(
                                     sociAdapter,
@@ -277,8 +319,6 @@ public class FrdsList extends BaseActivity {
                                     System.out
                                             .println(societyMap
                                                     + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                                    // ((TextView)
-                                    // arg0.getChildAt(0)).setTextColor(0x00000000);
 
                                     ((TextView) avenueSpinner.getSelectedView())
                                             .setTextColor(getResources()
@@ -434,7 +474,7 @@ public class FrdsList extends BaseActivity {
                                     int position, long id) {
                 // TODO Auto-generated method stub
                 Intent i = new Intent(FrdsList.this, FrdsDetail.class);
-                i.putExtra("jsonDetails", gson.toJson(userListPojo.get(position)));
+                i.putExtra("jsonDetails", gson.toJson(globalUserListPojo.get(position)));
 
                 startActivity(i);
             }
@@ -444,7 +484,7 @@ public class FrdsList extends BaseActivity {
         new SocietyNamees().execute();
     }
     private void callFrdsList() {
-        String host = MyApplication.HOSTNAME + "search_users.json?search_key="+searchStr;
+        String host = MyApplication.HOSTNAME + "search_users.json?limit=" +  "&limit=" + limit +"&offset="+offset+"&search_key="+searchStr;
         host = host.replaceAll(" ", "%20");
         JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, host,
                 (String) null, new Response.Listener<JSONArray>() {
@@ -469,14 +509,89 @@ public class FrdsList extends BaseActivity {
                         userListPojo = gson.fromJson(jsonResultArry.toString(), new TypeToken<List<UserDetailsPojo>>() {
                         }.getType());
 
+                        globalUserListPojo.addAll(userListPojo);
+                        Log.d("SIZE", globalUserListPojo.size() + "");
+                        currentPosition = listviewIdeas
+                                .getLastVisiblePosition();
+
                         adapterfrds = new ListFreindsBaseAdapter(
-                                FrdsList.this, userListPojo);
+                                FrdsList.this, globalUserListPojo);
                         listviewIdeas.setAdapter(adapterfrds);
+
+                        pDialogBtm.setVisibility(View.GONE);
+
                         pDialog.setVisibility(View.GONE);
                         progressBar.setVisibility(View.GONE);
                         db.addEventNews(jsonResultArry, eventName);
                         //for updating new data
                         db.updateEventNews(response, eventName);
+
+                        DisplayMetrics displayMetrics =
+                                getResources().getDisplayMetrics();
+                        int height = displayMetrics.heightPixels;
+
+                        listviewIdeas.setSelectionFromTop(
+                                currentPosition + 1, height - 220);
+                        listviewIdeas.smoothScrollToPosition(0);
+                        listviewIdeas
+                                .setOnScrollListener(new AbsListView.OnScrollListener() {
+
+                                    private int currentScrollState;
+                                    private int currentFirstVisibleItem;
+                                    private int currentVisibleItemCount;
+                                    private int totalItemCount;
+                                    private int mLastFirstVisibleItem;
+                                    private boolean mIsScrollingUp;
+
+                                    @Override
+                                    public void onScrollStateChanged(
+                                            AbsListView view, int scrollState) {
+                                        // TODO Auto-generated method stub
+                                        this.currentScrollState = scrollState;
+                                        if (view.getId() == listviewIdeas
+                                                .getId()) {
+                                            final int currentFirstVisibleItem = listviewIdeas
+                                                    .getFirstVisiblePosition();
+
+                                            if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                                                mIsScrollingUp = false;
+
+                                            } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+
+                                                mIsScrollingUp = true;
+                                            }
+
+                                            mLastFirstVisibleItem = currentFirstVisibleItem;
+                                        }
+                                        this.isScrollCompleted();
+                                    }
+
+                                    @Override
+                                    public void onScroll(AbsListView view,
+                                                         int firstVisibleItem,
+                                                         int visibleItemCount,
+                                                         int totalItemCount) {
+                                        // TODO Auto-generated method stub
+
+                                        this.currentFirstVisibleItem = firstVisibleItem;
+                                        this.currentVisibleItemCount = visibleItemCount;
+                                        this.totalItemCount = totalItemCount;
+                                        pDialogBtm.setVisibility(View.GONE);
+
+                                    }
+
+                                    private void isScrollCompleted() {
+                                        pDialogBtm.setVisibility(View.VISIBLE);
+                                        if (this.currentVisibleItemCount > 0
+                                                && this.currentScrollState == SCROLL_STATE_IDLE
+                                                && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
+                                            offset = offset + 15;
+                                            callFrdsList();
+
+                                        }
+                                        pDialogBtm.setVisibility(View.GONE);
+                                    }
+                                });
                     }
                 }
 
@@ -553,6 +668,7 @@ public class FrdsList extends BaseActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
             holder.unameTxt.setText(userListPojo.get(position).getUsername());
+            Log.d("POS :",position+"");
             holder.avaneuNameTxt.setText(userListPojo.get(position).getGclife_registration_flatdetails().get(0).getAvenue_name()
                     + "," + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getBuildingid() + ","
                     + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getFlat_number());
@@ -688,6 +804,7 @@ public class FrdsList extends BaseActivity {
                         R.anim.slide_out_right);
                 return true;
             case R.id.search:
+                Toast.makeText(getApplicationContext(),"Type atleast three characters",Toast.LENGTH_LONG).show();
                 searchLay.setVisibility(View.VISIBLE);
                 searchEdit.requestFocus();
                 searchEdit.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));

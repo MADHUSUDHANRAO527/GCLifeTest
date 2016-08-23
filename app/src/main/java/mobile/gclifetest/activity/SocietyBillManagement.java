@@ -1,28 +1,9 @@
 package mobile.gclifetest.activity;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.FilePicker;
-import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
-import mobile.gclifetest.http.SocietyBillPost;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +17,22 @@ import android.widget.TextView;
 
 import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.FlatDetailsPojo;
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.Utils.FilePicker;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
+import mobile.gclifetest.http.SocietyBillPost;
 
 public class SocietyBillManagement extends BaseActivity {
 	Spinner societyNameSpinner, chooseyrSpiner, monthsSpinner,
@@ -57,7 +54,7 @@ public class SocietyBillManagement extends BaseActivity {
 	JSONObject societyBillManagementDataJson;
 	JSONArray totalDataArr, paidStatusDataArr, confirmedStatusDataArr,
 			dueStatusDataArr;
-	boolean action = false,backPressed = true;
+	boolean action = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -102,13 +99,14 @@ public class SocietyBillManagement extends BaseActivity {
 
 		List<String> sociList = new ArrayList<String>();
 		for (int i = 0; i < flatsList.size(); i++) {
-
 			FlatDetailsPojo flatsListt = user
 					.getGclife_registration_flatdetails().get(i);
 			societyName = flatsListt.getSocietyid();
 			System.out.println(societyName + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-			sociList.add(societyName);
-		}
+            if (!sociList.contains(societyName)) {
+                sociList.add(societyName);
+            }
+        }
 
 		System.out.println(sociList + "  ---------------------------------");
 
@@ -218,7 +216,8 @@ public class SocietyBillManagement extends BaseActivity {
 								|| actionType.equals("View")) {
 							action=false;
 							fileNameTxt.setVisibility(View.GONE);
-						}
+                            submitTxt.setEnabled(true);
+                        }
 					}
 
 					@Override
@@ -261,7 +260,6 @@ public class SocietyBillManagement extends BaseActivity {
 									"Select a file to upload!",
 									"OK");
 						}else{
-                            backPressed=false;
 							new PostSocietyBill().execute();
 						}
 
@@ -370,14 +368,10 @@ public class SocietyBillManagement extends BaseActivity {
 		switch (item.getItemId()) {
 
 		case android.R.id.home:
-            System.out.println(backPressed);
-            if(backPressed == false){
                 onBackPressed();
-            }else{
                 finish();
                 overridePendingTransition(R.anim.slide_right_in,
                         R.anim.slide_out_right);
-            }
 
 			return true;
 		default:
@@ -387,7 +381,7 @@ public class SocietyBillManagement extends BaseActivity {
 	}
     @Override
     public void onBackPressed() {
-        // do nothing. We want to force user to stay in this activity and not drop out.
+        finish();
     }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -432,10 +426,10 @@ public class SocietyBillManagement extends BaseActivity {
 				showSnack(SocietyBillManagement.this,
 						"Uploaded file!",
 						"OK");
-                backPressed=true;
 				pDialog.setVisibility(View.GONE);
 				fileNameTxt.setVisibility(View.GONE);
-			}
+                submitTxt.setEnabled(false);
+            }
 
 		}
 	}
@@ -494,9 +488,9 @@ public class SocietyBillManagement extends BaseActivity {
 					paidStatusCountTxt.setText(json
 							.getString("paid_status_count"));
 					dueAmountTxt.setText(json.getString("due_amount"));
-					confrmdAmount.setText(json.getString("confirmed_amount"));
-					balnceAmountTxt.setText(json.getString("balanced_amount"));
-					viewLay.setVisibility(View.VISIBLE);
+                    confrmdAmount.setText("Rs." + json.getString("confirmed_amount") + ".00");
+                    balnceAmountTxt.setText("Rs." + json.getString("balanced_amount") + ".00");
+                    viewLay.setVisibility(View.VISIBLE);
 					pDialog.setVisibility(View.GONE);
 					fileNameTxt.setVisibility(View.GONE);
 				} catch (JSONException e) {

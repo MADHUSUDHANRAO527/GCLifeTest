@@ -55,6 +55,7 @@
         <item>Apr</item>
         <item>May</item>
         <item>June</item>
+        <item>July</item>
         <item>Aug</item>
         <item>Sept</item>
         <item>Oct</item>
@@ -69,5 +70,14 @@
         <item>Paid</item>
         <item>Not paid</item>
     </string-array>
-    
+    <string-array name="paymentTypeArray">
+        <item>Cash</item>
+        <item>Demand Draft</item>
+        <item>Cheque</item>
+        <item>Electronic Transfer (NEFT/IMPS/Net Banking)</item>
+        <item>Debit Card</item>
+        <item>Credit Card</item>
+        <item>Other</item>
+    </string-array>
+
 </resources>

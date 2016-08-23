@@ -1,37 +1,23 @@
 package mobile.gclifetest.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.EventsPojo;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.db.DatabaseHandler;
-import mobile.gclifetest.http.EvenstPost;
-import mobile.gclifetest.http.MemsPost;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -45,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -63,10 +50,33 @@ import com.gc.materialdesign.views.ButtonFloat;
 import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.EventsPojo;
+import mobile.gclifetest.PojoGson.FlatDetailsPojo;
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.Utils.InternetConnectionDetector;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.fragments.IdeasDetailFragment;
+import mobile.gclifetest.http.EvenstPost;
+import mobile.gclifetest.http.MemsPost;
 
 public class PhotosList extends BaseActivity {
 	ButtonFloat addBtn;
-	ProgressBarCircularIndeterminate pDialog;
+	ProgressBarCircularIndeterminate pDialog,pDialogBtm;
 	InternetConnectionDetector netConn;
 	UserDetailsPojo user;
 	Boolean isInternetPresent = false;
@@ -84,25 +94,31 @@ public class PhotosList extends BaseActivity {
 	Dialog m_dialog;
 	Gson gson;
 	SwipeRefreshLayout mSwipeRefreshLayout;
-	Runnable run;
+    List<EventsPojo> globalEventsPojo = new ArrayList<>();
+    Runnable run;
     RelativeLayout searchLay;
     ProgressBar progressBar;
     boolean progressShow = true;
     EditText searchEdit;
     String searchStr="";
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    ImageView clearImg;
+    ImageLoader imageLoader;
+    DisplayImageOptions options;
+	int limit = 10, currentPosition,offset=0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.ideas_list);
-
-
 		addBtn = (ButtonFloat) findViewById(R.id.addBtn);
 		pDialog = (ProgressBarCircularIndeterminate) findViewById(R.id.pDialog);
 		listviewIdeas = (ListView) findViewById(R.id.listview);
         mSwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.activity_main_swipe_refresh_layout);
         searchEdit=(EditText)findViewById(R.id.searchEdit);
         progressBar=(ProgressBar)findViewById(R.id.progressBar);
+        pDialogBtm = (ProgressBarCircularIndeterminate) findViewById(R.id.pDialogBtm);
         searchLay=(RelativeLayout)findViewById(R.id.searchLay);
+        clearImg = (ImageView) findViewById(R.id.clearImg);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
                 R.color.green, R.color.blue);
 		typefaceLight = Typeface.createFromAsset(getAssets(),
@@ -116,6 +132,12 @@ public class PhotosList extends BaseActivity {
 		} else {
 			setUpActionBar("Videos");
 		}
+        imageLoader = ImageLoader.getInstance();
+        options = new DisplayImageOptions.Builder().cacheInMemory(true)
+                .cacheOnDisc(true).resetViewBeforeLoading(true)
+                .showImageForEmptyUri(R.drawable.no_media)
+                .showImageOnFail(R.drawable.no_media)
+                .showImageOnLoading(R.drawable.no_media).build();
 
 		addBtn.setOnClickListener(new OnClickListener() {
 
@@ -142,10 +164,18 @@ public class PhotosList extends BaseActivity {
 									int position, long id) {
 				// TODO Auto-generated method stub
 
+				IdeasDetailFragment fragment = new IdeasDetailFragment();
+				Bundle bundle = new Bundle();
+				bundle.putString("EventName", eventName);
+				bundle.putString("id", String.valueOf(eventsPojo.get(position).getId()));
+				fragment.setArguments(bundle);
+				((HomeActivity) mContext).addFragment(fragment);
+
+				/*
 				Intent i = new Intent(PhotosList.this, IdeasDetail.class);
 				i.putExtra("EventName", eventName);
 				i.putExtra("id", String.valueOf(eventsPojo.get(position).getId()));
-				startActivity(i);
+				startActivity(i);*/
 			}
 		});
 		if (db.getEventNews(eventName) != "null") {
@@ -170,8 +200,8 @@ public class PhotosList extends BaseActivity {
 						new Handler().postDelayed(new Runnable() {
 							@Override
 							public void run() {
-
-								eventsPojo = new ArrayList<EventsPojo>();
+                                offset=0;
+                                globalEventsPojo = new ArrayList<EventsPojo>();
                                 callEventsList(searchStr);
 								runOnUiThread(run);
 								mSwipeRefreshLayout
@@ -194,6 +224,9 @@ public class PhotosList extends BaseActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+					globalEventsPojo=new ArrayList<EventsPojo>();
+					offset=0;
+					adapter.notifyDataSetChanged();
                     searchStr = searchEdit.getText().toString();
                     progressShow = false;
                     callEventsList(searchStr);
@@ -204,10 +237,18 @@ public class PhotosList extends BaseActivity {
                 return false;
             }
         });
+        clearImg.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalEventsPojo=new ArrayList<EventsPojo>();
+                offset=0;
+                callEventsList("");
+                searchEdit.setText("");
+            }
+        });
+    }
 
-
-	}
-    private void callEventsList(String searchStr) {
+    private void callEventsList(final String searchStr) {
         //get method
         if (progressShow == true) {
             pDialog.setVisibility(View.VISIBLE);
@@ -216,7 +257,7 @@ public class PhotosList extends BaseActivity {
         }
         String host = MyApplication.HOSTNAME + "events.json?user_id=" + userPref.getString("USERID", "NV")
                 + "&event_type=" + eventName + "&society_master_name="
-                + flats.getSocietyid() + "&association_name=" + flats.getAvenue_name()+"&search_text="+searchStr;
+                + flats.getSocietyid() + "&association_name=" + flats.getAvenue_name() + "&limit=" + limit +"&offset="+offset+"&search_text="+searchStr;
         JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, host.replaceAll(" ", "%20"),
                 (String) null, new Response.Listener<JSONArray>() {
             @Override
@@ -226,15 +267,85 @@ public class PhotosList extends BaseActivity {
                 if (response != null) {
                     eventsPojo = gson.fromJson(response.toString(), new TypeToken<List<EventsPojo>>() {
                     }.getType());
+                    globalEventsPojo.addAll(eventsPojo);
+                    Log.d("SIZE",globalEventsPojo.size()+"");
+                    currentPosition = listviewIdeas
+                            .getLastVisiblePosition();
                     adapter = new ListIdeasBaseAdapter(
-                            PhotosList.this, eventsPojo);
+                            PhotosList.this, globalEventsPojo);
                     listviewIdeas.setAdapter(adapter);
                     pDialog.setVisibility(View.GONE);
-
+                    pDialogBtm.setVisibility(View.GONE);
                     // Storing in DB
                     db.addEventNews(response, eventName);
-					//for updating new data
-					db.updateEventNews(response, eventName);
+                    //for updating new data
+                    db.updateEventNews(response, eventName);
+
+
+                    DisplayMetrics displayMetrics =
+                            getResources().getDisplayMetrics();
+                    int height = displayMetrics.heightPixels;
+
+                    listviewIdeas.setSelectionFromTop(
+                            currentPosition + 1, height - 220);
+
+                    listviewIdeas
+                            .setOnScrollListener(new AbsListView.OnScrollListener() {
+
+                                private int currentScrollState;
+                                private int currentFirstVisibleItem;
+                                private int currentVisibleItemCount;
+                                private int totalItemCount;
+                                private int mLastFirstVisibleItem;
+                                private boolean mIsScrollingUp;
+
+                                @Override
+                                public void onScrollStateChanged(
+                                        AbsListView view, int scrollState) {
+                                    // TODO Auto-generated method stub
+                                    this.currentScrollState = scrollState;
+                                    if (view.getId() == listviewIdeas
+                                            .getId()) {
+                                        final int currentFirstVisibleItem = listviewIdeas
+                                                .getFirstVisiblePosition();
+
+                                        if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                                            mIsScrollingUp = false;
+
+                                        } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+
+                                            mIsScrollingUp = true;
+                                        }
+
+                                        mLastFirstVisibleItem = currentFirstVisibleItem;
+                                    }
+                                    this.isScrollCompleted();
+                                }
+
+                                @Override
+                                public void onScroll(AbsListView view,
+                                                     int firstVisibleItem,
+                                                     int visibleItemCount,
+                                                     int totalItemCount) {
+                                    // TODO Auto-generated method stub
+
+                                    this.currentFirstVisibleItem = firstVisibleItem;
+                                    this.currentVisibleItemCount = visibleItemCount;
+                                    this.totalItemCount = totalItemCount;
+
+                                }
+
+                                private void isScrollCompleted() {
+                                    pDialogBtm.setVisibility(View.VISIBLE);
+                                    if (this.currentVisibleItemCount > 0
+                                            && this.currentScrollState == SCROLL_STATE_IDLE
+                                            && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
+                                        offset = offset + 10;
+                                        callEventsList(searchStr);
+                                        pDialogBtm.setVisibility(View.GONE);
+                                    }
+                                }
+                            });
                 }
             }
         }, new Response.ErrorListener() {
@@ -374,8 +485,10 @@ public class PhotosList extends BaseActivity {
 						.findViewById(R.id.detailClick);
 				holder.shareImg = (ImageView) convertView
 						.findViewById(R.id.shareImg);
-				holder.likeImg = (ImageView) convertView
-						.findViewById(R.id.likeImg);
+                holder.shareeImg = (ImageView) convertView
+                        .findViewById(R.id.shareeImg);
+                holder.likeImg = (ImageView) convertView
+                        .findViewById(R.id.likeImg);
 				holder.deleteImg = (ImageView) convertView
 						.findViewById(R.id.deleteImg);
 
@@ -399,15 +512,15 @@ public class PhotosList extends BaseActivity {
 				holder.likesCountTxt.setText(String.valueOf(eventsPojos.get(position).getEvent_likes().size()));
 				likeCheckArr.add(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()));
 			}
-
-			/*if (String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId())  == null||String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()) == ""
+            imageLoader.displayImage(eventsPojos.get(position).getEvent_images().get(0).getImage_url(), holder.shareeImg, options);
+            /*if (String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId())  == null||String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()) == ""
                     || String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()).equals("")) {
 
 			} else {
 				likeCheckArr.add(String.valueOf(eventsPojos.get(position).getEvent_likes().get(position).getId()));
 			}*/
 
-			holder.detailClick.setOnClickListener(new OnClickListener() {
+            holder.detailClick.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
@@ -466,20 +579,9 @@ public class PhotosList extends BaseActivity {
 				@Override
 				public void onClick(View v) {
 					// TODO Auto-generated method stub
-					Intent sharingIntent = new Intent(
-							Intent.ACTION_SEND);
-					sharingIntent.setType("text/plain");
-					sharingIntent.putExtra(
-							Intent.EXTRA_SUBJECT,
-							eventsPojos.get(position).getTitle());
-					sharingIntent.putExtra(
-							Intent.EXTRA_TEXT,
-							eventsPojos.get(position).getSdesc() + "\n"
-									+ eventsPojos.get(position).getBdesc());
-					startActivity(Intent.createChooser(sharingIntent,
-							"Share via"));
-				}
-			});
+                    onShareItem(v, holder.shareeImg);
+                }
+            });
 			if (eventsPojos.get(position).getEvent_likes().size() > 0) {
 				if (likeCheckArr.contains(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()))) {
 					holder.likeImg.setImageResource(R.drawable.liked);
@@ -520,9 +622,9 @@ public class PhotosList extends BaseActivity {
 		public class ViewHolder {
 			TextView titleTxt, attchCountTxt, comntCountTxt,
 					likesCountTxt;
-			ImageView shareImg, likeImg, deleteImg;
-			RelativeLayout detailClick;
-		}
+            ImageView shareImg, likeImg, deleteImg, shareeImg;
+            RelativeLayout detailClick;
+        }
 	}
 
 	private class Like extends AsyncTask<Void, Void, Void> {
@@ -635,4 +737,51 @@ public class PhotosList extends BaseActivity {
 
 		return true;
 	}
+
+    // Can be triggered by a view event such as a button press
+    public void onShareItem(View v, ImageView ivImage) {
+        // Get access to bitmap image from view
+
+        // Get access to the URI for the bitmap
+        Uri bmpUri = getLocalBitmapUri(ivImage);
+        if (bmpUri != null) {
+            // Construct a ShareIntent with link to image
+            Intent shareIntent = new Intent();
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Sample text");
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, bmpUri);
+            shareIntent.setType("image/*");
+            // Launch sharing dialog for image
+            startActivity(Intent.createChooser(shareIntent, "Share Image"));
+        } else {
+            // ...sharing failed, handle error
+        }
+    }
+
+    // Returns the URI path to the Bitmap displayed in specified ImageView
+    public Uri getLocalBitmapUri(ImageView imageView) {
+        // Extract Bitmap from ImageView drawable
+        Drawable drawable = imageView.getDrawable();
+        Bitmap bmp = null;
+        if (drawable instanceof BitmapDrawable) {
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        } else {
+            return null;
+        }
+        // Store image to default external storage directory
+        Uri bmpUri = null;
+        try {
+            // Use methods on Context to access package-specific directories on external storage.
+            // This way, you don't need to request external read/write permission.
+            // See https://youtu.be/5xVh-7ywKpE?t=25m25s
+            File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+            bmpUri = Uri.fromFile(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bmpUri;
+    }
 }

@@ -1,20 +1,10 @@
 package mobile.gclifetest.activity;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.http.SignUpPost;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +12,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.gc.materialdesign.widgets.SnackBar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.http.SignUpPost;
 
 public class OTP extends BaseActivity implements OnClickListener {
 	TextView resendOtpTxt, submitTxt, otpTxt;
@@ -149,7 +146,6 @@ public class OTP extends BaseActivity implements OnClickListener {
 								jsonResult.getString("mobile"));
 						editor.putString("OTPFLAG",
 								jsonResult.getString("otpflag"));
-
 						editor.commit();
 
 					} catch (JSONException e) {

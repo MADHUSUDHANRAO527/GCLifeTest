@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:padding="5dp"
             android:text="Avenue Name"
-            android:textColor="#bdbdbd"
+            android:textColor="#212121"
             android:textSize="16sp" />
 
         <TextView
@@ -29,7 +29,7 @@
             android:layout_below="@+id/titleTxt"
             android:padding="5dp"
             android:text="Flat Number"
-            android:textColor="#212121"
+            android:textColor="#bdbdbd"
             android:textSize="14sp" />
 
         <ImageView

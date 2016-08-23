@@ -8,17 +8,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import org.json.JSONArray;
 
-import java.util.List;
-
-import mobile.gclifetest.PojoGson.EventsPojo;
-
 /**
  * Created by goodworklabs on 08/02/2016.
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "GCLIFE_DB";
+    public static final String DATABASE_NAME = "GCLIFE_DB";
     private static final String TABLE_NEWS = "News";
     private static final String TABLE_NOTICE = "Notice";
     private static final String TABLE_IDEAS = "Ideas";
@@ -98,4 +94,5 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(EVENT_LIST, eventNews.toString());
         db.update(tableName, values, null, null);
     }
+
 }

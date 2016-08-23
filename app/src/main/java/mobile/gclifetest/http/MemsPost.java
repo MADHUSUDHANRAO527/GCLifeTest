@@ -1,7 +1,5 @@
 package mobile.gclifetest.http;
 
-import java.net.URI;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -20,12 +18,13 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.net.URI;
 
 public class MemsPost {
 
-	public static JSONObject activateMem(String hostname, int memId,String status)
+	public static JSONObject activateMem(String hostname, int memId,String status,String statusReason)
 			throws Exception {
 		SSLSocketFactory sslFactory = new SimpleSSLSocketFactory(null);
 		sslFactory
@@ -42,7 +41,8 @@ public class MemsPost {
 		HttpClient client = new DefaultHttpClient(ccm, params);
 
 		HttpGet httget = new HttpGet();
-		String host=hostname+"activate_users.json?user_id="+memId+"&status="+status;
+		String host=hostname+"activate_users.json?user_id="+memId+"&status="+status+"&reason="+statusReason;
+		host = host.replaceAll(" ", "%20");
 		httget.setURI(new URI(host));
 		httget.setHeader("Accept", "*/*");
 		httget.setHeader("Accept-Encoding", "identity");

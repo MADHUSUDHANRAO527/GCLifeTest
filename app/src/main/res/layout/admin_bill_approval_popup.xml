@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:float="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#eee" >
+    android:background="#eee">
 
     <LinearLayout
         android:id="@+id/lay"
@@ -14,7 +13,16 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="5dp"
         android:background="@drawable/articles_list_selector"
-        android:orientation="vertical" >
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text=" Bill Amount"
+            android:textSize="18sp" />
 
         <com.wrapp.floatlabelededittext.FloatLabeledEditText
             android:id="@+id/amounttEdit"
@@ -22,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:layout_marginTop="10dp"
-            float:fletPadding="5dp" >
+            float:fletPadding="5dp">
 
             <EditText
                 android:id="@+id/amountEdit"
@@ -44,27 +52,34 @@
             android:layout_marginRight="18dp"
             android:layout_marginTop="5dp"
             android:background="#ccc"
-            android:orientation="horizontal" >
-        </RelativeLayout>
+            android:orientation="horizontal" />
 
-        <com.wrapp.floatlabelededittext.FloatLabeledEditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            float:fletPadding="5dp" >
+        <!-- <com.wrapp.floatlabelededittext.FloatLabeledEditText
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginLeft="15dp"
+             float:fletPadding="5dp">
 
-            <!-- float:fletPadding="10dp" -->
+             &lt;!&ndash; float:fletPadding="10dp" &ndash;&gt;
 
-            <EditText
-                android:id="@+id/typePaymentModeEdit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#00000000"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
-                android:hint="Type of payment"
-                android:singleLine="true" />
-        </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+             <EditText
+                 android:id="@+id/typePaymentModeEdit"
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content"
+                 android:background="#00000000"
+                 android:focusable="true"
+                 android:focusableInTouchMode="true"
+                 android:hint="Type of payment"
+                 android:singleLine="true" />
+         </com.wrapp.floatlabelededittext.FloatLabeledEditText>-->
+        <Spinner
+            android:id="@+id/paymentTypeSpin"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:spinnerMode="dialog" />
 
         <RelativeLayout
             android:id="@+id/line3"
@@ -74,23 +89,49 @@
             android:layout_marginRight="18dp"
             android:layout_marginTop="5dp"
             android:background="#ccc"
-            android:orientation="horizontal" >
-        </RelativeLayout>
+            android:orientation="horizontal"></RelativeLayout>
 
         <com.wrapp.floatlabelededittext.FloatLabeledEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
-            float:fletPadding="5dp" >
+            float:fletPadding="5dp">
 
             <EditText
-                android:id="@+id/referenseNumEdit"
+                android:id="@+id/narrationEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#00000000"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:hint="Reference number"
+                android:hint="Narration"
+                android:singleLine="true" />
+        </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0.8dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginTop="5dp"
+            android:background="#ccc"
+            android:orientation="horizontal"></RelativeLayout>
+
+        <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            float:fletPadding="5dp">
+
+            <EditText
+                android:id="@+id/billAmountPaidEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#00000000"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint="Bill amount paid"
+                android:inputType="phone"
                 android:singleLine="true" />
         </com.wrapp.floatlabelededittext.FloatLabeledEditText>
 
@@ -102,15 +143,14 @@
             android:layout_marginRight="18dp"
             android:layout_marginTop="5dp"
             android:background="#ccc"
-            android:orientation="horizontal" >
-        </RelativeLayout>
+            android:orientation="horizontal"></RelativeLayout>
 
         <Spinner
             android:id="@+id/actionTypeSpin"
             android:layout_width="fill_parent"
             android:layout_height="40dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
             android:layout_marginTop="10dp"
             android:spinnerMode="dialog" />
 
@@ -122,21 +162,20 @@
             android:layout_marginRight="18dp"
             android:layout_marginTop="5dp"
             android:background="#ccc"
-            android:orientation="horizontal" >
-        </RelativeLayout>
+            android:orientation="horizontal"></RelativeLayout>
 
         <LinearLayout
             android:id="@+id/layout"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:gravity="center" >
+            android:gravity="center">
 
             <TextView
                 android:id="@+id/submitTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
+                android:padding="10dp"
                 android:text="SUBMIT"
                 android:textColor="#4169E1"
                 android:textSize="16sp" />

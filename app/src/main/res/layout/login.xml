@@ -5,8 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/sign_in_bg"
-    android:gravity="center"
-    tools:context="mobile.apartment.activity.MainActivity">
+    android:gravity="center">
 
     <RelativeLayout
         android:id="@+id/lay"
@@ -44,9 +43,9 @@
                 android:focusableInTouchMode="true"
                 android:hint="  Email"
                 android:singleLine="true"
-                android:textSize="18sp"
                 android:textColor="#fff"
-                android:textColorHint="#FFFFFF" />
+                android:textColorHint="#FFFFFF"
+                android:textSize="18sp" />
         </com.wrapp.floatlabelededittext.FloatLabeledEditText>
 
         <RelativeLayout
@@ -83,8 +82,8 @@
                 android:inputType="textPassword"
                 android:singleLine="true"
                 android:textColor="#fff"
-                android:textSize="18sp"
-                android:textColorHint="#FFFFFF" />
+                android:textColorHint="#FFFFFF"
+                android:textSize="18sp" />
         </com.wrapp.floatlabelededittext.FloatLabeledEditText>
 
         <RelativeLayout
@@ -147,8 +146,8 @@
         android:id="@+id/progressBarCircularIndetermininate"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
         android:layout_marginBottom="4dp"
         android:layout_marginRight="45dp"
         android:background="#fff"

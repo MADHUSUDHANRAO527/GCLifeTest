@@ -1,7 +1,5 @@
 package mobile.gclifetest.http;
 
-import java.net.URI;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -24,6 +22,8 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.net.URI;
 
 public class EvenstPost {
 	public static JSONObject makeRequest(JSONObject jsonIdeas, String hostname)
@@ -240,4 +240,41 @@ public class EvenstPost {
 		}
 		return jobj;
 	}
+    public static JSONObject makeDeleteInbox(String hostname, String eid,String type,String userId)
+            throws Exception {
+        SSLSocketFactory sslFactory = new SimpleSSLSocketFactory(null);
+        sslFactory
+                .setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+        HttpParams params = new BasicHttpParams();
+        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+        HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+        SchemeRegistry registry = new SchemeRegistry();
+        registry.register(new Scheme("http", PlainSocketFactory
+                .getSocketFactory(), 80));
+        registry.register(new Scheme("https", sslFactory, 443));
+
+        HttpParams httpParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParams, 15000);
+        HttpConnectionParams.setSoTimeout(httpParams, 15000);
+
+        // HttpClient httpClient = getNewHttpClient();
+        HttpClient httpClient = new DefaultHttpClient();// httpParams);
+
+        HttpResponse response = null;
+        System.out.println(hostname +type+"/" + eid
+                + ".json?user_id="+userId);
+        HttpDelete httpDelete = new HttpDelete(hostname +type+"/" + eid
+                + ".json?user_id="+userId);
+
+        response = httpClient.execute(httpDelete);
+        JSONObject jobj = null;
+        StringBuilder s = new StringBuilder();
+        s = s.append(response);
+        if (response == null) {
+            System.out.println("no data");
+        } else {
+            jobj = new JSONObject(s.toString());
+        }
+        return jobj;
+    }
 }

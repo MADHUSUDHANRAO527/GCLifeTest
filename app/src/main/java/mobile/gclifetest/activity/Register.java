@@ -1,24 +1,5 @@
 package mobile.gclifetest.activity;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
-import mobile.gclifetest.http.SignUpPost;
-import mobile.gclifetest.http.SocietyNameGet;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -26,10 +7,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
@@ -51,6 +30,25 @@ import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.Utils.InternetConnectionDetector;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
+import mobile.gclifetest.http.SignUpPost;
+import mobile.gclifetest.http.SocietyNameGet;
+
 public class Register extends BaseActivity {
 	TextView nextTxt;
 	Typeface typefaceLight;
@@ -70,7 +68,7 @@ public class Register extends BaseActivity {
 			memberType, flatNum, liscenseDateStr = "",
 			realtionShipWithOwner = "";
 	EditText datewithOwnerEdit, lisecnseEndsOntxtEdit, flatNumEdit;
-	ProgressBarCircularIndeterminate pDialog;
+	ProgressBarCircularIndeterminate pDialog,pDialog1;
 	JSONObject jsonSignupResult;
 	// View loginViewColor, flatDetailViewColor;
 	static final int DATE_DIALOG_FROMID = 0;
@@ -96,7 +94,7 @@ public class Register extends BaseActivity {
 		finishTxt = (TextView) findViewById(R.id.finishTxt);
 		loginDetailsTxt = (TextView) findViewById(R.id.loginDetailsTxt);
 		flatDteailTxt = (TextView) findViewById(R.id.flatDteailTxt);
-
+		pDialog1 = (ProgressBarCircularIndeterminate) findViewById(R.id.pDialog1);
 		flatDteailTxt.setTextColor(Color.parseColor("#C8C8C8"));
 
 		avenueSpinner = (Spinner) findViewById(R.id.avenueSpin);
@@ -113,7 +111,7 @@ public class Register extends BaseActivity {
 
 		// setting Action Bar
 
-		setUpActionBar("GC Life Registeration");
+		setUpActionBar("GC Life Registration");
 		getSupportActionBar().setElevation(0);
 
 		userPref = getSharedPreferences("USER", MODE_PRIVATE);
@@ -519,7 +517,7 @@ public class Register extends BaseActivity {
 				} else {
 					List<String> societylist = societyMap.get(avenueName);
 					ArrayAdapter<String> sociAdapter = new ArrayAdapter<String>(
-							Register.this, android.R.layout.simple_list_item_1,
+							Register.this, R.layout.spinr_txt,
 							societylist);
 
 					sociAdapter
@@ -577,7 +575,7 @@ public class Register extends BaseActivity {
 									.get(societyName);
 							ArrayAdapter<String> buildAdapter = new ArrayAdapter<String>(
 									Register.this,
-									android.R.layout.simple_list_item_1,
+									R.layout.spinr_txt,
 									buildinglist);
 
 							buildAdapter
@@ -778,7 +776,7 @@ public class Register extends BaseActivity {
 	public class SocietyNames extends AsyncTask<Void, Void, Void> {
 		@Override
 		protected void onPreExecute() {
-			// pDialog.setVisibility(View.VISIBLE);
+			pDialog1.setVisibility(View.VISIBLE);
 		}
 
 		@Override
@@ -863,7 +861,7 @@ public class Register extends BaseActivity {
 
 					}
 					ArrayAdapter<String> associtationAdapter = new ArrayAdapter<String>(
-							Register.this, android.R.layout.simple_list_item_1,
+							Register.this, R.layout.spinr_txt,
 							listAssociation);
 
 					associtationAdapter
@@ -873,13 +871,14 @@ public class Register extends BaseActivity {
 									associtationAdapter,
 									R.layout.avenue_spinner_nothing_selected,
 									Register.this));
-
+					pDialog1.setVisibility(View.GONE);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			} else {
+				pDialog1.setVisibility(View.GONE);
 				showSnack(Register.this,
 						"Oops! Something went wrong. Please wait a moment!",
 						"OK");

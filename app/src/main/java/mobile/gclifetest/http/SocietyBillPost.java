@@ -1,10 +1,5 @@
 package mobile.gclifetest.http;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -29,6 +24,11 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 public class SocietyBillPost {
 	@SuppressWarnings("deprecation")
@@ -200,7 +200,7 @@ public class SocietyBillPost {
 	}
 
 	public static JSONObject updateStatusBill(String hostname, String billId,
-			String paymentMode, String refNum, String confirmed_status)
+			String paymentMode, String refNum, String confirmed_status,String billAmountPaid)
 			throws Exception {
 		SSLSocketFactory sslFactory = new SimpleSSLSocketFactory(null);
 		sslFactory
@@ -220,7 +220,7 @@ public class SocietyBillPost {
 		confirmed_status = confirmed_status.replaceAll(" ", "%20");
 		String host = hostname + "confirm_bill.json?bill_id=" + billId
 				+ "&payment_mode=" + paymentMode + "&ref_no=" + refNum
-				+ "&confirmed_status=" + confirmed_status;
+				+ "&confirmed_status=" + confirmed_status+"&bill_amount_paid="+billAmountPaid;;
 		System.out.println(host + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		httget.setURI(new URI(host));
 		httget.setHeader("Accept", "*/*");
@@ -247,7 +247,7 @@ public class SocietyBillPost {
 	}
 
 	public static JSONObject updateMyBill(String hostname, String billId,
-			String paymentMode, String refNum) throws Exception {
+			String paymentMode, String refNum,String billAmountPaid) throws Exception {
 		SSLSocketFactory sslFactory = new SimpleSSLSocketFactory(null);
 		sslFactory
 				.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
@@ -264,7 +264,7 @@ public class SocietyBillPost {
 
 		HttpGet httget = new HttpGet();
 		String host = hostname + "my_bill_confirmation.json?bill_id=" + billId
-				+ "&payment_mode=" + paymentMode + "&ref_no=" + refNum;
+				+ "&payment_mode=" + paymentMode + "&ref_no=" + refNum+"&bill_amount_paid="+billAmountPaid;
 		System.out.println(host + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		httget.setURI(new URI(host));
 		httget.setHeader("Accept", "*/*");

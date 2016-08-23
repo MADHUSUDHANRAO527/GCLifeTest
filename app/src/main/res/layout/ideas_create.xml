@@ -5,26 +5,26 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:background="#fff"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <ScrollView
         android:id="@+id/scroll"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="fill_parent">
 
         <LinearLayout
             android:id="@+id/lay"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="#fff"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <com.wrapp.floatlabelededittext.FloatLabeledEditText
                 android:id="@+id/mailEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                float:fletPadding="5dp" >
+                float:fletPadding="5dp">
 
                 <EditText
                     android:id="@+id/titleEdit"
@@ -34,7 +34,9 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:hint="Title"
-                    android:singleLine="true" />
+                    android:textSize="16sp"
+                    android:singleLine="true"
+                    android:textColorHint="#000000" />
             </com.wrapp.floatlabelededittext.FloatLabeledEditText>
 
             <RelativeLayout
@@ -45,8 +47,7 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
             <!-- add some padding -->
 
             <LinearLayout
@@ -54,14 +55,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="#fff"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <com.wrapp.floatlabelededittext.FloatLabeledEditText
                     android:id="@+id/discEdit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
-                    float:fletPadding="5dp" >
+                    float:fletPadding="5dp">
 
                     <!-- float:fletPadding="10dp" -->
 
@@ -71,9 +72,11 @@
                         android:layout_height="wrap_content"
                         android:background="#00000000"
                         android:focusable="true"
+                        android:textSize="16sp"
                         android:focusableInTouchMode="true"
                         android:hint="Short Description"
-                        android:singleLine="true" />
+                        android:singleLine="true"
+                        android:textColorHint="#000000" />
                 </com.wrapp.floatlabelededittext.FloatLabeledEditText>
 
                 <RelativeLayout
@@ -84,8 +87,7 @@
                     android:layout_marginRight="18dp"
                     android:layout_marginTop="5dp"
                     android:background="#ccc"
-                    android:orientation="horizontal" >
-                </RelativeLayout>
+                    android:orientation="horizontal"></RelativeLayout>
 
                 <EditText
                     android:id="@+id/briefDiscEdit"
@@ -96,10 +98,12 @@
                     android:layout_marginTop="10dp"
                     android:background="@drawable/button_border"
                     android:gravity="start"
+                    android:textSize="16sp"
                     android:hint="Brief Description"
                     android:lines="10"
                     android:maxLines="5"
-                    android:padding="10dp" />
+                    android:padding="10dp"
+                    android:textColorHint="#000000" />
             </LinearLayout>
 
             <RelativeLayout
@@ -107,7 +111,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="40dp"
-                android:layout_marginTop="10dp" >
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/selectedMedia"
@@ -149,10 +153,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:padding="5dp"
+                android:paddingLeft="25dp"
                 android:text="Choose recipient"
                 android:textColor="#000"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <RelativeLayout
                 android:id="@+id/avenueLay"
@@ -161,7 +166,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
-                android:gravity="center" >
+                android:gravity="center">
 
                 <TextView
                     android:id="@+id/avenueTxt"
@@ -189,8 +194,7 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/societyLay"
@@ -198,7 +202,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginTop="10dp" >
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/sociTxt"
@@ -226,8 +230,7 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/memberLay"
@@ -235,7 +238,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginTop="10dp" >
+                android:layout_marginTop="10dp">
 
                 <TextView
                     android:id="@+id/memTxt"
@@ -263,14 +266,13 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/layoutt"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="10dp" >
+                android:paddingBottom="10dp">
 
                 <TextView
                     android:id="@+id/finishTxt"

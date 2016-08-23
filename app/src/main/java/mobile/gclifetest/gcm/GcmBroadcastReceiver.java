@@ -1,12 +1,5 @@
 package mobile.gclifetest.gcm;
 
-import mobile.gclifetest.activity.HomeApp;
-import mobile.gclifetest.activity.IdeasDetail;
-import mobile.gclifetest.activity.InBox;
-import mobile.gclifetest.activity.R;
-
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -14,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
@@ -22,19 +14,20 @@ import android.net.Uri;
 import android.os.PowerManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+import java.util.Random;
+
+import mobile.gclifetest.activity.HomeApp;
+import mobile.gclifetest.activity.IdeasDetail;
+import mobile.gclifetest.activity.InBox;
+import mobile.gclifetest.activity.R;
+
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     String message, title, category;
-    JSONObject jsonCont;
-    String uName, image_url;
-    SharedPreferences uTuconatactsPref;
     Context mContext;
-    String userNam, myId, eid;
-    JSONObject json;
-    String frdId;
-    String countMsg, frdid;
-    JSONObject jsonn;
+    String  eid;
     Intent notificationIntent;
     Notification myNotication;
+    Random random = new Random();
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -87,18 +80,6 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
                                       Intent notificationIntent) {
         // TODO Auto-generated method stub
         int icon = R.drawable.app_icon;
-        //long when = System.currentTimeMillis();
-
-		/*Notification notification = new Notification(icon, title, when);
-        // set intent so it does not start a new activity
-		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		PendingIntent intent = PendingIntent.getActivity(context, 0,
-				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-		notification.setLatestEventInfo(context, title, message, intent);
-		notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		notificationManager.notify(0, notification);*/
-
         PendingIntent intent = PendingIntent.getActivity(context, 0,
                 notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         NotificationManager notificationManager = (NotificationManager) context
@@ -121,7 +102,9 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         builder.setWhen(System.currentTimeMillis());
         builder.build();
         myNotication = builder.getNotification();
-        notificationManager.notify(0, myNotication);
+        //for multiple notification // i put some unique number to generate multiple notifications
+        int n = random.nextInt(9999 - 1000) + 1000;
+        notificationManager.notify(n, myNotication);
         //wake up screen
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         boolean isScreenOn = pm.isScreenOn();

@@ -1,27 +1,13 @@
 package mobile.gclifetest.activity;
 
-import java.util.List;
-
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.db.DatabaseHandler;
-import mobile.gclifetest.http.MemsPost;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -29,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -45,33 +32,48 @@ import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.FlatDetailsPojo;
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.http.MemsPost;
+
 public class MemsList extends BaseActivity {
     ListView listviewMem;
     JSONObject veriJson;
     SharedPreferences userPref;
-    String status, eventName = "MEMSVERIFI";
-    int memId;
+    String status, eventName = "MEMSVERIFI", statusReason = "";
+    int memId,pos;
     JSONObject json;
     static Typeface typefaceLight;
     ProgressBarCircularIndeterminate pDialog;
-    ProgressBarCircularIndeterminate pDialogPop;
+    ProgressBarCircularIndeterminate pDialogPop,pDialogBtm;
     Dialog m_dialog;
     UserModelAdapter dataTaskGrpAdapter;
     TextView submitTxt, loginWithEMailTxt, discriptionEdit;
     CheckBox checkboxApprove, rejectCheckBox, deleteCheckBox;
     SharedPreferences.Editor editor;
     List<UserDetailsPojo> userList;
+    List<UserDetailsPojo> globalUsersList = new ArrayList<>();
     // UserDetailsPojo users;
     DatabaseHandler db = new DatabaseHandler(this);
     Gson gson;
-
+    int limit = 10, currentPosition,offset=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_members);
 
         pDialog = (ProgressBarCircularIndeterminate) findViewById(R.id.pDialog);
-
+        pDialogBtm = (ProgressBarCircularIndeterminate) findViewById(R.id.pDialogBtm);
         listviewMem = (ListView) findViewById(R.id.listViewMem);
 
         setUpActionBar("GC Member Verification");
@@ -89,8 +91,9 @@ public class MemsList extends BaseActivity {
                 Intent i = new Intent(MemsList.this, UserProfile.class);
 
                 Gson gsonn = new Gson();
-                String json = gsonn.toJson(userList.get(position));
-
+                String json = gsonn.toJson(globalUsersList.get(position));
+                editor.putString("activityName", "mems_activity");
+                editor.apply();
                 i.putExtra("EACH_USER_DET", json);
                 startActivity(i);
                 overridePendingTransition(R.anim.slide_in_left,
@@ -110,40 +113,109 @@ public class MemsList extends BaseActivity {
             Log.d("DB NULL: " + eventName, "");
 
         }
-
-        //	new ListMems().execute();
     }
 
     private void callListMems() {
-        JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, MyApplication.HOSTNAME + "get_registered_users.json?user_id=" + userPref.getString("USERID", "NV").replaceAll(" ", "%20"),
+        JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, MyApplication.HOSTNAME + "get_registered_users.json?user_id=" +
+                userPref.getString("USERID", "NV").replaceAll(" ", "%20") + "&limit=" + limit +"&offset="+offset,
                 (String) null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 //    pDialog.hide();
                 Log.d("Response", response.toString());
                 if (response != null) {
-                    if (response != null) {
-                        if (response.length() == 0
-                                || response.toString() == "[]"
-                                || response.toString() == ""
-                                || response.toString().equals("")) {
-                            pDialog.setVisibility(View.GONE);
-                            showSnack(MemsList.this,
-                                    "Oops! There is no members!",
-                                    "OK");
-                        } else {
-                            userList = gson.fromJson(response.toString(), new TypeToken<List<UserDetailsPojo>>() {
-                            }.getType());
-                            dataTaskGrpAdapter = new UserModelAdapter(MemsList.this, R.layout.member_row, userList);
-                            listviewMem.setAdapter(dataTaskGrpAdapter);
-                            pDialog.setVisibility(View.GONE);
-                            // Storing in DB
-                            db.addEventNews(response, eventName);
-                            //        //for updating new data
-                            db.updateEventNews(response, eventName);
-                        }
-                    }
+                    if (response.length() == 0
+                            || response.toString() == "[]"
+                            || response.toString() == ""
+                            || response.toString().equals("")) {
+                        pDialog.setVisibility(View.GONE);
+                        showSnack(MemsList.this,
+                                "Oops! There is no members!",
+                                "OK");
+                    } else {
+                        userList = gson.fromJson(response.toString(), new TypeToken<List<UserDetailsPojo>>() {
+                        }.getType());
 
+                        globalUsersList.addAll(userList);
+                        Log.d("SIZE", globalUsersList.size() + "");
+                        currentPosition = listviewMem
+                                .getLastVisiblePosition();
+
+                        dataTaskGrpAdapter = new UserModelAdapter(MemsList.this, R.layout.member_row, globalUsersList);
+                        listviewMem.setAdapter(dataTaskGrpAdapter);
+                        pDialog.setVisibility(View.GONE);
+                        pDialogBtm.setVisibility(View.GONE);
+                        // Storing in DB
+                        db.addEventNews(response, eventName);
+                        //        //for updating new data
+                        db.updateEventNews(response, eventName);
+
+
+                        DisplayMetrics displayMetrics =
+                                getResources().getDisplayMetrics();
+                        int height = displayMetrics.heightPixels;
+
+                        listviewMem.setSelectionFromTop(
+                                currentPosition + 1, height - 220);
+
+                        listviewMem
+                                .setOnScrollListener(new AbsListView.OnScrollListener() {
+
+                                    private int currentScrollState;
+                                    private int currentFirstVisibleItem;
+                                    private int currentVisibleItemCount;
+                                    private int totalItemCount;
+                                    private int mLastFirstVisibleItem;
+                                    private boolean mIsScrollingUp;
+
+                                    @Override
+                                    public void onScrollStateChanged(
+                                            AbsListView view, int scrollState) {
+                                        // TODO Auto-generated method stub
+                                        this.currentScrollState = scrollState;
+                                        if (view.getId() == listviewMem
+                                                .getId()) {
+                                            final int currentFirstVisibleItem = listviewMem
+                                                    .getFirstVisiblePosition();
+
+                                            if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                                                mIsScrollingUp = false;
+
+                                            } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+
+                                                mIsScrollingUp = true;
+                                            }
+
+                                            mLastFirstVisibleItem = currentFirstVisibleItem;
+                                        }
+                                        this.isScrollCompleted();
+                                    }
+
+                                    @Override
+                                    public void onScroll(AbsListView view,
+                                                         int firstVisibleItem,
+                                                         int visibleItemCount,
+                                                         int totalItemCount) {
+                                        // TODO Auto-generated method stub
+
+                                        this.currentFirstVisibleItem = firstVisibleItem;
+                                        this.currentVisibleItemCount = visibleItemCount;
+                                        this.totalItemCount = totalItemCount;
+
+                                    }
+
+                                    private void isScrollCompleted() {
+                                        pDialogBtm.setVisibility(View.VISIBLE);
+                                        if (this.currentVisibleItemCount > 0
+                                                && this.currentScrollState == SCROLL_STATE_IDLE
+                                                && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
+                                            offset = offset + 10;
+                                            callListMems();
+                                            pDialogBtm.setVisibility(View.GONE);
+                                        }
+                                    }
+                                });
+                    }
                 }
             }
         }, new Response.ErrorListener() {
@@ -166,7 +238,6 @@ public class MemsList extends BaseActivity {
 
         List<UserDetailsPojo> usersList;
         LayoutInflater inflator;
-
         public UserModelAdapter(Context context, int textViewResourceId,
                                 List<UserDetailsPojo> userList) {
             super(context, textViewResourceId, userList);
@@ -208,7 +279,7 @@ public class MemsList extends BaseActivity {
             holder.usernameTxt.setText(usersList.get(position).getUsername());
             List<FlatDetailsPojo> flatsList = usersList.get(position).getGclife_registration_flatdetails();
             for (int i = 0; i < flatsList.size(); i++) {
-                holder.avenueNameTxt.setText(flatsList.get(i).getAvenue_name()+" , "+flatsList.get(i).getFlat_number());
+                holder.avenueNameTxt.setText(flatsList.get(i).getAvenue_name() + " , " + flatsList.get(i).getFlat_number() + " , " + flatsList.get(i).getBuildingid());
             }
             holder.profileImg.setOnClickListener(new OnClickListener() {
 
@@ -254,7 +325,9 @@ public class MemsList extends BaseActivity {
                     cancellTxt.setTypeface(typefaceLight);
                     discriptionEdit.setTypeface(typefaceLight);
                     loginWithEMailTxt.setTypeface(typefaceLight);
-
+                    Log.d("MEMID", String.valueOf(usersList.get(position).getId()));
+                    memId = usersList.get(position).getId();
+                    pos=position;
                     cancellTxt.setOnClickListener(new OnClickListener() {
 
                         @Override
@@ -266,13 +339,13 @@ public class MemsList extends BaseActivity {
                     submitTxt.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
+                            statusReason = discriptionEdit.getText().toString();
                             if (status == null || status == "null" || status == "" || status.equals("")) {
                                 showSnack(MemsList.this,
                                         "Select atleast one action!",
                                         "OK");
                             } else {
-                                memId = usersList.get(position).getId();
+
                                 System.out.println(memId);
                                 // to remove row
                                 usersList.remove(position);
@@ -336,6 +409,7 @@ public class MemsList extends BaseActivity {
 
             return convertView;
         }
+
         public class ViewHolder {
             TextView usernameTxt, avenueNameTxt;
             ImageView profileImg, settingsImg;
@@ -353,7 +427,9 @@ public class MemsList extends BaseActivity {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                veriJson = MemsPost.activateMem(MyApplication.HOSTNAME, memId, status);
+                Log.d("STATUS", status);
+                veriJson = MemsPost.activateMem(MyApplication.HOSTNAME, memId, status, statusReason);
+                Log.d("MEM RESPONSE", veriJson.toString());
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -366,9 +442,44 @@ public class MemsList extends BaseActivity {
             m_dialog.dismiss();
             pDialogPop.setVisibility(View.GONE);
             submitTxt.setVisibility(View.INVISIBLE);
-            showSnack(MemsList.this,
-                    "Approved!",
-                    "OK");
+            if (veriJson != null) {
+                if (status == "Reject" || status.equals("Reject")) {
+                    showSnack(MemsList.this,
+                            "Rejected!",
+                            "OK");
+                } else if (status == "Delete" || status.equals("status")) {
+                    showSnack(MemsList.this,
+                            "Deleted!",
+                            "OK");
+                } else if (status == "Approve" || status.equals("Approve")) {
+                    showSnack(MemsList.this,
+                            "Approved!",
+                            "OK");
+                } else {
+                    showSnack(MemsList.this,
+                            "Oops! Something went wrong!",
+                            "OK");
+                }
+                if (db.getEventNews(eventName) != "null") {
+                    Log.d("DB NOT NULL: " + eventName, db.getEventNews(eventName));
+                    userList = gson.fromJson(db.getEventNews(eventName), new TypeToken<List<UserDetailsPojo>>() {
+                    }.getType());
+                    userList.remove(pos);
+                    String afterEdit = gson.toJson(userList);
+                    try {
+                        JSONArray arr = new JSONArray(afterEdit);
+                        db.updateEventNews(arr, eventName);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            } else {
+                showSnack(MemsList.this,
+                        "Oops! Something went wrong. Please check internet connection!",
+                        "OK");
+            }
+
             dataTaskGrpAdapter.notifyDataSetChanged();
         }
     }

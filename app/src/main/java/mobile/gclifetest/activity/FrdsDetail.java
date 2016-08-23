@@ -1,25 +1,16 @@
 package mobile.gclifetest.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -34,16 +25,24 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import mobile.gclifetest.MaterialDesign.PagerSlidingTabStrip;
-
 import com.gc.materialdesign.views.ButtonFloat;
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import mobile.gclifetest.MaterialDesign.PagerSlidingTabStrip;
+import mobile.gclifetest.PojoGson.FlatDetailsPojo;
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
 
 public class FrdsDetail extends BaseActivity {
     String hostname;
     PagerSlidingTabStrip tabs;
     ViewPager pager;
     MyPagerAdapter adapter;
+
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,16 +96,25 @@ public class FrdsDetail extends BaseActivity {
         SharedPreferences userPref;
         List<FlatDetailsPojo> flatsList = new ArrayList<FlatDetailsPojo>();
         ListView listviewFlats;
-        ImageView imageProfile;
+        ImageView imageProfile, mobileNumImg, mobileSmsImg;
         ButtonFloat addFlats;
         UserDetailsPojo user;
         String memDet, userStatus;
+        static ImageLoader imageLoader;
+        static DisplayImageOptions options;
+        de.hdodenhof.circleimageview.CircleImageView userImg;
 
         public static FrdsDetailTabs newInstance(int position) {
             FrdsDetailTabs f = new FrdsDetailTabs();
             Bundle b = new Bundle();
             b.putInt(ARG_POSITION, position);
             f.setArguments(b);
+            imageLoader = ImageLoader.getInstance();
+            options = new DisplayImageOptions.Builder().cacheInMemory(true)
+                    .cacheOnDisc(true).resetViewBeforeLoading(true)
+                    .showImageForEmptyUri(R.drawable.no_media)
+                    .showImageOnFail(R.drawable.no_media)
+                    .showImageOnLoading(R.drawable.no_media).build();
             return f;
         }
 
@@ -134,10 +142,13 @@ public class FrdsDetail extends BaseActivity {
             layUserDet = (LinearLayout) v.findViewById(R.id.layUserDet);
             flatDetailsLay = (LinearLayout) v.findViewById(R.id.flatDetailsLay);
             emrNumTxt = (TextView) v.findViewById(R.id.emeryNumTxt);
-            imageProfile=(ImageView)v.findViewById(R.id.imageProfile);
+            imageProfile = (ImageView) v.findViewById(R.id.imageProfile);
+            mobileNumImg= (ImageView) v.findViewById(R.id.mobileNumImg);
+            mobileSmsImg= (ImageView) v.findViewById(R.id.mobileSmsImg);
+
             occupationtxt = (TextView) v.findViewById(R.id.occuTxt);
             dobTxt = (TextView) v.findViewById(R.id.dobTxt);
-
+            userImg = (de.hdodenhof.circleimageview.CircleImageView) v.findViewById(R.id.imageProfile);
             typefaceLight = Typeface.createFromAsset(getActivity().getAssets(),
                     "fonts/RobotoLight.ttf");
             typeMeduim = Typeface.createFromAsset(getActivity().getAssets(),
@@ -156,13 +167,13 @@ public class FrdsDetail extends BaseActivity {
             unameTxt.setText(user.getUsername());
             emailTxt.setText(user.getEmail());
             mobileNumTxt.setText(user.getMobile());
-            if(user.getPrivacy()==true){
+            if (user.getPrivacy() == true) {
                 mobileNumTxt.setVisibility(View.GONE);
                 emailTxt.setVisibility(View.GONE);
                 emrNumTxt.setVisibility(View.GONE);
                 occupationtxt.setVisibility(View.GONE);
                 dobTxt.setVisibility(View.GONE);
-            }else{
+            } else {
                 mobileNumTxt.setVisibility(View.VISIBLE);
                 emailTxt.setVisibility(View.VISIBLE);
                 emrNumTxt.setVisibility(View.VISIBLE);
@@ -173,7 +184,9 @@ public class FrdsDetail extends BaseActivity {
             emrNumTxt.setText(user.getEmeNum());
             occupationtxt.setText(user.getOccupation());
             dobTxt.setText(user.getDob());
-
+            if (user.getProfile_url() != null) {
+                imageLoader.displayImage(user.getProfile_url(), userImg, options);
+            }
             // list flat details
             flatsList = user.getGclife_registration_flatdetails();
 
@@ -203,10 +216,10 @@ public class FrdsDetail extends BaseActivity {
                 flatDetailsLay.setVisibility(View.GONE);
                 layUserDet.setVisibility(View.VISIBLE);
             } else {
+                userImg.setVisibility(View.GONE);
                 flatDetailsLay.setVisibility(View.VISIBLE);
                 layUserDet.setVisibility(View.GONE);
                 listviewFlats.setVisibility(View.VISIBLE);
-
             }
 
             TypedValue tv = new TypedValue();
@@ -216,6 +229,42 @@ public class FrdsDetail extends BaseActivity {
                 actionBarHeight = TypedValue.complexToDimensionPixelSize(
                         tv.data, getResources().getDisplayMetrics());
             }
+            mobileNumTxt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:" + user.getMobile()));
+                    startActivity(intent);
+                }
+            });
+            emailTxt.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
+                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO,
+                            Uri.fromParts("mailto", user.getEmail(), null));
+                    startActivity(Intent.createChooser(emailIntent, "Send email..."));
+                }
+            });
+            mobileNumImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:" + user.getMobile()));
+                    startActivity(intent);
+                }
+            });
+            mobileSmsImg.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
+                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO,
+                            Uri.fromParts("mailto", user.getEmail(), null));
+                    startActivity(Intent.createChooser(emailIntent, "Send email..."));
+                }
+            });
             return v;
 
         }

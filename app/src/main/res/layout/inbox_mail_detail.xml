@@ -42,7 +42,32 @@
                     android:textColor="#000"
                     android:textSize="14sp" />
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/toLay"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:weightSum="4" >
 
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:gravity="center_vertical"
+                    android:text="To"
+                    android:textColor="#606060"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tounameTxt"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:text=""
+                    android:textColor="#000"
+                    android:textSize="14sp" />
+            </LinearLayout>
             <LinearLayout
                 android:id="@+id/subLay"
                 android:layout_width="fill_parent"

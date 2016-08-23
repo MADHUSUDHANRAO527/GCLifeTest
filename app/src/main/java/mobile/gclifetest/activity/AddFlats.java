@@ -1,31 +1,11 @@
 package mobile.gclifetest.activity;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
-import mobile.gclifetest.http.SignUpPost;
-import mobile.gclifetest.http.SocietyNameGet;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -45,6 +25,24 @@ import android.widget.TextView;
 import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
+import mobile.gclifetest.http.SignUpPost;
+import mobile.gclifetest.http.SocietyNameGet;
 
 public class AddFlats extends BaseActivity {
 	Typeface typefaceLight;
@@ -190,7 +188,7 @@ public class AddFlats extends BaseActivity {
 				} else {
 					List<String> societylist = societyMap.get(avenueName);
 					ArrayAdapter<String> sociAdapter = new ArrayAdapter<String>(
-							AddFlats.this, android.R.layout.simple_list_item_1,
+							AddFlats.this, R.layout.spinr_txt,
 							societylist);
 
 					sociAdapter
@@ -248,7 +246,7 @@ public class AddFlats extends BaseActivity {
 									.get(societyName);
 							ArrayAdapter<String> buildAdapter = new ArrayAdapter<String>(
 									AddFlats.this,
-									android.R.layout.simple_list_item_1,
+									R.layout.spinr_txt,
 									buildinglist);
 
 							buildAdapter
@@ -706,7 +704,7 @@ public class AddFlats extends BaseActivity {
 
 					}
 					ArrayAdapter<String> associtationAdapter = new ArrayAdapter<String>(
-							AddFlats.this, android.R.layout.simple_list_item_1,
+							AddFlats.this, R.layout.spinr_txt,
 							listAssociation);
 
 					associtationAdapter

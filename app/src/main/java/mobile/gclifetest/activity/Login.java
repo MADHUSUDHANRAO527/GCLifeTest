@@ -1,14 +1,5 @@
 package mobile.gclifetest.activity;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.http.SignUpPost;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -23,6 +14,15 @@ import android.widget.TextView;
 import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.Utils.InternetConnectionDetector;
+import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.http.SignUpPost;
 
 public class Login extends BaseActivity {
 	TextView login, signUp, loginwithEmailTxt;
@@ -61,8 +61,8 @@ public class Login extends BaseActivity {
 		passwordEdit.setTypeface(typefaceLight);
 		loginwithEmailTxt.setTypeface(typefaceLight);
 
-		emailEdit.setText("m@mail.com");
-		passwordEdit.setText("123456");
+		//emailEdit.setText("m@mail.com");
+		//passwordEdit.setText("123456");
 
 		netConn = new InternetConnectionDetector(this);
 		isInternetPresent = netConn.isConnectingToInternet();
@@ -171,7 +171,7 @@ public class Login extends BaseActivity {
 
 				} else {
 
-					Intent dash = new Intent(Login.this, HomeApp.class);
+					Intent dash = new Intent(Login.this, HomeActivity.class);
 					startActivity(dash);
 					overridePendingTransition(R.anim.slide_in_left,
 							R.anim.slide_out_left);
@@ -232,4 +232,10 @@ public class Login extends BaseActivity {
 			}
 		}).show();
 	}
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSupportActionBar().hide();
+    }
 }

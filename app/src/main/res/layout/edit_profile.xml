@@ -1,32 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:float="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <ScrollView
         android:id="@+id/scroll"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="fill_parent">
 
         <LinearLayout
             android:id="@+id/layLogin"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_corner_signinpopup"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <mobile.gclifetest.Utils.RoundedImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageProfile"
                 android:layout_width="136dp"
                 android:layout_height="136dp"
                 android:layout_marginBottom="7dp"
                 android:layout_marginLeft="8dp"
+                android:layout_gravity="center"
                 android:background="@drawable/profilepic"
-                android:scaleType="centerInside" />
+                android:visibility="visible"/>
+
+            <TextView
+                android:id="@+id/uploadingTxt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:padding="5dp"
+                android:text="Uploading image..."
+                android:textColor="#4169E1"
+                android:textSize="16sp"
+                android:visibility="gone" />
 
             <com.wrapp.floatlabelededittext.FloatLabeledEditText
                 android:id="@+id/userNameEdit"
@@ -34,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="10dp"
-                float:fletPadding="5dp" >
+                float:fletPadding="5dp">
 
                 <EditText
                     android:id="@+id/userName"
@@ -55,15 +69,14 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
 
             <com.wrapp.floatlabelededittext.FloatLabeledEditText
                 android:id="@+id/mail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                float:fletPadding="5dp" >
+                float:fletPadding="5dp">
 
                 <!-- float:fletPadding="10dp" -->
 
@@ -86,15 +99,14 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
 
             <com.wrapp.floatlabelededittext.FloatLabeledEditText
                 android:id="@+id/mobileNumLay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                float:fletPadding="5dp" >
+                float:fletPadding="5dp">
 
                 <!-- float:fletPadding="10dp" -->
 
@@ -119,8 +131,7 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -136,7 +147,7 @@
                 android:id="@+id/lay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp" >
+                android:layout_marginTop="5dp">
 
                 <RadioGroup
                     android:id="@+id/radioGrp"
@@ -144,7 +155,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingLeft="8dp"
-                    android:paddingRight="8dp" >
+                    android:paddingRight="8dp">
 
                     <RadioButton
                         android:id="@+id/radioM"
@@ -170,7 +181,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                float:fletPadding="5dp" >
+                float:fletPadding="5dp">
 
                 <!-- float:fletPadding="10dp" -->
 
@@ -194,14 +205,13 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
 
             <com.wrapp.floatlabelededittext.FloatLabeledEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                float:fletPadding="5dp" >
+                float:fletPadding="5dp">
 
                 <!-- float:fletPadding="10dp" -->
 
@@ -223,8 +233,7 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/dateToLay"
@@ -232,18 +241,18 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="7dp"
                 android:layout_marginTop="5dp"
-                android:gravity="left" >
+                android:gravity="left">
 
                 <com.wrapp.floatlabelededittext.FloatLabeledEditText
                     android:id="@+id/liscenseEndson"
-                    android:layout_width="wrap_content"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    float:fletPadding="5dp" >
+                    float:fletPadding="5dp">
 
                     <EditText
                         android:id="@+id/dobEdit"
-                        android:layout_width="wrap_content"
+                        android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
                         android:background="#00000000"
                         android:drawablePadding="5dp"
@@ -263,15 +272,14 @@
                 android:layout_marginRight="18dp"
                 android:layout_marginTop="5dp"
                 android:background="#ccc"
-                android:orientation="horizontal" >
-            </RelativeLayout>
+                android:orientation="horizontal"></RelativeLayout>
 
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/rounded_corner_signinpopup"
                 android:layout_marginTop="5dp"
-                android:orientation="horizontal" >
+                android:background="@drawable/rounded_corner_signinpopup"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -297,7 +305,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:paddingBottom="5dp" >
+                android:paddingBottom="5dp">
 
                 <TextView
                     android:id="@+id/submitTxt"

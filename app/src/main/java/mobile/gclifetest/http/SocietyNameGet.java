@@ -1,7 +1,5 @@
 package mobile.gclifetest.http;
 
-import java.net.URI;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -19,6 +17,8 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+
+import java.net.URI;
 
 public class SocietyNameGet {
 	public static JSONArray callSocietyList(String hostname)
@@ -59,6 +59,5 @@ public class SocietyNameGet {
 		String output = EntityUtils.toString(response.getEntity());
 		JSONArray jobj = new JSONArray(output.toString());
 		return jobj;
-
 	}
 }
