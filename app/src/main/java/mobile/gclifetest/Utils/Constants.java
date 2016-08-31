@@ -1,4 +1,4 @@
-package mobile.gclifetest.Utils;
+package mobile.gclifetest.utils;
 
 import android.app.Activity;
 import android.content.Context;

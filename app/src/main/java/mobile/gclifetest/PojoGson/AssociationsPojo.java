@@ -1,4 +1,4 @@
-package mobile.gclifetest.PojoGson;
+package mobile.gclifetest.pojoGson;
 
 import com.google.gson.annotations.SerializedName;
 

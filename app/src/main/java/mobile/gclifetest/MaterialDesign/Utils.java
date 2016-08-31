@@ -1,4 +1,4 @@
-package mobile.gclifetest.MaterialDesign;
+package mobile.gclifetest.materialDesign;
 
 import android.content.res.Resources;
 import android.util.TypedValue;

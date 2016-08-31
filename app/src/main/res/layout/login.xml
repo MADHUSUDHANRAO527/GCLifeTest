@@ -142,7 +142,7 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
+    <mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate
         android:id="@+id/progressBarCircularIndetermininate"
         android:layout_width="32dp"
         android:layout_height="32dp"

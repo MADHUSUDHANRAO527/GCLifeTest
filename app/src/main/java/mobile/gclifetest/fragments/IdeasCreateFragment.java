@@ -35,6 +35,7 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,17 +53,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.AvenuesFilter;
-import mobile.gclifetest.Utils.Constants;
-import mobile.gclifetest.Utils.MyApplication;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.custom.CustomGallery;
 import mobile.gclifetest.custom.CustomImgGalleryActivity;
 import mobile.gclifetest.custom.GalleryImgAdapter;
+import mobile.gclifetest.event.AddIdeasEvent;
 import mobile.gclifetest.http.EvenstPost;
 import mobile.gclifetest.http.SocietyNameGet;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.AvenuesFilter;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by MRaoKorni on 8/2/2016.
@@ -137,13 +139,13 @@ public class IdeasCreateFragment extends Fragment {
         eventName = bundle.getString("EventName");
         if (eventName == "Ideas" || eventName.equals("Ideas")) {
             //  setUpActionBar("Create idea");
-            ((HomeActivity) context).changeToolbarTitle("Create idea");
+            ((HomeActivity) context).changeToolbarTitle(R.string.create_ideas);
         } else if (eventName == "News" || eventName.equals("News")) {
             // setUpActionBar("Create News");
-            ((HomeActivity) context).changeToolbarTitle("Create News");
+            ((HomeActivity) context).changeToolbarTitle(R.string.create_news);
         } else {
             //  setUpActionBar("Create NoticeBoard");
-            ((HomeActivity) context).changeToolbarTitle("Create NoticeBoard");
+            ((HomeActivity) context).changeToolbarTitle(R.string.create_nb);
         }
 
         dialogAvenue = new Dialog(getActivity());
@@ -460,14 +462,8 @@ public class IdeasCreateFragment extends Fragment {
             if (jsonResult != null) {
                 if (jsonResult.has("id")) {
                     pDialog.setVisibility(View.GONE);
-                    /*Intent i = new Intent(context, IdeasList.class);
-                    i.putExtra("EventName", eventName);
-                    startActivity(i);*/
-                    IdeasListFragment fragment = new IdeasListFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("EventName", eventName);
-                    fragment.setArguments(bundle);
-                    ((HomeActivity) context).addFragment(fragment);
+                    EventBus.getDefault().post(new AddIdeasEvent(true));
+                    ((HomeActivity) context).onBackpressed();
                     apiProgress = false;
                 }
             } else {
@@ -551,12 +547,8 @@ public class IdeasCreateFragment extends Fragment {
                                 BigDecimal number = new BigDecimal(buildingName);
                                 buildingName = number.stripTrailingZeros()
                                         .toPlainString();
-
                                 listbuilddata.add(buildingName);
-
-                                // listbuilddata.add(buildingArray.get(k).toString());
                             }
-
                         }
                         ArrayList<String> associationList = new ArrayList<String>(
                                 listSociety);
@@ -679,27 +671,32 @@ public class IdeasCreateFragment extends Fragment {
                         try {
                             JSONObject jsonMedia = new JSONObject();
                             jsonMedia.put("image_type", "image");
-                            jsonMedia.put("image_url", mediaUrl);
-                            System.out.println(jsonMedia
-                                    + " +++++++++++++++++++++++ ");
-                            eventImages.put(jsonMedia);
-                            System.out.println(eventImages
-                                    + " ******************* ");
+                            if (mediaUrl != null) {
+                                jsonMedia.put("image_url", mediaUrl);
+                                eventImages.put(jsonMedia);
+                                System.out.println(eventImages
+                                        + " ******************* ");
 
-                            if (all_path.length == eventImages.length()) {
-                                pDialogImg.setVisibility(View.GONE);
-                                selectedMediaTxt.setText("Attached "
-                                        + all_path.length + " images");
-                                finishTxt.setClickable(true);
-                                finishTxt.setEnabled(true);
-                            } else {
-                                pDialogImg.setVisibility(View.VISIBLE);
-                                selectedMediaTxt.setText("Attaching images...."
-                                        + (String.valueOf(eventImages.length())));
-                                finishTxt.setClickable(false);
-                                finishTxt.setEnabled(false);
+                                if (all_path.length == eventImages.length()) {
+                                    pDialogImg.setVisibility(View.GONE);
+                                    selectedMediaTxt.setText("Attached "
+                                            + all_path.length + " images");
+                                    finishTxt.setClickable(true);
+                                    finishTxt.setEnabled(true);
+                                } else if(all_path.length > eventImages.length()) {
+                                    pDialogImg.setVisibility(View.VISIBLE);
+                                    selectedMediaTxt.setText("Attaching images...."
+                                            + (String.valueOf(eventImages.length())));
+                                    finishTxt.setClickable(false);
+                                    finishTxt.setEnabled(false);
+                                }else{
+                                    pDialogImg.setVisibility(View.GONE);
+                                    selectedMediaTxt.setText("Attached "
+                                            + eventImages.length() + " images");
+                                    finishTxt.setClickable(true);
+                                    finishTxt.setEnabled(true);
+                                }
                             }
-
                         } catch (JSONException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
@@ -711,6 +708,14 @@ public class IdeasCreateFragment extends Fragment {
             // adapter.addAll(dataT);
 
         }
+        /*if (eventImages.length() > 0) {
+            pDialogImg.setVisibility(View.GONE);
+            selectedMediaTxt.setText("Attached "
+                    + eventImages.length() + " images");
+            finishTxt.setClickable(true);
+            finishTxt.setEnabled(true);
+        }*/
+        Log.d("IMAGES LENGTH", String.valueOf(eventImages.length()));
     }
 
     public String getPath(Uri uri) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mobile.gclifetest.MaterialDesign;
+package mobile.gclifetest.materialDesign;
 
 import java.util.Locale;
 

@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import mobile.gclifetest.Utils.Constants;
+import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.activity.R;
 
 /**

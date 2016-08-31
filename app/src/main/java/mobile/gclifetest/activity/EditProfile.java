@@ -44,9 +44,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.http.SignUpPost;
 
 public class EditProfile extends BaseActivity {

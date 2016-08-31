@@ -41,11 +41,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.InternetConnectionDetector;
+import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 import mobile.gclifetest.http.SignUpPost;
 import mobile.gclifetest.http.SocietyNameGet;
 

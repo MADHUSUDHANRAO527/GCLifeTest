@@ -1,4 +1,4 @@
-package mobile.gclifetest.PojoGson;
+package mobile.gclifetest.pojoGson;
 
 /**
  * Created by goodworklabs on 04/05/2016.

@@ -10,18 +10,19 @@ import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.InternetConnectionDetector;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.http.SignUpPost;
 
 public class Login extends BaseActivity {
@@ -36,7 +37,6 @@ public class Login extends BaseActivity {
 	ProgressBarCircularIndeterminate pDialog;
 	InternetConnectionDetector netConn;
 	Boolean isInternetPresent = false;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -70,7 +70,7 @@ public class Login extends BaseActivity {
 		if (isInternetPresent) {
 
 		} else {
-			showSnack(Login.this, "Please check network connection!", "OK");
+			Constants.showSnack(Login.this, "Please check network connection!", "OK");
 
 		}
 		login.setOnClickListener(new OnClickListener() {
@@ -83,12 +83,12 @@ public class Login extends BaseActivity {
 				if (email == null || email == "null" || email == ""
 						|| email.length() == 0) {
 
-					showSnack(Login.this, "Please enter your email!", "OK");
+					Constants.showSnack(Login.this, "Please enter your email!", "OK");
 				} else if (password == null || password == "null"
 						|| password == "" || password.length() == 0) {
-					showSnack(Login.this, "Please enter your password!", "OK");
+					Constants.showSnack(Login.this, "Please enter your password!", "OK");
 				} else if (password.length() < 6) {
-					showSnack(
+					Constants.showSnack(
 							Login.this,
 							"Your password must be at least 6 characters long!",
 							"OK");
@@ -98,7 +98,7 @@ public class Login extends BaseActivity {
 					if (isInternetPresent) {
 						new SignIn().execute();
 					} else {
-						showSnack(Login.this,
+						Constants.showSnack(Login.this,
 								"Please check network connection!", "OK");
 
 					}
@@ -114,11 +114,12 @@ public class Login extends BaseActivity {
 				// TODO Auto-generated method stub
 				if (isInternetPresent) {
 					Intent regi = new Intent(Login.this, Register.class);
+					regi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 					startActivity(regi);
 					overridePendingTransition(R.anim.slide_in_left,
 							R.anim.slide_out_left);
 				} else {
-					showSnack(Login.this, "Please check network connection!",
+					Constants.showSnack(Login.this, "Please check network connection!",
 							"OK");
 
 				}
@@ -164,15 +165,15 @@ public class Login extends BaseActivity {
 			if (jsonSignInResult != null) {
 
 				if (jsonSignInResult.has("error")) {
-					showSnack(Login.this,
+					Constants.showSnack(Login.this,
 							"You have entered wrong Email or Password!", "OK");
 					pDialog.setVisibility(View.GONE);
 					login.setVisibility(View.VISIBLE);
 
 				} else {
-
 					Intent dash = new Intent(Login.this, HomeActivity.class);
-					startActivity(dash);
+                    dash.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(dash);
 					overridePendingTransition(R.anim.slide_in_left,
 							R.anim.slide_out_left);
 
@@ -200,7 +201,7 @@ public class Login extends BaseActivity {
 			} else {
 				pDialog.setVisibility(View.GONE);
 				login.setVisibility(View.VISIBLE);
-				showSnack(Login.this,
+				Constants.showSnack(Login.this,
 						"Oops! Something went wrong. Please wait a moment!",
 						"OK");
 			}
@@ -218,20 +219,12 @@ public class Login extends BaseActivity {
 			startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(startMain);
 		} else {
-			showSnack(Login.this, "Press again to close app!", "OK");
+			Toast.makeText(this, "Please Tap BACK again to exit", Toast.LENGTH_SHORT).show();
 		}
 
 		mBackPressed = System.currentTimeMillis();
 	}
 
-	void showSnack(Login login, String stringMsg, String ok) {
-		new SnackBar(Login.this, stringMsg, ok, new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-			}
-		}).show();
-	}
 
     @Override
     protected void onResume() {

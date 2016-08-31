@@ -1,11 +1,8 @@
 package mobile.gclifetest.activity;
 
-import mobile.gclifetest.Utils.MyApplication;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;

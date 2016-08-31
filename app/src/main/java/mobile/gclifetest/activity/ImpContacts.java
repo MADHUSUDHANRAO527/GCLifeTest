@@ -52,9 +52,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.ImpContactsPojo;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.ImpContactsPojo;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.db.DatabaseHandler;
 
 public class ImpContacts extends BaseActivity {

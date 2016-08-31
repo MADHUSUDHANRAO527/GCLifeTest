@@ -2,15 +2,14 @@ package mobile.gclifetest.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -18,8 +17,8 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Stack;
 
-import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.fragments.HomeFragment;
+import mobile.gclifetest.fragments.IdeasDetailFragment;
 
 /**
  * Created by MRaoKorni on 8/1/2016.
@@ -31,7 +30,7 @@ public class HomeActivity extends BaseActivity {
     android.support.v4.app.FragmentManager mFragmentManager;
     Context context;
     private boolean doubleBackToExitPressedOnce;
-
+    SharedPreferences notificationPref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +39,31 @@ public class HomeActivity extends BaseActivity {
         mFrame = (FrameLayout) findViewById(R.id.layout_frame_content);
         context = this;
         initToolbar();
-        getOverflowMenu();
-        replaceFragment(new HomeFragment());
+        //getOverflowMenu();
+        notificationPref = context.getSharedPreferences("NOTIFICATION", Context.MODE_PRIVATE);
+
+        if (notificationPref.getString("notification", "NV").equals("+ve")) {
+            Intent intent = getIntent();
+            Bundle bundle = intent.getExtras();
+            if (bundle != null) {
+                String eventName = bundle.getString("EventName");
+                String eid = bundle.getString("id");
+                IdeasDetailFragment fragment = new IdeasDetailFragment();
+                bundle = new Bundle();
+                bundle.putString("EventName", eventName);
+                bundle.putString("id", eid);
+                fragment.setArguments(bundle);
+                replaceFragment(new HomeFragment());
+                ((HomeActivity) context).addFragment(fragment);
+                SharedPreferences.Editor editor = notificationPref.edit();
+                editor.clear();
+                editor.commit();
+            } else {
+                replaceFragment(new HomeFragment());
+            }
+        } else {
+            replaceFragment(new HomeFragment());
+        }
     }
 
     private void initToolbar() {
@@ -50,10 +72,13 @@ public class HomeActivity extends BaseActivity {
         setSupportActionBar(mToolbar);
     }
 
-    public void changeToolbarTitle(String title) {
+    public void changeToolbarTitle(int title) {
         mToolbar.setTitle(title);
     }
 
+    public void changeToolbarTitle(String title) {
+        mToolbar.setTitle(title);
+    }
     public void setHomeAsEnabled(boolean status) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(status);
     }
@@ -86,6 +111,10 @@ public class HomeActivity extends BaseActivity {
         transaction.commit();
     }
 
+    public void removeFragment(Fragment fragment) {
+        //     mFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        mFragmentManager.popBackStack("fragB", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
 
     private static final int TIME_INTERVAL = 10000; // # milliseconds, desired
     private long mBackPressed;
@@ -100,7 +129,10 @@ public class HomeActivity extends BaseActivity {
             ft.commitAllowingStateLoss();
         } else {
             if (doubleBackToExitPressedOnce) {
-                super.onBackPressed();
+                Intent intent = new Intent(HomeActivity.this, SplashActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra("EXIT", true);
+                startActivity(intent);
                 return;
             }
             this.doubleBackToExitPressedOnce = true;
@@ -115,48 +147,8 @@ public class HomeActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.logout_menu, menu);
-        MenuItem itemLogout = menu.findItem(R.id.logOut);
-        itemLogout.setVisible(true);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.logOut:
-                // editor.clear();
-                //  editor.commit();
-                context.deleteDatabase(DatabaseHandler.DATABASE_NAME);
-                //  showSnack(HomeApp.this, "You have been logged out!", "OK");
-                //  Intent i = new Intent(HomeApp.this, Login.class);
-                //  startActivity(i);
-                break;
-            case R.id.refreh:
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-                break;
-            case R.id.profile:
-                //  Intent ii = new Intent(HomeApp.this, UserProfile.class);
-                // ii.putExtra("EACH_USER_DET", "");
-                // startActivity(ii);
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onBackPressed() {
-
             handleButtonBarBackKey();
-
     }
     private void handleButtonBarBackKey() {
         List<Fragment> frags = getSupportFragmentManager().getFragments();

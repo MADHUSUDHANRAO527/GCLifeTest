@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +22,8 @@ import org.json.JSONArray;
 import java.util.HashMap;
 import java.util.List;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.EventImages;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.EventImages;
 import mobile.gclifetest.activity.GalleryImageViewer;
 import mobile.gclifetest.activity.R;
 
@@ -43,18 +44,20 @@ public class EventsImagesAdapter extends BaseAdapter {
     JSONArray mediaArr;
     ProgressBarCircularIndeterminate pDialog;
     public EventsImagesAdapter(Context activity,
-                                 List<EventImages> eventImagesPoj) {
+                                 List<EventImages> eventImagesPoj,String evenName,ProgressBar pBar) {
         // TODO Auto-generated constructor stub
         this.context = activity;
         this.eventImagesPojo = eventImagesPoj;
         inflator = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         imageLoader = ImageLoader.getInstance();
+        eventName=evenName;
         options = new DisplayImageOptions.Builder().cacheInMemory(true)
                 .cacheOnDisc(true).resetViewBeforeLoading(true)
                 .showImageForEmptyUri(R.drawable.no_media)
                 .showImageOnFail(R.drawable.no_media)
                 .showImageOnLoading(R.drawable.no_media).build();
+        thumbPbar=pBar;
     }
 
     @Override
@@ -94,8 +97,16 @@ public class EventsImagesAdapter extends BaseAdapter {
         }
         //imageViewThumb = new ImageView(context);
         final String imgUrl = eventImagesPojo.get(position).getImage_url();
-        System.out.println(imgUrl);
-        if (imgUrl == "[]" || imgUrl.equals("[]") || imgUrl == ""
+      //  System.out.println(imgUrl);
+        Log.d("POS : ",position+"");
+        if (eventName == "Videos" || eventName.equals("Videos")) {
+            new BitmapCall(imgUrl).execute();
+        } else if(imgUrl!=null){
+            thumbPbar.setVisibility(View.GONE);
+            imageLoader.displayImage(imgUrl, thumbnailImg, options);
+            thumbnailImg.setScaleType(ImageView.ScaleType.FIT_XY);
+        }
+      /*  if (imgUrl == "[]" || imgUrl.equals("[]") || imgUrl == ""
                 || imgUrl.equals("")) {
 
 
@@ -105,9 +116,7 @@ public class EventsImagesAdapter extends BaseAdapter {
             thumbPbar.setVisibility(View.GONE);
             imageLoader.displayImage(imgUrl, thumbnailImg, options);
             thumbnailImg.setScaleType(ImageView.ScaleType.FIT_XY);
-        }
-
-
+        }*/
         return convertView;
     }
 

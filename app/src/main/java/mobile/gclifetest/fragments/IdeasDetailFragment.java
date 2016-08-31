@@ -37,15 +37,15 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.EventComments;
-import mobile.gclifetest.PojoGson.EventImages;
-import mobile.gclifetest.PojoGson.EventsPojo;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.Constants;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.Utils.ListViewUtils;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.EventComments;
+import mobile.gclifetest.pojoGson.EventImages;
+import mobile.gclifetest.pojoGson.EventsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.InternetConnectionDetector;
+import mobile.gclifetest.utils.ListViewUtils;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.activity.GalleryImageViewer;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.IdeasDetail;
@@ -132,26 +132,6 @@ public class IdeasDetailFragment extends Fragment {
         user = gson.fromJson(jsonUser, UserDetailsPojo.class);
         Bundle bundle = this.getArguments();
         eventName = bundle.getString("EventName");
-        if (eventName == "Ideas" || eventName.equals("Ideas")) {
-            ((HomeActivity) context).changeToolbarTitle("Ideas detail");
-            //  setUpActionBar("Ideas detail");
-        } else if (eventName == "News" || eventName.equals("News")) {
-            //  setUpActionBar("News detail");
-            ((HomeActivity) context).changeToolbarTitle("News detail");
-        } else if (eventName == "Photos" || eventName.equals("Photos")) {
-            // setUpActionBar("Photos detail");
-            ((HomeActivity) context).changeToolbarTitle("Photos detail");
-            sdescLay.setVisibility(View.GONE);
-            bdescLay.setVisibility(View.GONE);
-        } else if (eventName == "Videos" || eventName.equals("Videos")) {
-            //  setUpActionBar("Videos detail");
-            ((HomeActivity) context).changeToolbarTitle("Videos detail");
-            sdescLay.setVisibility(View.GONE);
-            bdescLay.setVisibility(View.GONE);
-        } else {
-            //  actionBar.setTitle("NoticeBoard detail");
-            ((HomeActivity) context).changeToolbarTitle("NoticeBoard detail");
-        }
 
         eid = bundle.getString("id");
 
@@ -168,7 +148,7 @@ public class IdeasDetailFragment extends Fragment {
                     sDiscTxt.setText(eventsPojo.get(i).getSdesc());
                     bDiscTxt.setText(eventsPojo.get(i).getBdesc());
                     EventsImagesAdapter adapterImages = new EventsImagesAdapter(
-                            context, eventsPojo.get(i).getEvent_images());//
+                            context, eventsPojo.get(i).getEvent_images(),eventName,thumbPbar);//
                     jsonImages = gson.toJson(eventsPojo.get(i).getEvent_images());
 
                     try {
@@ -307,13 +287,11 @@ public class IdeasDetailFragment extends Fragment {
                         }
 
                         EventsImagesAdapter adapterImages = new EventsImagesAdapter(
-                                context, eventImagesPojo);
+                                context, eventImagesPojo,eventName,thumbPbar);
                         galleryArti.setAdapter(adapterImages);
                         if (eventImagesPojo.size() > 1) {
                             galleryArti.setSelection(1);
                         }
-
-
                     }
                     JSONArray cmntArr = jsonDetails
                             .getJSONArray("event_comments");
@@ -406,6 +384,21 @@ public class IdeasDetailFragment extends Fragment {
     public void onResume() {
         super.onResume();
         setHasOptionsMenu(true);
+        if (eventName == "Ideas" || eventName.equals("Ideas")) {
+            ((HomeActivity) context).changeToolbarTitle(R.string.idea_detail);
+        } else if (eventName == "News" || eventName.equals("News")) {
+            ((HomeActivity) context).changeToolbarTitle(R.string.news_detail);
+        } else if (eventName.equals("Photos")) {
+            ((HomeActivity) context).changeToolbarTitle(R.string.photos_detail);
+            sdescLay.setVisibility(View.GONE);
+            bdescLay.setVisibility(View.GONE);
+        } else if (eventName.equals("Videos")) {
+            ((HomeActivity) context).changeToolbarTitle(R.string.videos_detail);
+            sdescLay.setVisibility(View.GONE);
+            bdescLay.setVisibility(View.GONE);
+        } else {
+            ((HomeActivity) context).changeToolbarTitle(R.string.nb_detail);
+        }
         ((HomeActivity) context).setHomeAsEnabled(true);
     }
 }

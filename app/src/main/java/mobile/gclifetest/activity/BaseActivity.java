@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.inputmethod.InputMethodManager;
 
 import java.lang.reflect.Field;
 import java.util.Stack;
 
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by goodworklabs on 04/03/2016.
@@ -38,7 +40,10 @@ public class BaseActivity extends AppCompatActivity {
         actionBar.setBackgroundDrawable(new ColorDrawable(Color
                 .parseColor(MyApplication.actiobarColor)));
     }
-
+    public static void closeSoftKeyboard(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
     void getOverflowMenu() {
 
         try {

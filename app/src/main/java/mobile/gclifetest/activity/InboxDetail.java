@@ -11,8 +11,8 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
 
-import mobile.gclifetest.PojoGson.InboxPojo;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.pojoGson.InboxPojo;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.db.DatabaseHandler;
 
 public class InboxDetail extends BaseActivity {

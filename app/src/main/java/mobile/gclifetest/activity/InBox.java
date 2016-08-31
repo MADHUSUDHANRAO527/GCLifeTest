@@ -62,10 +62,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import mobile.gclifetest.MaterialDesign.PagerSlidingTabStrip;
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.InboxPojo;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.materialDesign.PagerSlidingTabStrip;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.InboxPojo;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.http.EvenstPost;
 

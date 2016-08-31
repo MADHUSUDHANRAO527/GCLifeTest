@@ -33,9 +33,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.gclifetest.MaterialDesign.PagerSlidingTabStrip;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.materialDesign.PagerSlidingTabStrip;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
 
 public class FrdsDetail extends BaseActivity {
     String hostname;

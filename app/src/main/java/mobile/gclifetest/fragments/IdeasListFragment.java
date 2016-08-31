@@ -9,10 +9,14 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,6 +31,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -36,23 +41,28 @@ import com.gc.materialdesign.views.ButtonFloat;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.EventsPojo;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.Constants;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.EventsPojo;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.InternetConnectionDetector;
+import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.activity.BaseActivity;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.adapters.ListIdeasAdapter;
 import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.event.AddIdeasEvent;
 
 /**
  * Created by MRaoKorni on 8/1/2016.
@@ -135,11 +145,6 @@ public class IdeasListFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // TODO Auto-generated method stub
-                /*Intent i = new Intent(context, IdeasDetail.class);
-                i.putExtra("EventName", eventName);
-                i.putExtra("id", String.valueOf(eventsPojo.get(position).getId()));
-                startActivity(i);*/
-
                 IdeasDetailFragment fragment = new IdeasDetailFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("EventName", eventName);
@@ -153,11 +158,6 @@ public class IdeasListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                /*Intent i = new Intent(context, IdeasCreate.class);
-                i.putExtra("EventName", eventName);
-                startActivity(i);*/
-
-
                 IdeasCreateFragment fragment = new IdeasCreateFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("EventName", eventName);
@@ -192,18 +192,41 @@ public class IdeasListFragment extends Fragment {
                 }
             }
         };
+        searchEdit.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
+
+                searchStr = searchEdit.getText().toString();
+            }
+        });
         searchEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    globalEventsPojo = new ArrayList<EventsPojo>();
-                    offset = 0;
-                    adapter.notifyDataSetChanged();
-                    searchStr = searchEdit.getText().toString();
-                    progressShow = false;
-                    callEventsList(searchStr);
-                    InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(searchEdit.getWindowToken(), 0);
+                    if (searchStr.length() >= 3) {
+                        globalEventsPojo = new ArrayList<EventsPojo>();
+                        offset = 0;
+                        adapter.notifyDataSetChanged();
+                        searchStr = searchEdit.getText().toString();
+                        progressShow = false;
+                        callEventsList(searchStr);
+                        InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(searchEdit.getWindowToken(), 0);
+                    }else {
+                        Toast.makeText(getActivity(), "Type atleast three characters", Toast.LENGTH_LONG).show();
+                    }
+
                     return true;
                 }
                 return false;
@@ -224,7 +247,7 @@ public class IdeasListFragment extends Fragment {
     private void callEventsList(final String searchStr) {
 
         //get method
-        if (progressShow == true) {
+        if (progressShow) {
             pDialog.setVisibility(View.VISIBLE);
         } else {
             pDialog.setVisibility(View.GONE);
@@ -237,9 +260,13 @@ public class IdeasListFragment extends Fragment {
                 (String) null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
-                //    pDialog.hide();
                 Log.d("Response", response.toString());
-                if (response != null) {
+                if (response.toString() == "[]" || response.length() == 0) {
+                    Constants.showSnack(context,
+                            "Oops! There is no " + eventName + "!", "");
+                    pDialog.setVisibility(View.GONE);
+                    pDialogBtm.setVisibility(View.GONE);
+                } else {
                     eventsPojo = gson.fromJson(response.toString(), new TypeToken<List<EventsPojo>>() {
                     }.getType());
                     globalEventsPojo.addAll(eventsPojo);
@@ -247,7 +274,7 @@ public class IdeasListFragment extends Fragment {
                     currentPosition = listviewIdeas
                             .getLastVisiblePosition();
                     adapter = new ListIdeasAdapter(
-                            context, eventsPojo, flats,eventName);
+                            context, globalEventsPojo, flats, eventName);
                     listviewIdeas.setAdapter(adapter);
                     pDialog.setVisibility(View.GONE);
                     pDialogBtm.setVisibility(View.GONE);
@@ -279,6 +306,8 @@ public class IdeasListFragment extends Fragment {
                                         AbsListView view, int scrollState) {
                                     // TODO Auto-generated method stub
                                     this.currentScrollState = scrollState;
+                                    pDialogBtm.setVisibility(View.GONE);
+                                    pDialog.setVisibility(View.GONE);
                                     if (view.getId() == listviewIdeas
                                             .getId()) {
                                         final int currentFirstVisibleItem = listviewIdeas
@@ -307,35 +336,27 @@ public class IdeasListFragment extends Fragment {
                                     this.currentFirstVisibleItem = firstVisibleItem;
                                     this.currentVisibleItemCount = visibleItemCount;
                                     this.totalItemCount = totalItemCount;
-
                                 }
 
                                 private void isScrollCompleted() {
-                                    pDialogBtm.setVisibility(View.VISIBLE);
                                     if (this.currentVisibleItemCount > 0
                                             && this.currentScrollState == SCROLL_STATE_IDLE
                                             && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
                                         offset = offset + 10;
                                         Log.d("Offset :", offset + "");
+                                        pDialogBtm.setVisibility(View.VISIBLE);
+                                        progressShow=false;
                                         callEventsList(searchStr);
-                                        pDialogBtm.setVisibility(View.GONE);
                                     }
                                 }
                             });
-
-                }
-                if (response.toString() == "[]" || response.length() == 0) {
-                    Constants.showSnack(context,
-                            "Oops! There is no " + eventName + "!", "");
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 volleyError.printStackTrace();
-
                 Log.d("Error = ", volleyError.toString());
-
                 pDialog.setVisibility(View.GONE);
                 Constants.showSnack(context,
                         "Oops! Something went wrong. Please check internet connection!",
@@ -343,8 +364,13 @@ public class IdeasListFragment extends Fragment {
             }
         });
         MyApplication.queue.add(request);
+    }
 
-
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // TODO Add your menu entries here
+        inflater.inflate(R.menu.search, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -353,6 +379,7 @@ public class IdeasListFragment extends Fragment {
 
             case android.R.id.home:
                 ((HomeActivity) context).onBackpressed();
+                BaseActivity.closeSoftKeyboard(context, searchEdit);
                 return true;
             case R.id.search:
                 searchLay.setVisibility(View.VISIBLE);
@@ -371,5 +398,26 @@ public class IdeasListFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(eventName);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AddIdeasEvent event) {
+        if (event.success) {
+            globalEventsPojo.clear();
+            callEventsList(searchStr);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
     }
 }

@@ -16,8 +16,8 @@ import com.gc.materialdesign.widgets.SnackBar;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.http.SignUpPost;
 
 public class OTP extends BaseActivity implements OnClickListener {
@@ -152,7 +152,7 @@ public class OTP extends BaseActivity implements OnClickListener {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					Intent dash = new Intent(OTP.this, HomeApp.class);
+					Intent dash = new Intent(OTP.this, HomeActivity.class);
 					startActivity(dash);
 					overridePendingTransition(R.anim.slide_in_left,
 							R.anim.slide_out_left);

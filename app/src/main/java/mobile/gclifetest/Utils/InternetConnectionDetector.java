@@ -1,4 +1,4 @@
-package mobile.gclifetest.Utils;
+package mobile.gclifetest.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

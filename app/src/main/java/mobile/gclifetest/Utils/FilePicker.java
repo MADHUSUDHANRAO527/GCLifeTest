@@ -1,4 +1,4 @@
-package mobile.gclifetest.Utils;
+package mobile.gclifetest.utils;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;

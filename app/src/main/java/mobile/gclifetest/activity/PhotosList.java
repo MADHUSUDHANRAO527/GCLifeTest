@@ -63,14 +63,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.EventsPojo;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.EventsPojo;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.InternetConnectionDetector;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.db.DatabaseHandler;
-import mobile.gclifetest.fragments.IdeasDetailFragment;
 import mobile.gclifetest.http.EvenstPost;
 import mobile.gclifetest.http.MemsPost;
 
@@ -164,18 +163,17 @@ public class PhotosList extends BaseActivity {
 									int position, long id) {
 				// TODO Auto-generated method stub
 
-				IdeasDetailFragment fragment = new IdeasDetailFragment();
+				/*IdeasDetailFragment fragment = new IdeasDetailFragment();
 				Bundle bundle = new Bundle();
 				bundle.putString("EventName", eventName);
 				bundle.putString("id", String.valueOf(eventsPojo.get(position).getId()));
 				fragment.setArguments(bundle);
 				((HomeActivity) mContext).addFragment(fragment);
-
-				/*
+*/
 				Intent i = new Intent(PhotosList.this, IdeasDetail.class);
 				i.putExtra("EventName", eventName);
 				i.putExtra("id", String.valueOf(eventsPojo.get(position).getId()));
-				startActivity(i);*/
+				startActivity(i);
 			}
 		});
 		if (db.getEventNews(eventName) != "null") {

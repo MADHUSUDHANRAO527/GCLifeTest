@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
@@ -16,8 +17,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 
 import java.util.Random;
 
-import mobile.gclifetest.activity.HomeApp;
-import mobile.gclifetest.activity.IdeasDetail;
+import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.InBox;
 import mobile.gclifetest.activity.R;
 
@@ -28,41 +28,32 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     Intent notificationIntent;
     Notification myNotication;
     Random random = new Random();
-
+    SharedPreferences notificationPref;
     @Override
     public void onReceive(Context context, Intent intent) {
         mContext = context;
         // Explicitly specify that GcmMessageHandler will handle the intent.
-
+        notificationPref = context.getSharedPreferences("NOTIFICATION", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor=notificationPref.edit();
         category = intent.getExtras().getString("category");
         title = intent.getExtras().getString("tittle");
         message = intent.getExtras().getString("message");
         eid = intent.getExtras().getString("event");
         System.out.println(eid + " ID: " + category + " CAT: " + title + " TIT: " + message + " : MSG ");
-        if (category == "News" || category.equals("News")) {
-            notificationIntent = new Intent(context, IdeasDetail.class);
+
+        if (category.equals("News") || category.equals("Notice") ||
+                category.equals("Ideas") ||  category.equals("Photos") ||category.equals("Videos")) {
+            notificationIntent = new Intent(context, HomeActivity.class);
             notificationIntent.putExtra("EventName", category);
             notificationIntent.putExtra("id", eid);
-        } else if (category == "Notice" || category.equals("Notice")) {
-            notificationIntent = new Intent(context, IdeasDetail.class);
-            notificationIntent.putExtra("id", eid);
-            notificationIntent.putExtra("EventName", category);
-        } else if (category == "Ideas" || category.equals("Ideas")) {
-            notificationIntent = new Intent(context, IdeasDetail.class);
-            notificationIntent.putExtra("id", eid);
-            notificationIntent.putExtra("EventName", category);
-        } else if (category == "Photos" || category.equals("Photos")) {
-            notificationIntent = new Intent(context, IdeasDetail.class);
-            notificationIntent.putExtra("id", eid);
-            notificationIntent.putExtra("EventName", category);
-        } else if (category == "Videos" || category.equals("Videos")) {
-            notificationIntent = new Intent(context, IdeasDetail.class);
-            notificationIntent.putExtra("id", eid);
-            notificationIntent.putExtra("EventName", category);
+
+            editor.putString("notification","+ve");
+            editor.commit();
+
         } else if (category == "Inbox" || category.equals("Inbox")) {
             notificationIntent = new Intent(context, InBox.class);
         } else {
-            notificationIntent = new Intent(context, HomeApp.class);
+            notificationIntent = new Intent(context, HomeActivity.class);
         }
 
         generateNotification(context, "HELLLO", notificationIntent);
@@ -97,7 +88,7 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         //  builder.setDefaults(Notification.DEFAULT_SOUND);
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         builder.setSound(alarmSound);
-        builder.setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.app_icon));
+        builder.setLargeIcon(BitmapFactory.decodeResource(res, icon));
         //	builder.setSubText("This is subtext...");   //API level 16
         builder.setWhen(System.currentTimeMillis());
         builder.build();

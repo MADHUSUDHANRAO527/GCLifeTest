@@ -1,15 +1,11 @@
 package mobile.gclifetest.activity;
 
-import mobile.gclifetest.Utils.MyApplication;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.widget.MediaController;
 import android.widget.VideoView;

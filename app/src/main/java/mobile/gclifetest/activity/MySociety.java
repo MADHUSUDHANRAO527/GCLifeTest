@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
 
 public class MySociety extends BaseActivity {
 	GridView gv;

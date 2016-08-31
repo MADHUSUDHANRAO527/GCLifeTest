@@ -1,4 +1,4 @@
-package mobile.gclifetest.Utils;
+package mobile.gclifetest.utils;
 
 import android.view.View;
 import android.view.View.MeasureSpec;

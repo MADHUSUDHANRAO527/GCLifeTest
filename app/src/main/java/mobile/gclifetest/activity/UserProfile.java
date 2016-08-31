@@ -37,10 +37,10 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.gclifetest.MaterialDesign.PagerSlidingTabStrip;
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.materialDesign.PagerSlidingTabStrip;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
 
 public class UserProfile extends BaseActivity {
     String hostname;
@@ -461,7 +461,7 @@ public class UserProfile extends BaseActivity {
         if (userPref.getString("activityName", "NV").equalsIgnoreCase("mems_activity")) {
             finish();
         } else {
-            Intent dash = new Intent(UserProfile.this, HomeApp.class);
+            Intent dash = new Intent(UserProfile.this, HomeActivity.class);
             startActivity(dash);
             overridePendingTransition(R.anim.slide_in_left,
                     R.anim.slide_out_left);

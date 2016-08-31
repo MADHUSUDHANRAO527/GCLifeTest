@@ -1,4 +1,4 @@
-package mobile.gclifetest.PojoGson;
+package mobile.gclifetest.pojoGson;
 
 public class FlatDetailsPojo {
 	String membertypeid, avenue_name, societyid, buildingid, flat_type,

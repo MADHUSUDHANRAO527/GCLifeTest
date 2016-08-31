@@ -27,7 +27,7 @@
                 android:padding="60dp"
                 android:visibility="visible" >
 
-                <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
+                <mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate
                     android:id="@+id/pDialog"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
@@ -92,7 +92,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
-                        android:text="Small discription"
+                        android:text="Small description"
                         android:textStyle="bold"
                         android:textColor="#000"
                         android:textSize="16sp"
@@ -124,7 +124,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
-                        android:text="Brief discription"
+                        android:text="Brief description"
                         android:padding="5dp"
                         android:textStyle="bold"
                         android:textColor="#000"

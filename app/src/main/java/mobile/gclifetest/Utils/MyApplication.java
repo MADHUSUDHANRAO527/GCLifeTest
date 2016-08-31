@@ -1,4 +1,4 @@
-package mobile.gclifetest.Utils;
+package mobile.gclifetest.utils;
 
 import android.app.ActionBar;
 import android.app.Application;
@@ -20,6 +20,8 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.parse.Parse;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -28,7 +30,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
 
 public class MyApplication extends Application {
 
@@ -70,7 +72,8 @@ public class MyApplication extends Application {
         userPref = getSharedPreferences("USER", MODE_PRIVATE);
         gson = new Gson();
         String jsonUser = userPref.getString("USER_DATA", "NV");
-
+        EventBus.builder().logNoSubscriberMessages(false)
+                .sendNoSubscriberEvent(false).installDefaultEventBus();
         // get GCM token
         getRegId();
     }

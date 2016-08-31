@@ -10,9 +10,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import mobile.gclifetest.PojoGson.EventComments;
-import mobile.gclifetest.Utils.Constants;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.pojoGson.EventComments;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.activity.R;
 
 /**
@@ -84,8 +84,19 @@ public class EventsCommentsAdapter extends BaseAdapter {
 
         holder.dpNameTxt.setText(eventComntsPojo.get(position).getUsername());
         holder.comntDetailTxt.setText(Html.fromHtml(eventComntsPojo.get(position).getComment()));
-        String date = app.convertTimeComnts(eventComntsPojo.get(position).getCreated_at());
-        holder.timeTxt.setText(date);
+
+        String createdAt =eventComntsPojo.get(position).getCreated_at();
+        MyApplication app = new MyApplication();
+        createdAt = app.convertDateEmail(createdAt);
+        String time = eventComntsPojo.get(position)
+                .getCreated_at().substring(11, 19);
+        time = app.convertTimeEmail(time);
+
+        holder.timeTxt.setText(createdAt + "," + time);
+
+
+     //   String date = app.convertTimeComnts(eventComntsPojo.get(position).getCreated_at());
+      //  holder.timeTxt.setText(date);
 
         return convertView;
     }

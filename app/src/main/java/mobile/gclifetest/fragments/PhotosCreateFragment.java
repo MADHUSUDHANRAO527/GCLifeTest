@@ -35,6 +35,7 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,10 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.AvenuesFilter;
-import mobile.gclifetest.Utils.Constants;
-import mobile.gclifetest.Utils.MyApplication;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.PhotosList;
 import mobile.gclifetest.activity.R;
@@ -63,8 +60,13 @@ import mobile.gclifetest.custom.CustomGallery;
 import mobile.gclifetest.custom.CustomImgGalleryActivity;
 import mobile.gclifetest.custom.CustomVideoGalleryActivity;
 import mobile.gclifetest.custom.GalleryImgAdapter;
+import mobile.gclifetest.event.AddIdeasEvent;
 import mobile.gclifetest.http.EvenstPost;
 import mobile.gclifetest.http.SocietyNameGet;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.AvenuesFilter;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by MRaoKorni on 8/19/2016.
@@ -407,7 +409,6 @@ public class PhotosCreateFragment extends Fragment {
                 jsonIdeas.put("society_list", selectedSoci);
                 jsonIdeas.put("member_type_list", selectedMem);
 
-
                 System.out.println(eventImages + "!!!!!!!!!!!!!!!!!!!!!!!");
 
                 if (eventImages.toString() == "[]"
@@ -441,9 +442,8 @@ public class PhotosCreateFragment extends Fragment {
             if (jsonResult != null) {
                 if (jsonResult.has("id")) {
                     pDialog.setVisibility(View.GONE);
-                    Intent i = new Intent(getActivity(), PhotosList.class);
-                    i.putExtra("EventName", eventName);
-                    startActivity(i);
+                    EventBus.getDefault().post(new AddIdeasEvent(true));
+                    ((HomeActivity) context).onBackpressed();
                 }
             } else {
                 pDialog.setVisibility(View.GONE);
@@ -671,40 +671,54 @@ public class PhotosCreateFragment extends Fragment {
                         try {
                             JSONObject jsonMedia = new JSONObject();
                             jsonMedia.put("image_type", "image");
-                            jsonMedia.put("image_url", mediaUrl);
-                            System.out.println(jsonMedia
-                                    + " +++++++++++++++++++++++ ");
-                            eventImages.put(jsonMedia);
-                            System.out.println(eventImages
-                                    + " ******************* ");
 
-                            if (all_path.length == eventImages.length()) {
-                                pDialogImg.setVisibility(View.GONE);
 
-                                if (eventName == "Photos" || eventName.equals("Photos")) {
-                                    selectedMediaTxt.setText("Attached "
-                                            + all_path.length + " images");
+                            if (mediaUrl != null) {
+                                jsonMedia.put("image_url", mediaUrl);
+                                System.out.println(jsonMedia
+                                        + " +++++++++++++++++++++++ ");
+                                eventImages.put(jsonMedia);
+                                System.out.println(eventImages
+                                        + " ******************* ");
+
+                                if (all_path.length == eventImages.length()) {
+                                    pDialogImg.setVisibility(View.GONE);
+
+                                    if (eventName == "Photos" || eventName.equals("Photos")) {
+                                        selectedMediaTxt.setText("Attached "
+                                                + all_path.length + " images");
+                                    } else {
+                                        selectedMediaTxt.setText("Attached "
+                                                + all_path.length + " videos");
+                                    }
+                                    finishTxt.setClickable(true);
+                                } else if (all_path.length > eventImages.length()) {
+                                    pDialogImg.setVisibility(View.VISIBLE);
+
+
+                                    if (eventName == "Photos" || eventName.equals("Photos")) {
+                                        selectedMediaTxt.setText("Attaching images...."
+                                                + (String.valueOf(eventImages.length())));
+                                    } else {
+                                        selectedMediaTxt.setText("Attaching videos...."
+                                                + (String.valueOf(eventImages.length())));
+                                    }
+
+
+                                    finishTxt.setClickable(false);
                                 } else {
-                                    selectedMediaTxt.setText("Attached "
-                                            + all_path.length + " videos");
+                                    pDialogImg.setVisibility(View.GONE);
+                                    if (eventName == "Photos" || eventName.equals("Photos")) {
+                                        selectedMediaTxt.setText("Attached "
+                                                + eventImages.length() + " images");
+                                    } else {
+                                        selectedMediaTxt.setText("Attached "
+                                                + eventImages.length() + " videos");
+                                    }
+
+                                    finishTxt.setClickable(true);
+                                    finishTxt.setEnabled(true);
                                 }
-
-
-                                finishTxt.setClickable(true);
-                            } else {
-                                pDialogImg.setVisibility(View.VISIBLE);
-
-
-                                if (eventName == "Photos" || eventName.equals("Photos")) {
-                                    selectedMediaTxt.setText("Attaching images...."
-                                            + (String.valueOf(eventImages.length())));
-                                } else {
-                                    selectedMediaTxt.setText("Attaching videos...."
-                                            + (String.valueOf(eventImages.length())));
-                                }
-
-
-                                finishTxt.setClickable(false);
                             }
 
                         } catch (JSONException e) {
@@ -1021,51 +1035,8 @@ public class PhotosCreateFragment extends Fragment {
                     }
                 }
             });
-
-
-           /* mCheckBox.setOnCheckedChangeListener(
-                    new CompoundButton.OnCheckedChangeListener() {
-
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked) {
-
-                                *//*
-                                 * Saving Checked Position
-                                 *//*
-                                mChecked.put(position, isChecked);
-
-                                if (isAllValuesChecked()) {
-                                    checkBox_header.setChecked(isChecked);
-                                }
-                                selectedSociNames.add(societiesPojo.get(position).getSocityName());
-                            } else {
-
-                                *//*
-                                 * Removed UnChecked Position
-                                 *//*
-                                mChecked.delete(position);
-
-                                *//*
-                                 * Remove Checked in Header
-                                 *//*
-                                checkBox_header.setChecked(isChecked);
-                                selectedSociNames.remove(societiesPojo.get(position).getSocityName());
-                            }
-
-                        }
-                    });*/
-
-            /*
-             * Set CheckBox "TRUE" or "FALSE" if mChecked == true
-             */
             mCheckBox.setChecked((mChecked.get(position) == true ? true : false));
 
-            /* **************ADDING CONTENTS**************** */
-
-            /*
-             * Return View here
-             */
             return mView;
         }
 
@@ -1203,8 +1174,8 @@ public class PhotosCreateFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         if (eventName == "Photos" || eventName.equals("Photos")) {
-            ((HomeActivity) context).changeToolbarTitle("Create Photos");
+            ((HomeActivity) context).changeToolbarTitle(R.string.create_photos);
         }else
-            ((HomeActivity) context).changeToolbarTitle("Create Videos");
+            ((HomeActivity) context).changeToolbarTitle(R.string.create_videos);
     }
 }

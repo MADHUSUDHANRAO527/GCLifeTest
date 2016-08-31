@@ -1,4 +1,4 @@
-package mobile.gclifetest.MaterialDesign;
+package mobile.gclifetest.materialDesign;
 
 import android.content.Context;
 import android.graphics.Canvas;

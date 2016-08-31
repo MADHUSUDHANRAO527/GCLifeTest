@@ -53,9 +53,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.AvenuesFilter;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.AvenuesFilter;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.custom.CustomGallery;
 import mobile.gclifetest.custom.CustomImgGalleryActivity;
 import mobile.gclifetest.custom.CustomVideoGalleryActivity;

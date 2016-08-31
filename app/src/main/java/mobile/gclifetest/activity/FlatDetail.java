@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 
 public class FlatDetail extends BaseActivity {
     TextView avenueNameTxt, societyNameTxt, buidlingNameTxt, flatNumtxt,

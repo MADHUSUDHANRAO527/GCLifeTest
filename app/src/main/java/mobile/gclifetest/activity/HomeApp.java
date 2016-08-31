@@ -38,9 +38,9 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Field;
 
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.InternetConnectionDetector;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.http.MemsPost;
 

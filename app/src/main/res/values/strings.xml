@@ -79,5 +79,33 @@
         <item>Credit Card</item>
         <item>Other</item>
     </string-array>
-
+    <string name="home">Home</string>
+    <string name="my_society">My Society</string>
+    <string name="create_ideas">Create Idea</string>
+    <string name="create_news">Create News</string>
+    <string name="create_nb">Create NoticeBoard</string>
+    <string name="idea_detail">Ideas detail</string>
+    <string name="news_detail">News detail</string>
+    <string name="nb_detail">NoticeBoard detail</string>
+    <string name="photos_detail">Photos detail</string>
+    <string name="videos_detail">Videos detail</string>
+    <string name="create_photos">Create Photos</string>
+    <string name="create_videos">Create Videos</string>
+    <string name="my_Society_bill">My Society Bill</string>
+    <string name="admin">Admin</string>
+    <string name="sbmanagement">Society Bill Management</string>
+    <string name="view_bill">View Bill</string>
+    <string name="mem_ver">GC Member Verification</string>
+    <string name="imp_contacts">Imp Contacts</string>
+    <string name="frds">Friends</string>
+    <string name="videoUploadCompleted">The video has been successfully uploaded</string>
+    <string name="videoUploadFailed">Uploading of video failed due to some problems</string>\
+    <string name="uploadingVideo">Uploading video&#8230;</string>
+    <string name="confirmUploadVideo">Are you sure you want to upload the video?</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="ok">OK</string>
+    <string name="googleAccountNotSelected">Google Account Not Selected</string>
+    <string name="googleAccountNotSupported">Probably your device does not support Google account.</string>
+    <string name="appAuthorized">The app has been authorized. You can now upload your video now.</string>
 </resources>

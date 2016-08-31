@@ -123,7 +123,7 @@
                     android:text=""
                     android:textSize="14sp" />
 
-                <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
+                <mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate
                     android:id="@+id/pDialogImg"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
@@ -286,7 +286,7 @@
                     android:textColor="#4169E1"
                     android:textSize="16sp" />
 
-                <mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate
+                <mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate
                     android:id="@+id/pDialog"
                     android:layout_width="32dp"
                     android:layout_height="32dp"

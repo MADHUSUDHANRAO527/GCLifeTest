@@ -8,14 +8,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.InternetConnectionDetector;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.InternetConnectionDetector;
 
-public class Splash extends Activity {
+public class SplashActivity extends Activity {
     public static UserDetailsPojo user;
     Gson gson;
     SharedPreferences userPref;
@@ -34,9 +35,11 @@ public class Splash extends Activity {
         netConn = new InternetConnectionDetector(this);
         isInternetPresent = netConn.isConnectingToInternet();
         String jsonUser = userPref.getString("USER_DATA", "NV");
-        if (jsonUser != "NV" || !jsonUser.equals("NV")) {
+        if (getIntent().getBooleanExtra("EXIT", false)) {
+            finish();
+        } else if (jsonUser != "NV" || !jsonUser.equals("NV")) {
             user = gson.fromJson(jsonUser, UserDetailsPojo.class);
-            Intent home = new Intent(Splash.this, HomeApp.class);
+            Intent home = new Intent(SplashActivity.this, HomeActivity.class);
             home.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(home);
         }
@@ -48,16 +51,15 @@ public class Splash extends Activity {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 if (isInternetPresent) {
-                    Intent regi = new Intent(Splash.this, Register.class);
+                    Intent regi = new Intent(SplashActivity.this, Register.class);
+                    regi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(regi);
                     overridePendingTransition(R.anim.slide_in_left,
                             R.anim.slide_out_left);
                 } else {
-                    showSnack(Splash.this, "Please check network connection!",
+                    showSnack(SplashActivity.this, "Please check network connection!",
                             "OK");
-
                 }
-
             }
         });
         login.setOnClickListener(new View.OnClickListener() {
@@ -66,16 +68,15 @@ public class Splash extends Activity {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 if (isInternetPresent) {
-                    Intent regi = new Intent(Splash.this, Login.class);
+                    Intent regi = new Intent(SplashActivity.this, Login.class);
+                    regi.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(regi);
                     overridePendingTransition(R.anim.slide_in_left,
                             R.anim.slide_out_left);
                 } else {
-                    showSnack(Splash.this, "Please check network connection!",
+                    showSnack(SplashActivity.this, "Please check network connection!",
                             "OK");
-
                 }
-
             }
         });
     }
@@ -90,18 +91,26 @@ public class Splash extends Activity {
             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(startMain);
         } else {
-            showSnack(Splash.this, "Press again to close app!", "OK");
+            Toast.makeText(this, "Please Tap BACK again to exit", Toast.LENGTH_SHORT).show();
         }
 
         mBackPressed = System.currentTimeMillis();
     }
 
-    void showSnack(Splash login, String stringMsg, String ok) {
-        new SnackBar(Splash.this, stringMsg, ok, new View.OnClickListener() {
+    void showSnack(SplashActivity login, String stringMsg, String ok) {
+        new SnackBar(SplashActivity.this, stringMsg, ok, new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
             }
         }).show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (getIntent().getBooleanExtra("EXIT", false)) {
+            finish();
+        }
     }
 }

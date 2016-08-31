@@ -23,10 +23,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.gclifetest.PojoGson.EventsPojo;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.Utils.Constants;
-import mobile.gclifetest.Utils.MyApplication;
+import mobile.gclifetest.pojoGson.EventsPojo;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.fragments.IdeasDetailFragment;

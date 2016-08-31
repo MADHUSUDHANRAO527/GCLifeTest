@@ -35,12 +35,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import mobile.gclifetest.MaterialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.PojoGson.FlatDetailsPojo;
-import mobile.gclifetest.PojoGson.UserDetailsPojo;
-import mobile.gclifetest.Utils.ListViewUtils;
-import mobile.gclifetest.Utils.MyApplication;
-import mobile.gclifetest.Utils.NothingSelectedSpinnerAdapter1;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.ListViewUtils;
+import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 import mobile.gclifetest.http.SocietyBillPost;
 
 public class MySocietyBill extends BaseActivity {
@@ -367,14 +367,6 @@ public class MySocietyBill extends BaseActivity {
                     + yr);
             holder.amountTxt.setText(listt.get(positionn).get("AMOUNT"));
             holder.statusTxt.setText(listt.get(positionn).get("STATUS"));
-
-		/*	if(listt.get(positionn).get("STATUS")=="Due"||listt.get(positionn).get("STATUS").equals("Due")){
-                holder.statusImg.setVisibility(View.VISIBLE);
-			}else{
-				holder.statusImg.setVisibility(View.Vi);
-			}
-			*/
-
 
             holder.statusImg.setOnClickListener(new OnClickListener() {
 
