@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -27,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.gc.materialdesign.views.ButtonFloat;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -100,16 +100,16 @@ public class UserProfile extends BaseActivity {
                 societyNameTxt, buidlingNameTxt, flatNumtxt,
                 flatTypetxt, ownwerTypetxt, memTypeTxt,
                 dateFrmTypetxt, liscnseEndsOntxt, emrNumTxt, occupationtxt,
-                dobTxt;
+                dobTxt, genderTxt;
         ImageLoader imageLoader;
         DisplayImageOptions options;
         de.hdodenhof.circleimageview.CircleImageView userImg;
         Typeface typefaceLight, typeMeduim;
-        LinearLayout layUserDet, flatDetailsLay;
+        LinearLayout layUserDet, flatDetailsLay, privacyLay;
 
         List<FlatDetailsPojo> flatsList = new ArrayList<FlatDetailsPojo>();
         ListView listviewFlats;
-        ButtonFloat addFlats, editProfile;
+        FloatingActionButton addFlats, editProfile;
         UserDetailsPojo user;
         String memDet, userStatus;
         ImageView callEmerImg, smsEmerImg, callImg, smsImg;
@@ -149,13 +149,15 @@ public class UserProfile extends BaseActivity {
             unameTxt = (TextView) v.findViewById(R.id.unameTxt);
             mobileNumTxt = (TextView) v.findViewById(R.id.mobileNumTxt);
             listviewFlats = (ListView) v.findViewById(R.id.flatsList);
-            addFlats = (ButtonFloat) v.findViewById(R.id.addFlats);
-            editProfile = (ButtonFloat) v.findViewById(R.id.editProfile);
+            addFlats = (FloatingActionButton) v.findViewById(R.id.addFlats);
+            editProfile = (FloatingActionButton) v.findViewById(R.id.editProfile);
             layUserDet = (LinearLayout) v.findViewById(R.id.layUserDet);
             flatDetailsLay = (LinearLayout) v.findViewById(R.id.flatDetailsLay);
+            privacyLay = (LinearLayout) v.findViewById(R.id.privacy_lay);
             emrNumTxt = (TextView) v.findViewById(R.id.emeryNumTxt);
             occupationtxt = (TextView) v.findViewById(R.id.occuTxt);
             dobTxt = (TextView) v.findViewById(R.id.dobTxt);
+            genderTxt = (TextView) v.findViewById(R.id.gender_txt);
             callEmerImg = (ImageView) v.findViewById(R.id.phoneImg);
             smsEmerImg = (ImageView)
                     v.findViewById(R.id.smsImg);
@@ -173,6 +175,10 @@ public class UserProfile extends BaseActivity {
             emailTxt.setTypeface(typefaceLight);
             mobileNumTxt.setTypeface(typefaceLight);
             unameTxt.setTypeface(typefaceLight);
+            emrNumTxt.setTypeface(typefaceLight);
+            dobTxt.setTypeface(typefaceLight);
+            genderTxt.setTypeface(typefaceLight);
+            occupationtxt.setTypeface(typefaceLight);
             editor = userPref.edit();
             Intent intent = getActivity().getIntent();
             Bundle bundle = intent.getExtras();
@@ -205,7 +211,7 @@ public class UserProfile extends BaseActivity {
             }
             occupationtxt.setText(user.getOccupation());
             dobTxt.setText(user.getDob());
-
+            genderTxt.setText(user.getGender());
             imageLoader.displayImage(user.getProfile_url(), userImg, options, new SimpleImageLoadingListener() {
                 @Override
                 public void onLoadingStarted(String imageUri, View view) {

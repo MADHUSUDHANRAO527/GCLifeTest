@@ -20,6 +20,8 @@
             android:padding="5dp"
             android:text="Avenue Name"
             android:textColor="#212121"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/deleteImg"
             android:textSize="16sp" />
 
         <TextView
@@ -38,6 +40,7 @@
             android:layout_height="20dp"
             android:layout_alignParentRight="true"
             android:layout_marginTop="5dp"
+
             android:layout_marginRight="10dp"
             android:src="@drawable/delete" />
     </RelativeLayout>

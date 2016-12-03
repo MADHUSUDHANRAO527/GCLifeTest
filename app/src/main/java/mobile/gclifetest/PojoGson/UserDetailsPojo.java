@@ -3,7 +3,6 @@ package mobile.gclifetest.pojoGson;
 import java.util.List;
 
 public class UserDetailsPojo {
-
 	List<FlatDetailsPojo> gclife_registration_flatdetails;
 	String username;
 	String email;

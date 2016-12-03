@@ -1,14 +1,16 @@
 package mobile.gclifetest.utils;
 
-import android.app.ActionBar;
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.cloudinary.Cloudinary;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
@@ -28,14 +30,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 
 public class MyApplication extends Application {
-
     public static MyApplication instance;
-
     public static UserDetailsPojo user;
     SharedPreferences userPref;
     public static String actiobarColor = "#000000";
@@ -44,9 +46,9 @@ public class MyApplication extends Application {
     String PROJECT_NUMBER = "682888148825";
     public static String gcmTokenid;
     public static RequestQueue queue;
+    public static Cloudinary cloudinary;
     //HTTP Constants
     public static String HOSTNAME="http://54.169.40.151:3000/";
-    ActionBar actionBar;
     public void onCreate() {
         super.onCreate();
         instance = this;
@@ -76,6 +78,8 @@ public class MyApplication extends Application {
                 .sendNoSubscriberEvent(false).installDefaultEventBus();
         // get GCM token
         getRegId();
+        //cloudinary setup
+        cloudinarySetup();
     }
 
     private void getRegId() {
@@ -109,7 +113,7 @@ public class MyApplication extends Application {
         }.execute(null, null, null);
     }
 
-    public String convertDateEmail(String createdAt) {
+    public static String convertDateEmail(String createdAt) {
         String datee = createdAt.substring(0, 10);
         String fromYear = datee.substring(0, 4);
         try {
@@ -128,7 +132,7 @@ public class MyApplication extends Application {
         return createdAt + "," + fromYear;
     }
 
-    public String convertTimeEmail(String time) {
+    public static String convertTimeEmail(String time) {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
         Date d;
         try {
@@ -177,4 +181,17 @@ public class MyApplication extends Application {
         return comntCreated;
     }
 
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
+
+    private void cloudinarySetup() {
+        Map config = new HashMap();
+        config.put("cloud_name", "globalcityflatowners-org");
+        config.put("api_key", "554359813976545");
+        config.put("api_secret", "QWqoKmbLPvHTH57uMdlbOkZF51Q");
+        cloudinary = new Cloudinary(config);
+    }
 }

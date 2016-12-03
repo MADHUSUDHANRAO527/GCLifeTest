@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <RadioGroup
+        android:id="@+id/myRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/inactive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:padding="@dimen/padding_4"
+            android:checked="true"
+            android:text="Approval Pending" />
+
+        <RadioButton
+            android:id="@+id/approve"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4"
+            android:text="Approved" />
+
+        <RadioButton
+            android:id="@+id/delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4"
+            android:text="Deleted" />
+
+        <RadioButton
+            android:id="@+id/reject"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_4"
+            android:text="Rejected" />
+    </RadioGroup>
+
+    <RelativeLayout
+        android:id="@+id/layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingBottom="15dp">
+
+        <TextView
+            android:id="@+id/cancellTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="22dp"
+            android:layout_toLeftOf="@+id/submitTxt"
+            android:padding="5dp"
+            android:text="CANCEL"
+            android:textColor="#4169E1"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/submitTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="22dp"
+            android:padding="5dp"
+            android:text="SUBMIT"
+            android:textColor="#4169E1"
+            android:textSize="16sp" />
+
+        <mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate
+            android:id="@+id/pDialog"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="33dp"
+            android:layout_marginTop="22dp"
+            android:background="#1E88E5"
+            android:visibility="gone" />
+    </RelativeLayout>
+</LinearLayout>

@@ -1,12 +1,12 @@
 package mobile.gclifetest.fragments;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
@@ -37,7 +37,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
-import com.gc.materialdesign.views.ButtonFloat;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -45,51 +44,44 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.pojoGson.EventsPojo;
-import mobile.gclifetest.pojoGson.FlatDetailsPojo;
-import mobile.gclifetest.pojoGson.UserDetailsPojo;
-import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.InternetConnectionDetector;
-import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.activity.BaseActivity;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.adapters.ListIdeasAdapter;
 import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.event.AddIdeasEvent;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.EventsPojo;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by MRaoKorni on 8/1/2016.
  */
 public class IdeasListFragment extends Fragment {
     Context context;
-    ButtonFloat addBtn;
-    InternetConnectionDetector netConn;
+    FloatingActionButton addBtn;
     UserDetailsPojo user;
-    Boolean isInternetPresent = false;
-    String eventName, eid, deleteEveId;
+    String eventName;
     ListView listviewIdeas;
-    JSONArray jsonResultArry;
     SharedPreferences userPref;
     List<FlatDetailsPojo> flatsList = new ArrayList<FlatDetailsPojo>();
     List<EventsPojo> eventsPojo;
     FlatDetailsPojo flats;
     Typeface typefaceLight;
-    JSONObject jsonLike, jsonDelete;
     ListIdeasAdapter adapter;
-    Dialog m_dialog;
     Runnable run;
     RelativeLayout searchLay;
     EditText searchEdit;
     Gson gson;
     SwipeRefreshLayout mSwipeRefreshLayout;
-    boolean progressShow = true;
+    boolean progressShow = true, imPagination = true;
     ProgressBar progressBar;
     String searchStr = "";
     ImageView clearImg;
@@ -97,13 +89,14 @@ public class IdeasListFragment extends Fragment {
     List<EventsPojo> globalEventsPojo = new ArrayList<>();
     int limit = 10, currentPosition, offset = 0;
     ProgressBarCircularIndeterminate pDialog, pDialogBtm;
+    RelativeLayout snackLay;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(
                 R.layout.ideas_list, container, false);
         context = getActivity();
-        addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+        addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
         pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
         listviewIdeas = (ListView) v.findViewById(R.id.listview);
         mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.activity_main_swipe_refresh_layout);
@@ -111,9 +104,10 @@ public class IdeasListFragment extends Fragment {
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         searchLay = (RelativeLayout) v.findViewById(R.id.searchLay);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
-                R.color.green, R.color.blue);
+                android.R.color.holo_green_dark, R.color.blue);
         clearImg = (ImageView) v.findViewById(R.id.clearImg);
         pDialogBtm = (ProgressBarCircularIndeterminate)v.findViewById(R.id.pDialogBtm);
+        snackLay = (RelativeLayout) v.findViewById(R.id.snackLay);
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
         Bundle bundle = this.getArguments();
         eventName = bundle.getString("EventName");
@@ -135,8 +129,6 @@ public class IdeasListFragment extends Fragment {
             callEventsList(searchStr);
         } else {
             callEventsList(searchStr);
-            Log.d("DB NULL: " + eventName, "");
-
         }
         listviewIdeas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -239,14 +231,13 @@ public class IdeasListFragment extends Fragment {
                 offset = 0;
                 callEventsList("");
                 searchEdit.setText("");
+                searchLay.setVisibility(View.GONE);
             }
         });
         return v;
     }
 
     private void callEventsList(final String searchStr) {
-
-        //get method
         if (progressShow) {
             pDialog.setVisibility(View.VISIBLE);
         } else {
@@ -262,10 +253,18 @@ public class IdeasListFragment extends Fragment {
             public void onResponse(JSONArray response) {
                 Log.d("Response", response.toString());
                 if (response.toString() == "[]" || response.length() == 0) {
-                    Constants.showSnack(context,
-                            "Oops! There is no " + eventName + "!", "");
+                    if (searchStr.length() > 0) {
+                        Constants.showSnack(snackLay,
+                                "Search result not found, please try with another search criteria!", "");
+                    } else {
+                        Constants.showSnack(snackLay,
+                                "No further " + eventName + " content is available!", "");
+                    }
+                    if (imPagination) {
+                        listviewIdeas.setAdapter(null);
+                    }
                     pDialog.setVisibility(View.GONE);
-                    pDialogBtm.setVisibility(View.GONE);
+                    pDialogBtm.setVisibility(View.INVISIBLE);
                 } else {
                     eventsPojo = gson.fromJson(response.toString(), new TypeToken<List<EventsPojo>>() {
                     }.getType());
@@ -277,7 +276,7 @@ public class IdeasListFragment extends Fragment {
                             context, globalEventsPojo, flats, eventName);
                     listviewIdeas.setAdapter(adapter);
                     pDialog.setVisibility(View.GONE);
-                    pDialogBtm.setVisibility(View.GONE);
+                    pDialogBtm.setVisibility(View.INVISIBLE);
                     // Storing in DB
                     db.addEventNews(response, eventName);
                     //for updating new data
@@ -289,7 +288,7 @@ public class IdeasListFragment extends Fragment {
                     int height = displayMetrics.heightPixels;
 
                     listviewIdeas.setSelectionFromTop(
-                            currentPosition + 1, height - 220);
+                            currentPosition, height - 220);
 
                     listviewIdeas
                             .setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -306,7 +305,7 @@ public class IdeasListFragment extends Fragment {
                                         AbsListView view, int scrollState) {
                                     // TODO Auto-generated method stub
                                     this.currentScrollState = scrollState;
-                                    pDialogBtm.setVisibility(View.GONE);
+                                    pDialogBtm.setVisibility(View.INVISIBLE);
                                     pDialog.setVisibility(View.GONE);
                                     if (view.getId() == listviewIdeas
                                             .getId()) {
@@ -332,7 +331,6 @@ public class IdeasListFragment extends Fragment {
                                                      int visibleItemCount,
                                                      int totalItemCount) {
                                     // TODO Auto-generated method stub
-
                                     this.currentFirstVisibleItem = firstVisibleItem;
                                     this.currentVisibleItemCount = visibleItemCount;
                                     this.totalItemCount = totalItemCount;
@@ -346,6 +344,7 @@ public class IdeasListFragment extends Fragment {
                                         Log.d("Offset :", offset + "");
                                         pDialogBtm.setVisibility(View.VISIBLE);
                                         progressShow=false;
+                                        imPagination = false;
                                         callEventsList(searchStr);
                                     }
                                 }
@@ -358,7 +357,7 @@ public class IdeasListFragment extends Fragment {
                 volleyError.printStackTrace();
                 Log.d("Error = ", volleyError.toString());
                 pDialog.setVisibility(View.GONE);
-                Constants.showSnack(context,
+                Constants.showSnack(snackLay,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }
@@ -398,7 +397,7 @@ public class IdeasListFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(eventName);
-
+        searchEdit.setHint("Search your " + eventName.toLowerCase());
     }
 
     @Override

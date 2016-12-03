@@ -80,6 +80,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_edit" />
+
+            <ImageView
+                android:id="@+id/view_img"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/icon_news"
+                android:tint="@color/black"
+                android:visibility="gone"/>
         </LinearLayout>
     </LinearLayout>
 

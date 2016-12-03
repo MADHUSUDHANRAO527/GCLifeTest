@@ -57,10 +57,6 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name=".HomeApp"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".OTP"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
@@ -76,31 +72,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AdminGrid"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".MemsList"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".UserProfile"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".SocietyBillManagement"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".MySociety"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".MySocietyBill"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".AdminBillManagement"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
@@ -116,24 +88,6 @@
             android:name="mobile.gclifetest.utils.FilePicker"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ViewBillDetail"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".IdeasList"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".IdeasCreate"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity
-            android:name=".IdeasDetail"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
             android:name="mobile.gclifetest.custom.CustomImgGalleryActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
@@ -142,24 +96,7 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ImpContacts"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".FrdsList"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".FrdsDetail"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".InBox"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".PhotosList"
             android:label="@string/app_name"
             android:screenOrientation="portrait" />
         <activity
@@ -175,11 +112,6 @@
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
-        <activity
-            android:name=".PhotosCreate"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".InboxDetail"
             android:label="@string/app_name"
@@ -215,6 +147,12 @@
         <activity
             android:name="mobile.gclifetest.fragments.InboxActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="mobile.gclifetest.activity.YoutubeUpload"
+            android:screenOrientation="portrait">
+
+
+        </activity>
     </application>
 
 </manifest>

@@ -20,11 +20,12 @@ import android.view.View.OnTouchListener;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -44,16 +45,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 
+import mobile.gclifetest.http.SignUpPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.MyApplication;
-import mobile.gclifetest.http.SignUpPost;
 
 public class EditProfile extends BaseActivity {
 	RelativeLayout dateToLay;
 	static final int DATE_DIALOG_FROMID = 0;
-	String  userName, email, mobileNum, genderName, emeNum,
-			occupation, dob, privacy = "false",ext,fileName,mediaUrl;
+	String userName, email, mobileNum, genderName = "Male", emeNum,
+			occupation, dob, privacy, ext, fileName, mediaUrl="";
 	TextView submitTxt,uploadingTxt;
 	SharedPreferences userPref;
 	ProgressBarCircularIndeterminate pDialog;
@@ -69,6 +71,8 @@ public class EditProfile extends BaseActivity {
     byte[] bytes;
 	ImageLoader imageLoader;
 	DisplayImageOptions options;
+	RelativeLayout snackLay;
+	RadioGroup genderRadio;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -82,12 +86,12 @@ public class EditProfile extends BaseActivity {
         userNameEdit = (EditText) findViewById(R.id.userName);
 		emailEdit = (EditText) findViewById(R.id.mailEdit);
 		mobileNumEdit = (EditText) findViewById(R.id.mobileNumEdit);
-
+		snackLay = (RelativeLayout) findViewById(R.id.snackLay);
 		emeContaNum = (EditText) findViewById(R.id.emeContaNum);
 		occupatioEdit = (EditText) findViewById(R.id.occupationNumEdit);
 		dobEdit = (EditText) findViewById(R.id.dobEdit);
 		privacySwitch = (Switch) findViewById(R.id.privacySwitch);
-
+		genderRadio = (RadioGroup) findViewById(R.id.radioGrp);
 		setUpActionBar("Update Profile");
 		imageLoader = ImageLoader.getInstance();
 		options = new DisplayImageOptions.Builder().cacheInMemory(true)
@@ -142,26 +146,26 @@ public class EditProfile extends BaseActivity {
 				mobileNum = mobileNumEdit.getText().toString();
 				if (userName == null || userName == "null" || userName == ""
 						|| userName.length() == 0) {
-					showSnack(EditProfile.this,
+					Constants.showSnack(v,
 							"Please enter a valid username!",
 							"OK");
 				} else if (mobileNum == null || mobileNum == "null"
 						|| mobileNum == "" || mobileNum.length() == 0) {
-					showSnack(EditProfile.this,
+					Constants.showSnack(v,
 							"Please enter mobile number!",
 							"OK");
 				} else if (mobileNum.length() < 10) {
-					showSnack(EditProfile.this,
+					Constants.showSnack(v,
 							"Please enter proper mobile number!",
 							"OK");
 				} else if (email == null || email == "null" || email == ""
 						|| email.length() == 0) {
-					showSnack(EditProfile.this,
+					Constants.showSnack(v,
 							"Please enter your email!",
 							"OK");
 				} else if (email != null && !email.isEmpty()
 						&& !email.matches(checkPatternId)) {
-					showSnack(EditProfile.this,
+					Constants.showSnack(v,
 							"Please enter a valid email address!",
 							"OK");
 				} else {
@@ -182,13 +186,20 @@ public class EditProfile extends BaseActivity {
 							boolean isChecked) {
 						// do something, the isChecked will be
 						// true if the switch is in the On position
-						if (isChecked == true) {
+						if (isChecked) {
 							privacy = "true";
 						} else {
 							privacy = "false";
 						}
 					}
 				});
+		genderRadio.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				RadioButton rb = (RadioButton) findViewById(checkedId);
+				genderName = (String) rb.getText();
+			}
+		});
 
 	}
 
@@ -245,7 +256,12 @@ public class EditProfile extends BaseActivity {
 				jsonSignUp.put("gender", genderName);
 				jsonSignUp.put("dob", dob);
 				jsonSignUp.put("privacy", privacy);
-				jsonSignUp.put("profile_url",mediaUrl);
+				if (mediaUrl.equals("") || mediaUrl == null) {
+					jsonSignUp.put("profile_url", user.getProfile_url());
+				} else {
+					jsonSignUp.put("profile_url", mediaUrl);
+				}
+
 				try {
 					jsonSignupResult = SignUpPost.updateProfile(jsonSignUp,
 							MyApplication.HOSTNAME);
@@ -269,7 +285,7 @@ public class EditProfile extends BaseActivity {
 
 				if (jsonSignupResult.has("errors")) {
 
-					showSnack(EditProfile.this,
+					Constants.showSnack(snackLay,
 							"email has already been taken!",
 							"OK");
 					pDialog.setVisibility(View.GONE);
@@ -295,17 +311,19 @@ public class EditProfile extends BaseActivity {
 
                     overridePendingTransition(R.anim.slide_in_left,
 							R.anim.slide_out_left);
-					showSnack(EditProfile.this,
+					Constants.showSnack(snackLay,
 							"Profile has been updated!",
 							"OK");
-                    finish();
+					Intent ii = new Intent(EditProfile.this, UserProfile.class);
+					ii.putExtra("EACH_USER_DET", "");
+					startActivity(ii);
 				}
 
 			} else {
 				pDialog.setVisibility(View.GONE);
 				submitTxt.setVisibility(View.VISIBLE);
 
-				showSnack(EditProfile.this,
+				Constants.showSnack(snackLay,
 						"Oops! Something went wrong. Please wait a moment!",
 						"OK");
 			}
@@ -327,14 +345,7 @@ public class EditProfile extends BaseActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	void showSnack(EditProfile flats, String stringMsg, String ok) {
-		new SnackBar(EditProfile.this, stringMsg, ok, new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-			}
-		}).show();
-	}
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);

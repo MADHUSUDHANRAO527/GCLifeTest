@@ -1,5 +1,6 @@
 package mobile.gclifetest.fragments;
 
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -27,13 +29,29 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.gc.materialdesign.views.ButtonFloat;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.SaveCallback;
+import com.cloudinary.utils.ObjectUtils;
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.common.AccountPicker;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.googleapis.media.MediaHttpUploader;
+import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.InputStreamContent;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.YouTubeScopes;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoSnippet;
+import com.google.api.services.youtube.model.VideoStatus;
+import com.google.common.collect.Lists;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -54,7 +72,6 @@ import java.util.Map;
 import java.util.Set;
 
 import mobile.gclifetest.activity.HomeActivity;
-import mobile.gclifetest.activity.PhotosList;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.custom.CustomGallery;
 import mobile.gclifetest.custom.CustomImgGalleryActivity;
@@ -68,12 +85,15 @@ import mobile.gclifetest.pojoGson.AvenuesFilter;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.MyApplication;
 
+import static mobile.gclifetest.youtube.IntentRequestCode.REQUEST_AUTHORIZATION;
+import static mobile.gclifetest.youtube.util.SharedPreferenceUtil.selectedGoogleAccount;
+
 /**
  * Created by MRaoKorni on 8/19/2016.
  */
 public class PhotosCreateFragment extends Fragment {
     Context context;
-    ButtonFloat addBtn;
+    FloatingActionButton addBtn;
     EditText titleEdit;
     JSONObject jsonResult;
     String ideaTitle, ext, fileName, mediaUrl = "", eventName, selectedAven = "", selectedSoci = "", selectedMem = "";
@@ -96,21 +116,31 @@ public class PhotosCreateFragment extends Fragment {
     ArrayList<String> selectedSociNames = new ArrayList<String>();
     ArrayList<String> selectedMemsNames = new ArrayList<String>();
     boolean mems = false;
+    String token;
     List<AvenuesFilter> societiesPojo = new ArrayList<AvenuesFilter>();
     ListView listviewAvenue, listviewSoci, listviewMem;
     ListSociBaseAdapter sociAdapter;
     SparseBooleanArray mChecked = new SparseBooleanArray();
     private static boolean isNotAdded = true;
     private CheckBox checkBox_header;
+    static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
+    public static final String scope = "oauth2:https://www.googleapis.com/auth/youtube";
+    private Video youtubeVideo = null;
+    View v;
+    String[] videoPathsArr;
+    String[] allPhotopaths;
+    File filePhoto;
+    SharedPreferences.Editor editor;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+        v = inflater.inflate(
                 R.layout.photos_create, container, false);
         context = getActivity();
 
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
-        addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+        editor = userPref.edit();
+        addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
         titleEdit = (EditText) v.findViewById(R.id.titleEdit);
         finishTxt = (TextView) v.findViewById(R.id.finishTxt);
         selectedMediaTxt = (TextView) v.findViewById(R.id.selectedMedia);
@@ -338,32 +368,32 @@ public class PhotosCreateFragment extends Fragment {
 
                 if (ideaTitle == null || ideaTitle == "null" || ideaTitle == ""
                         || ideaTitle.length() == 0) {
-                    Constants.showSnack(context,
+                    Constants.showSnack(v,
                             "Please enter title!",
                             "OK");
                 } else if (eventImages == null || eventImages.toString() == "null"
                         || eventImages.toString() == "" || eventImages.length() == 0) {
                     if (eventName == "Photos" || eventName.equals("Photos")) {
-                        Constants.showSnack(context,
+                        Constants.showSnack(v,
                                 "Please select atleast one image!",
                                 "OK");
                     } else {
-                        Constants.showSnack(context,
+                        Constants.showSnack(v,
                                 "Please select atleast one video!",
                                 "OK");
                     }
 
                 } else if (selectedAven == null || selectedAven == "null"
                         || selectedAven == "" || selectedAven.length() == 0) {
-                    Constants.showSnack(context,
+                    Constants.showSnack(v,
                             "Please select avenue name!", "OK");
                 } else if (selectedSoci == null || selectedSoci == "null"
                         || selectedSoci == "" || selectedSoci.length() == 0) {
-                    Constants.showSnack(context,
+                    Constants.showSnack(v,
                             "Please select society name!", "OK");
                 } else if (selectedMem == null || selectedMem == "null"
                         || selectedMem == "" || selectedMem.length() == 0) {
-                    Constants.showSnack(context,
+                    Constants.showSnack(v,
                             "Please select member type!", "OK");
                 } else {
                     new CreatePhotosVideos().execute();
@@ -448,7 +478,7 @@ public class PhotosCreateFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 finishTxt.setVisibility(View.VISIBLE);
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
             }
@@ -559,7 +589,7 @@ public class PhotosCreateFragment extends Fragment {
 
             } else {
 
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
             }
@@ -583,6 +613,7 @@ public class PhotosCreateFragment extends Fragment {
 
         if (requestCode == 200 && resultCode == Activity.RESULT_OK) {
             final String[] all_path = data.getStringArrayExtra("all_path");
+            videoPathsArr = data.getStringArrayExtra("all_path");
             if (all_path.length > 0) {
                 pDialogImg.setVisibility(View.VISIBLE);
                 if (eventName == "Photos" || eventName.equals("Photos")) {
@@ -590,147 +621,169 @@ public class PhotosCreateFragment extends Fragment {
                 } else {
                     selectedMediaTxt.setText("Attaching videos....");
                 }
-
+                finishTxt.setEnabled(false);
             }
             System.out.println(all_path);
             if (eventName == "Photos" || eventName.equals("Photos")) {
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "You have Selected " + all_path.length + " images",
                         "OK");
+                //   ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
+                for (String selectedPath1 : all_path) {
+                    CustomGallery item = new CustomGallery();
+                    item.sdcardPath = selectedPath1;
+
+                    //     dataT.add(item);
+
+                    // parsing
+                    ext = selectedPath1
+                            .substring(selectedPath1.lastIndexOf(".") + 1);
+                    fileName = selectedPath1.replaceFirst(".*/(\\w+).*", "$1");
+
+                    // selectedMediaTxt.setText(fileName+"."+ext);
+
+                    File filee = new File(selectedPath1);
+                    int size = (int) filee.length();
+                    bytes = new byte[size];
+                    try {
+                        BufferedInputStream buf = new BufferedInputStream(
+                                new FileInputStream(filee));
+                        buf.read(bytes, 0, bytes.length);
+                        buf.close();
+                    } catch (FileNotFoundException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    System.out.println(bytes + " !!!!!!!!!!!!!!!!!!!!");
+
+                    ext = ext.toLowerCase();
+                    System.out.println("File name : " + fileName + "   "
+                            + "Image extension : " + ext);
+
+                    new LoadImages(all_path, filee).execute();
+                }
+                   /*  final ParseFile file = new ParseFile(fileName + "." + ext,
+                            bytes);
+                   file.saveInBackground(new SaveCallback() {
+
+                        @Override
+                        public void done(ParseException arg0) {
+                            // TODO Auto-generated method stub
+                            final ParseObject jobApplication = new ParseObject(
+                                    "Files");
+                            if (ext == "png" || ext.equals("png")
+                                    || ext.equals("ico") || ext == "ico"
+                                    || ext == "jpg" || ext.equals("jpg")
+                                    || ext.equals("jpeg") || ext == "jpeg"
+                                    || ext == "gif" || ext.equals("gif")
+                                    || ext.equals("thm") || ext == "thm"
+                                    || ext == "tif" || ext.equals("tif")
+                                    || ext.equals("yuv") || ext == "yuv"
+                                    || ext.equals("bmp") || ext == "bmp") {
+                                jobApplication.put("mediatype", "image");
+                            } else {
+                                jobApplication.put("mediatype", "video");
+                            }
+                            // jobApplication.put("ticklecreatedid","Mayura");
+                            jobApplication.put("file", file);
+                            jobApplication.saveInBackground();
+                            // file = jobApplication.getParseFile(file);
+                            mediaUrl = file.getUrl();// live url
+                            System.err.println(mediaUrl
+                                    + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+                            try {
+                                JSONObject jsonMedia = new JSONObject();
+                                jsonMedia.put("image_type", "image");
+
+
+                                if (mediaUrl != null) {
+                                    jsonMedia.put("image_url", mediaUrl);
+                                    System.out.println(jsonMedia
+                                            + " +++++++++++++++++++++++ ");
+                                    eventImages.put(jsonMedia);
+                                    System.out.println(eventImages
+                                            + " ******************* ");
+
+                                    if (all_path.length == eventImages.length()) {
+                                        pDialogImg.setVisibility(View.GONE);
+
+                                        if (eventName == "Photos" || eventName.equals("Photos")) {
+                                            selectedMediaTxt.setText("Attached "
+                                                    + all_path.length + " images");
+                                        } else {
+                                            selectedMediaTxt.setText("Attached "
+                                                    + all_path.length + " videos");
+                                        }
+                                        finishTxt.setClickable(true);
+                                        finishTxt.setEnabled(true);
+                                    } else if (all_path.length > eventImages.length()) {
+                                        pDialogImg.setVisibility(View.VISIBLE);
+                                        if (eventName == "Photos" || eventName.equals("Photos")) {
+                                            selectedMediaTxt.setText("Attaching images...."
+                                                    + (String.valueOf(eventImages.length())));
+                                        } else {
+                                            selectedMediaTxt.setText("Attaching videos...."
+                                                    + (String.valueOf(eventImages.length())));
+                                        }
+                                        finishTxt.setClickable(false);
+                                    } else {
+                                        pDialogImg.setVisibility(View.GONE);
+                                        if (eventName == "Photos" || eventName.equals("Photos")) {
+                                            selectedMediaTxt.setText("Attached "
+                                                    + eventImages.length() + " images");
+                                        } else {
+                                            selectedMediaTxt.setText("Attached "
+                                                    + eventImages.length() + " videos");
+                                        }
+                                        finishTxt.setClickable(true);
+                                        finishTxt.setEnabled(true);
+                                    }
+                                }
+
+                            } catch (JSONException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                    });*/
+
+
             } else {
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "You have Selected " + all_path.length + " videos",
                         "OK");
-            }
-
-            ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
-
-            for (String selectedPath1 : all_path) {
-                CustomGallery item = new CustomGallery();
-                item.sdcardPath = selectedPath1;
-
-                dataT.add(item);
-
-                // parsing
-                ext = selectedPath1
-                        .substring(selectedPath1.lastIndexOf(".") + 1);
-                fileName = selectedPath1.replaceFirst(".*/(\\w+).*", "$1");
-
-                // selectedMediaTxt.setText(fileName+"."+ext);
-
-                File filee = new File(selectedPath1);
-                int size = (int) filee.length();
-                bytes = new byte[size];
-                try {
-                    BufferedInputStream buf = new BufferedInputStream(
-                            new FileInputStream(filee));
-                    buf.read(bytes, 0, bytes.length);
-                    buf.close();
-                } catch (FileNotFoundException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (!userPref.getString("youtube_name", "NV").equalsIgnoreCase("NV")) {
+                    new FetchYouTubeTokenTask().execute();
+                } else {
+                    pickUserAccount();
                 }
-                System.out.println(bytes + " !!!!!!!!!!!!!!!!!!!!");
-
-                ext = ext.toLowerCase();
-                System.out.println("File name : " + fileName + "   "
-                        + "Image extension : " + ext);
-                final ParseFile file = new ParseFile(fileName + "." + ext,
-                        bytes);
-                file.saveInBackground(new SaveCallback() {
-
-                    @Override
-                    public void done(ParseException arg0) {
-                        // TODO Auto-generated method stub
-                        final ParseObject jobApplication = new ParseObject(
-                                "Files");
-                        if (ext == "png" || ext.equals("png")
-                                || ext.equals("ico") || ext == "ico"
-                                || ext == "jpg" || ext.equals("jpg")
-                                || ext.equals("jpeg") || ext == "jpeg"
-                                || ext == "gif" || ext.equals("gif")
-                                || ext.equals("thm") || ext == "thm"
-                                || ext == "tif" || ext.equals("tif")
-                                || ext.equals("yuv") || ext == "yuv"
-                                || ext.equals("bmp") || ext == "bmp") {
-                            jobApplication.put("mediatype", "image");
-                        } else {
-                            jobApplication.put("mediatype", "video");
-                        }
-                        // jobApplication.put("ticklecreatedid","Mayura");
-                        jobApplication.put("file", file);
-                        jobApplication.saveInBackground();
-                        // file = jobApplication.getParseFile(file);
-                        mediaUrl = file.getUrl();// live url
-                        System.err.println(mediaUrl
-                                + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-                        try {
-                            JSONObject jsonMedia = new JSONObject();
-                            jsonMedia.put("image_type", "image");
-
-
-                            if (mediaUrl != null) {
-                                jsonMedia.put("image_url", mediaUrl);
-                                System.out.println(jsonMedia
-                                        + " +++++++++++++++++++++++ ");
-                                eventImages.put(jsonMedia);
-                                System.out.println(eventImages
-                                        + " ******************* ");
-
-                                if (all_path.length == eventImages.length()) {
-                                    pDialogImg.setVisibility(View.GONE);
-
-                                    if (eventName == "Photos" || eventName.equals("Photos")) {
-                                        selectedMediaTxt.setText("Attached "
-                                                + all_path.length + " images");
-                                    } else {
-                                        selectedMediaTxt.setText("Attached "
-                                                + all_path.length + " videos");
-                                    }
-                                    finishTxt.setClickable(true);
-                                } else if (all_path.length > eventImages.length()) {
-                                    pDialogImg.setVisibility(View.VISIBLE);
-
-
-                                    if (eventName == "Photos" || eventName.equals("Photos")) {
-                                        selectedMediaTxt.setText("Attaching images...."
-                                                + (String.valueOf(eventImages.length())));
-                                    } else {
-                                        selectedMediaTxt.setText("Attaching videos...."
-                                                + (String.valueOf(eventImages.length())));
-                                    }
-
-
-                                    finishTxt.setClickable(false);
-                                } else {
-                                    pDialogImg.setVisibility(View.GONE);
-                                    if (eventName == "Photos" || eventName.equals("Photos")) {
-                                        selectedMediaTxt.setText("Attached "
-                                                + eventImages.length() + " images");
-                                    } else {
-                                        selectedMediaTxt.setText("Attached "
-                                                + eventImages.length() + " videos");
-                                    }
-
-                                    finishTxt.setClickable(true);
-                                    finishTxt.setEnabled(true);
-                                }
-                            }
-
-                        } catch (JSONException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                });
             }
-
             // adapter.addAll(dataT);
+        } else {
 
+            if (requestCode == REQUEST_CODE_PICK_ACCOUNT && resultCode == Activity.RESULT_OK) {
+                if (data != null && data.getExtras() != null) {
+                    String accountName = data.getExtras().getString(AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        selectedGoogleAccount = accountName;
+                        //     userNameTxt.setText("Email : " + selectedGoogleAccount);
+                        editor.putString("youtube_name", accountName);
+                        editor.commit();
+                        new FetchYouTubeTokenTask().execute();
+
+                    } else {
+                        //   DialogUtil.showExceptionAlertDialog(this, getString(R.string.googleAccountNotSelected), getString(R.string.googleAccountNotSupported));
+                    }
+                }
+            } else if (requestCode == REQUEST_AUTHORIZATION && resultCode == Activity.RESULT_OK) {
+                // Account has been chosen and permissions have been granted. You can upload video
+                Toast.makeText(getActivity(), "APP AUTHORIZED!", Toast.LENGTH_LONG).show();
+                new FetchYouTubeTokenTask().execute();
+            }
         }
     }
 
@@ -765,7 +818,7 @@ public class PhotosCreateFragment extends Fragment {
     }
 
     public void onBackPressed() {
-        Intent soc = new Intent(getActivity(), PhotosList.class);
+        Intent soc = new Intent(getActivity(), PhotosVideosListFragment.class);
         soc.putExtra("EventName", eventName);
         startActivity(soc);
     }
@@ -1177,5 +1230,311 @@ public class PhotosCreateFragment extends Fragment {
             ((HomeActivity) context).changeToolbarTitle(R.string.create_photos);
         }else
             ((HomeActivity) context).changeToolbarTitle(R.string.create_videos);
+    }
+
+    private void pickUserAccount() {
+        String[] accountTypes = new String[]{"com.google"};
+        Intent intent = AccountPicker.newChooseAccountIntent(null, null, accountTypes, false, null, null, null, null);
+        startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
+    }
+
+    public class FetchYouTubeTokenTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                token = GoogleAuthUtil.getToken(getActivity(), userPref.getString("youtube_name", "NV"), scope);
+            } catch (UserRecoverableAuthException userAuthEx) {
+                // In case Android complains that Access not Configured, refer to comment of this class for how to configure OAuth client ID for this app.
+                startActivityForResult(userAuthEx.getIntent(), REQUEST_AUTHORIZATION);
+            } catch (GoogleAuthException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (token != null) {
+                //  tokenTxt.setText("Token : " + token);
+                //Toast.makeText(getActivity(), token, Toast.LENGTH_LONG).show();
+
+                // selectedMediaTxt.setText("Attaching videos....");
+                //  String videoPathvideo;
+                uploaddToServer();
+            }
+        }
+    }
+
+    private void uploaddToServer() {
+        for (int i = 0; i < videoPathsArr.length; i++) {
+            uploadVideo(videoPathsArr[i]);
+            selectedMediaTxt.setText("Attaching videos...." + i);
+        }
+        selectedMediaTxt.setText("Attached "
+                + videoPathsArr.length + " videos");
+        pDialogImg.setVisibility(View.GONE);
+        finishTxt.setEnabled(true);
+    }
+
+    private void uploadVideo(String videoPathvideo) {
+        new YouTubeUploadTask(videoPathvideo).execute();
+    }
+
+    public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
+        String videoPathvideo;
+        private static final String VIDEO_FILE_FORMAT = "video/*";
+
+        public static final String scope = "oauth2:https://www.googleapis.com/auth/youtube";
+        private final List<String> scopes = Lists.newArrayList(YouTubeScopes.YOUTUBE);
+
+        //  private String videoFileName = "/storage/sdcard1/DCIM/Camera/VID_20160905_125329.mp4";
+        private String appName = "GCLife Test";
+        private String title = titleEdit.getText().toString();
+        private String description = "";
+
+        private HttpTransport transport = AndroidHttp.newCompatibleTransport();
+        private com.google.api.client.json.JsonFactory jsonFactory = new GsonFactory();
+
+        private MediaHttpUploader uploader = null;
+
+
+        private String errorMessage = null;
+
+        public YouTubeUploadTask(String videoPathvide) {
+            videoPathvideo = videoPathvide;
+        }
+
+        public YouTube.Videos.Insert prepareUpload() {
+            try {
+
+
+                File videoFile = new File(videoPathvideo);
+
+                // Add extra information to the video before uploading
+                Video videoObjectDefiningMetadata = new Video();
+
+                // Set the video to public (default)
+                VideoStatus status = new VideoStatus();
+                status.setPrivacyStatus("public");
+                videoObjectDefiningMetadata.setStatus(status);
+
+                // Set metadata with the VideoSnippet object
+                VideoSnippet snippet = new VideoSnippet();
+
+                // Video title and description
+                snippet.setTitle(title);
+                snippet.setDescription(description);
+
+                // Set keywords
+                List<String> tags = new ArrayList<String>();
+                tags.add(appName);
+                snippet.setTags(tags);
+
+                // Set completed snippet to the video object
+                videoObjectDefiningMetadata.setSnippet(snippet);
+
+                InputStreamContent mediaContent = new InputStreamContent(VIDEO_FILE_FORMAT, new BufferedInputStream(new FileInputStream(videoFile)));
+                mediaContent.setLength(videoFile.length());
+
+                GoogleAccountCredential credential = buildGoogleAccountCredential();
+                YouTube youtube = new YouTube.Builder(transport, jsonFactory, credential).setApplicationName(appName).build();
+
+                YouTube.Videos.Insert videoInsert = youtube.videos().insert("snippet,statistics,status", videoObjectDefiningMetadata, mediaContent);
+
+                uploader = videoInsert.getMediaHttpUploader();
+
+            /*
+             * Sets whether direct media upload is enabled or disabled. True = whole media content is
+             * uploaded in a single request. False (default) = resumable media upload protocol to upload
+             * in data chunks.
+             */
+                uploader.setDirectUploadEnabled(true);
+                MediaHttpUploaderProgressListener progressListener = new MediaHttpUploaderProgressListener() {
+                    public void progressChanged(MediaHttpUploader uploader) throws IOException {
+                        switch (uploader.getUploadState()) {
+                            case INITIATION_STARTED:
+                                System.out.println("Initiation Started");
+//                                Toast.makeText(MainActivity.this, "Initiation Started", Toast.LENGTH_LONG).show();
+
+                                break;
+                            case INITIATION_COMPLETE:
+                                System.out.println("Initiation Completed");
+//                                Toast.makeText(MainActivity.this, "Initiation Completed", Toast.LENGTH_LONG).show();
+                                break;
+                            case MEDIA_IN_PROGRESS:
+                                System.out.println("Upload in progress");
+                                System.out.println("Upload percentage: " + uploader.getProgress());
+//                                Toast.makeText(MainActivity.this, "Upload percentage:", Toast.LENGTH_LONG).show();
+                                //      if (youtubeUploadTask != null) {
+                                try {
+                                    int progress = (int) (getUploader().getProgress() * 100);
+                                    if (progress < 10) {
+                                        //   activity.getTextViewProgress().setText(" 0" + progress + "%");
+                                        Log.d("PROGRESS :", " 0" + progress + "%");
+                                    } else if (progress < 100) {
+                                        //   activity.getTextViewProgress().setText(" " + progress + "%");
+                                        Log.d("PROGRESS :", " " + progress + "%");
+                                    } else {
+                                        //  activity.getTextViewProgress().setText(progress + "%");
+                                        Log.d("PROGRESS :", progress + "%");
+                                    }
+                                    Log.d("PROGRESS :", progress + "");
+                                    //   activity.getProgressBarUploadVideo().setProgress(progress);
+                                } catch (IOException e) {
+
+                                }
+                                //    }
+                                break;
+                            case MEDIA_COMPLETE:
+                                System.out.println("Upload Completed!");
+//                                Toast.makeText(MainActivity.this, "Upload Completed!", Toast.LENGTH_LONG).show();
+//                                Toast.makeText(YoutubeUpload.this, "videoUploadCompleted", Toast.LENGTH_LONG).show();
+                                break;
+                            case NOT_STARTED:
+                                System.out.println("Upload Not Started!");
+                                break;
+                        }
+                    }
+                };
+                uploader.setProgressListener(progressListener);
+                // Set chunk size. See http://stackoverflow.com/questions/13580109/check-progress-for-upload-download-google-drive-api-for-android-or-java
+                uploader.setChunkSize(MediaHttpUploader.MINIMUM_CHUNK_SIZE * 2);
+
+                return videoInsert;
+            } catch (GoogleJsonResponseException e) {
+                System.err.println("GoogleJsonResponseException code: " + e.getDetails().getCode() + " : "
+                        + e.getDetails().getMessage());
+                e.printStackTrace();
+            } catch (IOException e) {
+                System.err.println("IOException: " + e.getMessage());
+                e.printStackTrace();
+            } catch (Throwable t) {
+                System.err.println("Throwable: " + t.getMessage());
+                t.printStackTrace();
+
+            }
+            return null;
+        }
+
+        /**
+         * Build the credential to authorize the installed application to access user's protected data.
+         */
+        private GoogleAccountCredential buildGoogleAccountCredential() throws Exception {
+            GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getActivity(), scopes);
+            credential.setBackOff(new ExponentialBackOff());
+            credential.setSelectedAccountName(selectedGoogleAccount);
+            return credential;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            YouTube.Videos.Insert videoInsert = prepareUpload();
+            if (videoInsert != null) {
+                try {
+                    youtubeVideo = videoInsert.execute();
+                } catch (IOException e) {
+                    //  MessageUtil.sendHandlerMessage(uploadProgressHandler, HandlerMessage.VIDEO_UPLOAD_FAILED);
+                }
+            }
+            return null;
+
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if (errorMessage != null) {
+                //  DialogUtil.showExceptionAlertDialog(activity, "Exception", errorMessage);
+            } else if (youtubeVideo != null) {
+                //  MessageUtil.sendHandlerMessage(uploadProgressHandler, HandlerMessage.VIDEO_UPLOAD_COMPLETED);
+                // Print data about the newly inserted video from the API response.
+                System.out.println("\n================== Returned Video ==================\n");
+                System.out.println("  - Id: " + youtubeVideo.getId());
+                System.out.println("  - Title: " + youtubeVideo.getSnippet().getTitle());
+                System.out.println("  - Tags: " + youtubeVideo.getSnippet().getTags());
+                System.out.println("  - Privacy Status: " + youtubeVideo.getStatus().getPrivacyStatus());
+                System.out.println("  - Video Count: " + youtubeVideo.getStatistics().getViewCount());
+                //
+                JSONObject jsonMedia = new JSONObject();
+                try {
+                    jsonMedia.put("image_type", "image");
+                    if (mediaUrl != null) {
+                        jsonMedia.put("image_url", "https://www.youtube.com/watch?v=" + youtubeVideo.getId());
+                        System.out.println(jsonMedia
+                                + " VIDEO JSON ");
+                        eventImages.put(jsonMedia);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                //   youtubeUrlTxt.setText("Youtube URL : https://www.youtube.com/watch?v=" + youtubeVideo.getId() + "  \n\n" + "Title: " + youtubeVideo.getSnippet().getTitle());
+                //  titleEdit.setText("");
+                //  uploadVideobtn.setText("Video has been uploaded!");
+            }
+        }
+
+        public Video getUploadedVideo() {
+            return youtubeVideo;
+        }
+
+        MediaHttpUploader getUploader() {
+            return uploader;
+        }
+    }
+
+    public class LoadImages extends AsyncTask<Void, Void, Void> {
+        public LoadImages(String[] all_path, File filee) {
+            allPhotopaths = all_path;
+            filePhoto = filee;
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Map response = MyApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
+                System.out.println(response + "  IMAGE  RESULT ");
+
+                JSONObject jsonMedia = new JSONObject();
+                jsonMedia.put("image_type", "image");
+                jsonMedia.put("image_url", response.get("url").toString().trim());
+                System.out.println(jsonMedia
+                        + " +++++++++++++++++++++++ ");
+                eventImages.put(jsonMedia);
+                System.out.println(eventImages
+                        + " ******************* ");
+
+                eventImages.put(jsonMedia);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            if (allPhotopaths.length == eventImages.length()) {
+                //     pDialogImg.setVisibility(View.GONE);
+                selectedMediaTxt.setText("Attached "
+                        + allPhotopaths.length + " images");
+                pDialogImg.setVisibility(View.GONE);
+                finishTxt.setEnabled(true);
+            } else {
+                //   pDialogImg.setVisibility(View.VISIBLE);
+                selectedMediaTxt.setText("Attaching images...."
+                        + (String.valueOf(eventImages.length())));
+
+            }
+        }
     }
 }

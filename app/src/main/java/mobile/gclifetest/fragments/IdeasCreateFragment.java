@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -29,11 +30,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import com.gc.materialdesign.views.ButtonFloat;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.SaveCallback;
+import com.cloudinary.utils.ObjectUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -71,7 +68,7 @@ import mobile.gclifetest.utils.MyApplication;
  */
 public class IdeasCreateFragment extends Fragment {
     Context context;
-    ButtonFloat addBtn;
+    FloatingActionButton addBtn;
     EditText titleEdit, shortDisEdit, briefDiscEdit;
     JSONObject jsonResult;
     String ideaTitle, ideaSDisc = "", ideaBdisc = "",
@@ -84,7 +81,6 @@ public class IdeasCreateFragment extends Fragment {
     JSONArray jsonResultArry;
     ProgressBarCircularIndeterminate pDialog, pDialogImg;
     ImageView attachImg;
-    int SELECT_FILE1 = 1;
     byte[] bytes;
     ViewSwitcher viewSwitcher;
     GalleryImgAdapter adapter;
@@ -101,25 +97,21 @@ public class IdeasCreateFragment extends Fragment {
     ArrayList<String> myFinalList = new ArrayList<String>();
     boolean apiProgress;
     List<AvenuesFilter> societiesPojo = new ArrayList<AvenuesFilter>();
-
+    String[] allPhotopaths;
+    File filePhoto;
     ListSociBaseAdapter sociAdapter;
-
+    View v;
     SparseBooleanArray mChecked = new SparseBooleanArray();
     private static boolean isNotAdded = true;
     private CheckBox checkBox_header;
-
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+        v = inflater.inflate(
                 R.layout.ideas_create, container, false);
         context = getActivity();
-
-
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
-
-        //  filter.setSocityName("All");
-        addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+        addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
         titleEdit = (EditText) v.findViewById(R.id.titleEdit);
         shortDisEdit = (EditText) v.findViewById(R.id.shortDisEdit);
         briefDiscEdit = (EditText) v.findViewById(R.id.briefDiscEdit);
@@ -131,7 +123,6 @@ public class IdeasCreateFragment extends Fragment {
 
         pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
         pDialogImg = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialogImg);
-        finishTxt = (TextView) v.findViewById(R.id.finishTxt);
         attachImg = (ImageView) v.findViewById(R.id.attachImg);
 
         myFinalList.add("All");
@@ -162,21 +153,12 @@ public class IdeasCreateFragment extends Fragment {
         listviewSoci = (ListView) dialogSoci.findViewById(R.id.listviewSoci);
         societyLayy = (RelativeLayout) dialogSoci.findViewById(R.id.societyLayy);
 
-        //  if (isNotAdded) {
-
-            /*
-             * mListView >> (ListView) //DO NOT ADD `NULL` here.
-             */
-
         final View headerView = getActivity().getLayoutInflater().inflate(R.layout.custom_list_view_header,
                 listviewSoci, false);
 
         checkBox_header = (CheckBox) headerView.findViewById(
                 R.id.checkBox_header);
 
-            /*
-             * Select All / None DO NOT USE "setOnCheckedChangeListener" here.
-             */
         checkBox_header.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -194,23 +176,13 @@ public class IdeasCreateFragment extends Fragment {
                 } else {
                     for (int i = 0; i < societiesPojo.size(); i++) {
                         mChecked.delete(i);
-                        //  selectedSociNames.remove(societiesPojo.get(i).getSocityName());
-
                     }
-                    //   societiesPojo=new ArrayList<AvenuesFilter>();
                     selectedSociNames = new ArrayList<String>();
                 }
-                    /*
-                     * Update View
-                     */
                 sociAdapter.notifyDataSetChanged();
-
             }
         });
 
-            /*
-             * Add Header to ListView
-             */
         listviewSoci.addHeaderView(headerView);
 
         isNotAdded = false;
@@ -345,7 +317,7 @@ public class IdeasCreateFragment extends Fragment {
                 if (selectedAveNames.size() > 0) {
                     dialogSoci.show();
                 } else {
-                    Constants.showSnack(context, "Select avenue name", "OK");
+                    Constants.showSnack(v, "Select avenue name", "OK");
                 }
             }
         });
@@ -373,22 +345,22 @@ public class IdeasCreateFragment extends Fragment {
 
                 if (ideaTitle == null || ideaTitle == "null" || ideaTitle == ""
                         || ideaTitle.length() == 0) {
-                    Constants.showSnack(context, "Please enter title!", "OK");
+                    Constants.showSnack(v, "Please enter title!", "OK");
                 } else if (ideaSDisc == null || ideaSDisc == "null"
                         || ideaSDisc == "" || ideaSDisc.length() == 0) {
-                    Constants.showSnack(context,
+                    Constants.showSnack(v,
                             "Please enter short discription!", "OK");
                 } else if (selectedAven == null || selectedAven == "null"
                         || selectedAven == "" || selectedAven.length() == 0) {
-                    Constants.showSnack(context,
+                    Constants.showSnack(v,
                             "Please select avenue name!", "OK");
                 } else if (selectedSoci == null || selectedSoci == "null"
                         || selectedSoci == "" || selectedSoci.length() == 0) {
-                    Constants.showSnack(context,
+                    Constants.showSnack(v,
                             "Please select society name!", "OK");
                 } else if (selectedMem == null || selectedMem == "null"
                         || selectedMem == "" || selectedMem.length() == 0) {
-                    Constants.showSnack(context,
+                    Constants.showSnack(v,
                             "Please select member type!", "OK");
                 } else {
                     new CreateIdeas().execute();
@@ -469,7 +441,7 @@ public class IdeasCreateFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 finishTxt.setVisibility(View.VISIBLE);
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
                 apiProgress = false;
@@ -570,7 +542,7 @@ public class IdeasCreateFragment extends Fragment {
 
             } else {
 
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
             }
@@ -598,9 +570,10 @@ public class IdeasCreateFragment extends Fragment {
             if (all_path.length > 0) {
                 pDialogImg.setVisibility(View.VISIBLE);
                 selectedMediaTxt.setText("Attaching images....");
+                finishTxt.setEnabled(false);
             }
             System.out.println(all_path);
-            Constants.showSnack(context, "You have Selected " + all_path.length
+            Constants.showSnack(v, "You have Selected " + all_path.length
                     + " images", "OK");
 
             ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
@@ -638,7 +611,10 @@ public class IdeasCreateFragment extends Fragment {
                 ext = ext.toLowerCase();
                 System.out.println("File name : " + fileName + "   "
                         + "Image extension : " + ext);
-                final ParseFile file = new ParseFile(fileName + "." + ext,
+
+                new LoadImages(all_path, filee).execute();
+
+               /* final ParseFile file = new ParseFile(fileName + "." + ext,
                         bytes);
                 file.saveInBackground(new SaveCallback() {
 
@@ -702,7 +678,7 @@ public class IdeasCreateFragment extends Fragment {
                             e.printStackTrace();
                         }
                     }
-                });
+                });*/
             }
 
             // adapter.addAll(dataT);
@@ -954,38 +930,15 @@ public class IdeasCreateFragment extends Fragment {
             View mView = convertView;
 
             if (mView == null) {
-
-                /*
-                 * LayoutInflater
-                 */
                 final LayoutInflater sInflater = (LayoutInflater) context.getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
-
-                /*
-                 * Inflate Custom List View
-                 */
                 mView = sInflater.inflate(R.layout.avenues_adapter_row, null, false);
-
             }
 
-            /* **************CUSTOM LISTVIEW OBJECTS**************** */
-
-            /*
-             * DO NOT MISS TO ADD "mView"
-             */
             final TextView titleTxt = (TextView) mView.findViewById(R.id.titleTxt);
-            //      final ImageView sIMG = (ImageView) mView.findViewById(R.id.imageView);
             final CheckBox mCheckBox = (CheckBox) mView.findViewById(
                     R.id.checked);
-
-            /* **************CUSTOM LISTVIEW OBJECTS**************** */
-
-            /* **************ADDING CONTENTS**************** */
-            //   sTV1.setText(MainActivity.textviewContent[position]);
-            //    sIMG.setImageResource(R.drawable.ic_launcher);
             titleTxt.setText(societiesPojo.get(position).getSocityName());
-
-
             mCheckBox.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mCheckBox.isChecked()) {
@@ -996,65 +949,14 @@ public class IdeasCreateFragment extends Fragment {
                         }
                         selectedSociNames.add(societiesPojo.get(position).getSocityName());
                     } else {
-
-                                /*
-                                 * Removed UnChecked Position
-                                 */
                         mChecked.delete(position);
-
-                                /*
-                                 * Remove Checked in Header
-                                 */
                         checkBox_header.setChecked(mCheckBox.isChecked());
                         selectedSociNames.remove(societiesPojo.get(position).getSocityName());
                     }
                 }
             });
 
-
-           /* mCheckBox.setOnCheckedChangeListener(
-                    new CompoundButton.OnCheckedChangeListener() {
-
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                            if (isChecked) {
-
-                                *//*
-                                 * Saving Checked Position
-                                 *//*
-                                mChecked.put(position, isChecked);
-
-                                if (isAllValuesChecked()) {
-                                    checkBox_header.setChecked(isChecked);
-                                }
-                                selectedSociNames.add(societiesPojo.get(position).getSocityName());
-                            } else {
-
-                                *//*
-                                 * Removed UnChecked Position
-                                 *//*
-                                mChecked.delete(position);
-
-                                *//*
-                                 * Remove Checked in Header
-                                 *//*
-                                checkBox_header.setChecked(isChecked);
-                                selectedSociNames.remove(societiesPojo.get(position).getSocityName());
-                            }
-
-                        }
-                    });*/
-
-            /*
-             * Set CheckBox "TRUE" or "FALSE" if mChecked == true
-             */
             mCheckBox.setChecked((mChecked.get(position) == true ? true : false));
-
-            /* **************ADDING CONTENTS**************** */
-
-            /*
-             * Return View here
-             */
             return mView;
         }
 
@@ -1141,17 +1043,49 @@ public class IdeasCreateFragment extends Fragment {
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
                     if (holder.checkBox.isChecked()) {
-                        if (list.get(position) == "All" || list.get(position).equals("All")) {
+                        if (list.get(position).equals("All")) {
                             for (int i = 0; i < listviewMemadapter.getChildCount(); i++) {
                                 RelativeLayout itemLayout = (RelativeLayout) listviewMemadapter.getChildAt(i);
                                 CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
                                 cb.setChecked(true);
-                                selectedMemsNames.add(list.get(i).trim());
+                                if (!selectedMemsNames.contains(list.get(i).trim()))
+                                    selectedMemsNames.add(list.get(i).trim());
                             }
-                            //  selectedMemsNames.add("All");
-                            //  return;
                         } else {
-                            selectedMemsNames.add(list.get(position).trim());
+                            // selectedMemsNames.add(list.get(position).trim());
+                            if (position == 1) {
+                                for (int i = position; i < 6; i++) {
+                                    RelativeLayout itemLayout = (RelativeLayout) listviewMemadapter.getChildAt(i);
+                                    CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
+                                    cb.setChecked(true);
+                                    selectedMemsNames.add(list.get(i).trim());
+                                }
+                            } else if (position == 2) {
+                                for (int i = position; i < 6; i++) {
+                                    RelativeLayout itemLayout = (RelativeLayout) listviewMemadapter.getChildAt(i);
+                                    CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
+                                    cb.setChecked(true);
+                                    selectedMemsNames.add(list.get(i).trim());
+                                }
+                            } else if (position == 3) {
+                                for (int i = position; i < 6; i++) {
+                                    RelativeLayout itemLayout = (RelativeLayout) listviewMemadapter.getChildAt(i);
+                                    CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
+                                    cb.setChecked(true);
+                                    selectedMemsNames.add(list.get(i).trim());
+                                }
+                            } else if (position == 4) {
+                                for (int i = position; i < 6; i++) {
+                                    RelativeLayout itemLayout = (RelativeLayout) listviewMemadapter.getChildAt(i);
+                                    CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
+                                    cb.setChecked(true);
+                                    selectedMemsNames.add(list.get(i).trim());
+                                }
+                            } else if (position == 5) {
+                                selectedMemsNames.add(list.get(position).trim());
+                            } else if (position == 6) {
+                                selectedMemsNames.add(list.get(position).trim());
+                            }
                         }
                     } else {
                         if (list.get(position) == "All" || list.get(position).equals("All")) {
@@ -1167,13 +1101,48 @@ public class IdeasCreateFragment extends Fragment {
                             CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
                             cb.setChecked(false);
                             selectedMemsNames.remove(list.get(position));
+
+                         /*   if (position == 1) {
+                                for (int i = position; i < 6; i++) {
+                                    RelativeLayout itemLayout = (RelativeLayout) listviewMemadapter.getChildAt(i);
+                                    CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
+                                    cb.setChecked(false);
+                                    selectedMemsNames.remove(list.get(i).trim());
+                                }
+                            } else if (position == 2) {
+                                for (int i = position; i < 6; i++) {
+                                    RelativeLayout itemLayout = (RelativeLayout) listviewMemadapter.getChildAt(i);
+                                    CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
+                                    cb.setChecked(false);
+                                    selectedMemsNames.remove(list.get(i).trim());
+                                }
+                            } else if (position == 3) {
+                                for (int i = position; i < 6; i++) {
+                                    RelativeLayout itemLayout = (RelativeLayout) listviewMemadapter.getChildAt(i);
+                                    CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
+                                    cb.setChecked(false);
+                                    selectedMemsNames.remove(list.get(i).trim());
+                                }
+                            } else if (position == 4) {
+                                for (int i = position; i < 6; i++) {
+                                    RelativeLayout itemLayout = (RelativeLayout) listviewMemadapter.getChildAt(i);
+                                    CheckBox cb = (CheckBox) itemLayout.findViewById(R.id.checked);
+                                    cb.setChecked(false);
+                                    selectedMemsNames.remove(list.get(i).trim());
+                                }
+                            } else if (position == 5) {
+                                selectedMemsNames.remove(list.get(position).trim());
+                            } else if (position == 6) {
+                                selectedMemsNames.remove(list.get(position).trim());
+                            }*/
+
                         }
                     }
 
                     if (selectedMemsNames.contains("All")) {
                         selectedMemsNames.remove("All");
                     }
-                    System.out.println(selectedMemsNames);
+                    System.out.println(selectedMemsNames + " ******************************* ");
                 }
             });
             holder.checkBox.setTag(position);
@@ -1192,6 +1161,46 @@ public class IdeasCreateFragment extends Fragment {
         super.onResume();
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
+    }
+
+    public class LoadImages extends AsyncTask<Void, Void, Void> {
+        public LoadImages(String[] all_path, File filee) {
+            allPhotopaths = all_path;
+            filePhoto = filee;
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Map response = MyApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
+                System.out.println(response + "    RESULT ");
+                eventImages.put(response.get("url"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            if (allPhotopaths.length == eventImages.length()) {
+                //     pDialogImg.setVisibility(View.GONE);
+                selectedMediaTxt.setText("Attached "
+                        + allPhotopaths.length + " images");
+                pDialogImg.setVisibility(View.GONE);
+                finishTxt.setEnabled(true);
+            } else {
+                //   pDialogImg.setVisibility(View.VISIBLE);
+                selectedMediaTxt.setText("Attaching images...."
+                        + (String.valueOf(eventImages.length())));
+
+            }
+        }
     }
 }
 

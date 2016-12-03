@@ -21,11 +21,13 @@ import org.json.JSONArray;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.pojoGson.EventImages;
 import mobile.gclifetest.activity.GalleryImageViewer;
 import mobile.gclifetest.activity.R;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.EventImages;
 
 /**
  * Created by MRaoKorni on 8/2/2016.
@@ -100,7 +102,12 @@ public class EventsImagesAdapter extends BaseAdapter {
       //  System.out.println(imgUrl);
         Log.d("POS : ",position+"");
         if (eventName == "Videos" || eventName.equals("Videos")) {
-            new BitmapCall(imgUrl).execute();
+            // new BitmapCall(imgUrl).execute();
+            thumbPbar.setVisibility(View.GONE);
+            //getVideoId(imgUrl);
+            imageLoader.displayImage("http://img.youtube.com/vi/" + imgUrl.substring(imgUrl.length() - 11) + "/default.jpg", thumbnailImg, options);
+            thumbnailImg.setScaleType(ImageView.ScaleType.FIT_XY);
+
         } else if(imgUrl!=null){
             thumbPbar.setVisibility(View.GONE);
             imageLoader.displayImage(imgUrl, thumbnailImg, options);
@@ -118,6 +125,18 @@ public class EventsImagesAdapter extends BaseAdapter {
             thumbnailImg.setScaleType(ImageView.ScaleType.FIT_XY);
         }*/
         return convertView;
+    }
+
+    private String getVideoId(String imgUrl) {
+        String videoId = null;
+        Pattern pattern = Pattern.compile(
+                "^https?://.*(?:youtu.be/|v/|u/\\w/|embed/|watch?v=)([^#&?]*).*$",
+                Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(imgUrl);
+        if (matcher.matches()){
+            videoId = matcher.group(1);
+        }
+        return videoId;
     }
 
     public class ViewHolder {

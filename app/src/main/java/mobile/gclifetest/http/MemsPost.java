@@ -24,7 +24,7 @@ import java.net.URI;
 
 public class MemsPost {
 
-	public static JSONObject activateMem(String hostname, int memId,String status,String statusReason)
+	public static JSONObject activateMem(String hostname, int memId,String status,String statusReason,int recordId)
 			throws Exception {
 		SSLSocketFactory sslFactory = new SimpleSSLSocketFactory(null);
 		sslFactory
@@ -41,7 +41,7 @@ public class MemsPost {
 		HttpClient client = new DefaultHttpClient(ccm, params);
 
 		HttpGet httget = new HttpGet();
-		String host=hostname+"activate_users.json?user_id="+memId+"&status="+status+"&reason="+statusReason;
+		String host=hostname+"activate_users.json?user_id="+memId+"&status="+status+"&reason="+statusReason+"&flat_id="+recordId;
 		host = host.replaceAll(" ", "%20");
 		httget.setURI(new URI(host));
 		httget.setHeader("Accept", "*/*");

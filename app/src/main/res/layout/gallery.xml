@@ -23,6 +23,7 @@
             android:horizontalSpacing="-15dp"
             android:numColumns="3"
             android:padding="0dp"
+            android:scrollbars="none"
             android:verticalSpacing="-15dp"
             tools:listitem="@layout/gallery_item" >
         </GridView>

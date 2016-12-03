@@ -17,4 +17,11 @@
         <item name="android:windowEnterAnimation">@anim/bottom_up</item>
         <item name="android:windowExitAnimation">@anim/bottom_down</item>
     </style>
+
+    <style name="TextAppearance.App.TextInputLayout" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/list_background</item>
+    </style>
+    <style name="TextAppearance.App.TextInputLayoutBlack" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/black</item>
+    </style>
 </resources>

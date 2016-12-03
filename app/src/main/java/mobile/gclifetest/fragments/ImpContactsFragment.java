@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
@@ -42,7 +43,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
-import com.gc.materialdesign.views.ButtonFloat;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -53,21 +53,21 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.pojoGson.ImpContactsPojo;
-import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.activity.BaseActivity;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.ImpContactsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
  */
 public class ImpContactsFragment extends Fragment {
     Context context;
-    ButtonFloat addBtn;
+    FloatingActionButton addBtn;
     ProgressBarCircularIndeterminate pDialog,pDialogBtm;
     ListView listviewImp;
     SharedPreferences userPref;
@@ -87,13 +87,14 @@ public class ImpContactsFragment extends Fragment {
     boolean progressShow = true;
     ImageView clearImg;
     int limit = 15, currentPosition, offset = 0;
+    RelativeLayout snackLay;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(
                 R.layout.ideas_list, container, false);
         context = getActivity();
-        addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+        addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
         pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
         pDialogBtm = (ProgressBarCircularIndeterminate)v.findViewById(R.id.pDialogBtm);
         mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.activity_main_swipe_refresh_layout);
@@ -102,8 +103,9 @@ public class ImpContactsFragment extends Fragment {
         searchLay = (RelativeLayout) v.findViewById(R.id.searchLay);
         clearImg = (ImageView) v.findViewById(R.id.clearImg);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
-                R.color.green, R.color.blue);
+                android.R.color.holo_green_dark, R.color.blue);
         listviewImp = (ListView) v.findViewById(R.id.listview);
+        snackLay = (RelativeLayout) v.findViewById(R.id.snackLay);
         listviewImp.setClickable(false);
         addBtn.setVisibility(View.GONE);
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
@@ -117,7 +119,7 @@ public class ImpContactsFragment extends Fragment {
                             public void run() {
                                 offset = 0;
                                 impContactPojo = new ArrayList<ImpContactsPojo>();
-                                callImpContsList();
+                                callImpContsList(searchStr);
                                 getActivity().runOnUiThread(run);
                                 mSwipeRefreshLayout
                                         .setRefreshing(false);
@@ -155,7 +157,7 @@ public class ImpContactsFragment extends Fragment {
                         searchStr = searchEdit.getText().toString();
                         progressShow = false;
                         offset = 0;
-                        callImpContsList();
+                        callImpContsList(searchStr);
                         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(searchEdit.getWindowToken(), 0);
                     }else{
@@ -172,8 +174,9 @@ public class ImpContactsFragment extends Fragment {
                 globalImpContactPojo = new ArrayList<ImpContactsPojo>();
                 offset = 0;
                 searchStr = "";
-                callImpContsList();
+                callImpContsList(searchStr);
                 searchEdit.setText("");
+                searchLay.setVisibility(View.GONE);
             }
         });
         searchEdit.addTextChangedListener(new TextWatcher() {
@@ -203,9 +206,9 @@ public class ImpContactsFragment extends Fragment {
                     getActivity(), impContactPojo);
             listviewImp.setAdapter(adapterConts);
             progressShow = false;
-            callImpContsList();
+            callImpContsList(searchStr);
         } else {
-            callImpContsList();
+            callImpContsList(searchStr);
             Log.d("DB NULL: " + "ImpContacts", "");
         }
         return v;
@@ -244,7 +247,7 @@ public class ImpContactsFragment extends Fragment {
         m_dialog.show();
     }
 
-    private void callImpContsList() {
+    private void callImpContsList(final String searchStr) {
         try {
 
             if (progressShow) {
@@ -269,24 +272,25 @@ public class ImpContactsFragment extends Fragment {
                                 || response.toString().equals("")) {
                             pDialog.setVisibility(View.GONE);
                             progressBar.setVisibility(View.GONE);
-                            pDialogBtm.setVisibility(View.GONE);
-                            Constants.showSnack(context,
-                                    "Oops! There is no contacts!",
-                                    "OK");
+                            pDialogBtm.setVisibility(View.INVISIBLE);
+                            if (searchStr.length() > 0) {
+                                Constants.showSnack(snackLay,
+                                        "Searched Important contact details are not found, please try with another search criteria!", "");
+                            } else {
+                                Constants.showSnack(snackLay,
+                                        "No further Contacts content is available!",
+                                        "OK");
+                            }
+
                             impContactPojo.clear();
-                           /* adapterConts = new ListImpContsBaseAdapter(
-                                    getActivity(), globalImpContactPojo);
-                            adapterConts.notifyDataSetChanged();
-                            listviewImp.setAdapter(adapterConts);*/
+
                             currentPosition = listviewImp
                                     .getLastVisiblePosition();
                             DisplayMetrics displayMetrics =
                                     getResources().getDisplayMetrics();
                             int height = displayMetrics.heightPixels;
-
                             listviewImp.setSelectionFromTop(
-                                    currentPosition + 1, height - 220);
-
+                                    currentPosition, height - 220);
                         } else {
                             globalImpContactPojo.addAll(impContactPojo);
                             Log.d("SIZE", globalImpContactPojo.size() + "");
@@ -296,11 +300,10 @@ public class ImpContactsFragment extends Fragment {
                             adapterConts = new ListImpContsBaseAdapter(
                                     getActivity(), globalImpContactPojo);
                             listviewImp.setAdapter(adapterConts);
-
+                            adapterConts.notifyDataSetChanged();
                             pDialog.setVisibility(View.GONE);
-                            pDialogBtm.setVisibility(View.GONE);
+                            pDialogBtm.setVisibility(View.INVISIBLE);
                             progressBar.setVisibility(View.GONE);
-                            pDialogBtm.setVisibility(View.GONE);
                             db.addEventNews(response, "ImpContacts");
                             //for updating new data
                             db.updateEventNews(response, "ImpContacts");
@@ -328,7 +331,7 @@ public class ImpContactsFragment extends Fragment {
                                                 AbsListView view, int scrollState) {
                                             // TODO Auto-generated method stub
                                             this.currentScrollState = scrollState;
-                                            pDialogBtm.setVisibility(View.GONE);
+                                            pDialogBtm.setVisibility(View.INVISIBLE);
                                             if (view.getId() == listviewImp
                                                     .getId()) {
                                                 final int currentFirstVisibleItem = listviewImp
@@ -368,7 +371,7 @@ public class ImpContactsFragment extends Fragment {
                                                 Log.d("Offset :", offset + "");
                                                 pDialogBtm.setVisibility(View.VISIBLE);
                                                 progressShow=false;
-                                                callImpContsList();
+                                                callImpContsList(searchStr);
                                             }
                                         }
                                     });
@@ -386,7 +389,7 @@ public class ImpContactsFragment extends Fragment {
 
                     Log.d("Error = ", volleyError.toString());
                     pDialog.setVisibility(View.GONE);
-                    Constants.showSnack(context,
+                    Constants.showSnack(snackLay,
                             "Oops! Something went wrong. Please check internet connection!",
                             "OK");
                     //   pDialog.hide();
@@ -546,7 +549,7 @@ public class ImpContactsFragment extends Fragment {
                     try {
                         startActivity(smsVIntent);
                     } catch (Exception ex) {
-                        Constants.showSnack(context,
+                        Constants.showSnack(snackLay,
                                 "Your sms has failed...!",
                                 "OK");
                         ex.printStackTrace();
@@ -597,6 +600,7 @@ public class ImpContactsFragment extends Fragment {
                 searchLay.setVisibility(View.VISIBLE);
                 searchEdit.requestFocus();
                 searchEdit.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+                globalImpContactPojo = new ArrayList<>();
                 return true;
             default:
                 break;
@@ -611,5 +615,6 @@ public class ImpContactsFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.imp_contacts);
+        searchEdit.setHint("Search your contacts");
     }
 }

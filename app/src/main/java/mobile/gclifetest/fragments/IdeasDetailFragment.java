@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -37,6 +38,14 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import mobile.gclifetest.activity.GalleryImageViewer;
+import mobile.gclifetest.activity.HomeActivity;
+import mobile.gclifetest.activity.R;
+import mobile.gclifetest.adapters.EventsCommentsAdapter;
+import mobile.gclifetest.adapters.EventsImagesAdapter;
+import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.http.EvenstPost;
+import mobile.gclifetest.http.MemsPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.EventComments;
 import mobile.gclifetest.pojoGson.EventImages;
@@ -46,16 +55,6 @@ import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 import mobile.gclifetest.utils.ListViewUtils;
 import mobile.gclifetest.utils.MyApplication;
-import mobile.gclifetest.activity.GalleryImageViewer;
-import mobile.gclifetest.activity.HomeActivity;
-import mobile.gclifetest.activity.IdeasDetail;
-import mobile.gclifetest.activity.R;
-import mobile.gclifetest.activity.VideoPlay;
-import mobile.gclifetest.adapters.EventsCommentsAdapter;
-import mobile.gclifetest.adapters.EventsImagesAdapter;
-import mobile.gclifetest.db.DatabaseHandler;
-import mobile.gclifetest.http.EvenstPost;
-import mobile.gclifetest.http.MemsPost;
 
 /**
  * Created by MRaoKorni on 8/2/2016.
@@ -64,7 +63,7 @@ public class IdeasDetailFragment extends Fragment {
     Context context;
     String title, sdic, bdisc, societyName, associationName, memType,
             eventName, eid, videoPath, comntCreated, userName, jsonImages;
-    TextView titleTxt, sDiscTxt, bDiscTxt, photosCountTxt;
+    TextView titleTxt, sDiscTxt, bDiscTxt, photosCountTxt, postedByTxt;
     Bitmap bitmap = null;
     Gallery galleryArti;
     ImageLoader imageLoader;
@@ -82,7 +81,7 @@ public class IdeasDetailFragment extends Fragment {
     SharedPreferences userPref;
     UserDetailsPojo user;
     ProgressBarCircularIndeterminate pDialog;
-    LinearLayout progrLay;
+    LinearLayout progrLay, photosCountLay;
     JSONObject jsonDetails;
     EventsCommentsAdapter commentsAdapter;
     ScrollView scroll;
@@ -91,14 +90,14 @@ public class IdeasDetailFragment extends Fragment {
     List<EventComments> eventComntsPojo;
     Gson gson = new Gson();
     DatabaseHandler db;
-    IdeasDetail.ImagesListBaseAdapter adapterImages;
+    EventsImagesAdapter adapterImages;
     ImageView thumbnailImg;
     ProgressBar thumbPbar;
-
+    View v;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+        v = inflater.inflate(
                 R.layout.ideas_detail, container, false);
         context = getActivity();
         db = new DatabaseHandler(getActivity());
@@ -110,9 +109,11 @@ public class IdeasDetailFragment extends Fragment {
                 .showImageOnLoading(R.drawable.no_media).build();
         pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
         progrLay = (LinearLayout) v.findViewById(R.id.progrLay);
+        photosCountLay = (LinearLayout) v.findViewById(R.id.photos_lay);
         titleTxt = (TextView) v.findViewById(R.id.titleNameTxt);
         sDiscTxt = (TextView) v.findViewById(R.id.sdescTxt);
         bDiscTxt = (TextView) v.findViewById(R.id.bdescNumTxt);
+        postedByTxt = (TextView) v.findViewById(R.id.posted_by);
         photosCountTxt = (TextView) v.findViewById(R.id.photosCountTxt);
         galleryArti = (Gallery) v.findViewById(R.id.galleryArti);
         imagesLay = (RelativeLayout) v.findViewById(R.id.imagesLay);
@@ -124,8 +125,6 @@ public class IdeasDetailFragment extends Fragment {
         thumbPbar = (ProgressBar) v.findViewById(R.id.thumbPbar);
         scroll = (ScrollView) v.findViewById(R.id.scroll);
         scroll.smoothScrollTo(0, 0);
-
-
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
         String jsonUser = userPref.getString("USER_DATA", "NV");
         Gson gson = new Gson();
@@ -187,18 +186,13 @@ public class IdeasDetailFragment extends Fragment {
                     i.putExtra("Images", mediaArr.toString());
                     startActivity(i);
                 } else if (eventName == "Videos" || eventName.equals("Videos")) {
-                    Intent i = new Intent(context, VideoPlay.class);
-
                     try {
-                        System.out.println(mediaArr.getString(position)
-                                .toString());
                         JSONObject json = mediaArr.getJSONObject(position);
-                        i.putExtra("Video", json.getString("image_url"));
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(json.getString("image_url"))));
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
-                    startActivity(i);
                 }
 
             }
@@ -215,13 +209,13 @@ public class IdeasDetailFragment extends Fragment {
                         || comntEdit.getText().toString().equals("")
                         || comntEdit.getText().toString().length() == 0
                         || comntEdit.getText().toString() == null) {
-                    Constants.showSnack(context, "Enter comment!", "OK");
+                    Constants.showSnack(v, "Enter comment!", "OK");
                 } else {
                     if (isInternetPresent) {
                         sendBtn.setText("Adding comment.....");
                         new SendComment().execute();
                     } else {
-                        Constants.showSnack(context,
+                        Constants.showSnack(v,
                                 "Please check network connection!", "OK");
                     }
                 }
@@ -266,11 +260,22 @@ public class IdeasDetailFragment extends Fragment {
                         sDiscTxt.setText(jsonDetails.getString("sdesc"));
                         bDiscTxt.setText(jsonDetails.getString("bdesc"));
                     }
+                    String createdAt = MyApplication.convertDateEmail(jsonDetails.getString("created_at"));
+                    String time = jsonDetails.getString("created_at").substring(11, 19);
+                    time = MyApplication.convertTimeEmail(time);
 
+                    if (jsonDetails.has("username")) {
+                        if (jsonDetails.getString("username") != null) {
+                            postedByTxt.setText("Posted by: " + jsonDetails.getString("username") + " - " + createdAt + "," + time);
+                            //   postedByTxt.setText(Html.fromHtml("<font color=\"#c5c5c5\">" + "Posted by: " + "</font>" +"<font color=\"#000000\">"+ jsonDetails.getString("username") +  "</font>" +
+                            //           "<font color=\"#000000\">"+createdAt + "," + time + "</font>"));
+                        }
+                    }
                     mediaArr = jsonDetails.getJSONArray("eventimages");
                     if (mediaArr.length() == 0 || mediaArr == null
                             || mediaArr.toString() == "null") {
                         imagesLay.setVisibility(View.GONE);
+                        photosCountLay.setVisibility(View.GONE);
                     } else {
 
 
@@ -309,7 +314,7 @@ public class IdeasDetailFragment extends Fragment {
                 progrLay.setVisibility(View.GONE);
             } else {
                 progrLay.setVisibility(View.GONE);
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }
@@ -362,7 +367,7 @@ public class IdeasDetailFragment extends Fragment {
                 ListViewUtils.setDynamicHeight(commentsListview);
                 sendBtn.setText("ADD THIS COMMENT");
             } else {
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }
@@ -371,7 +376,6 @@ public class IdeasDetailFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
             case android.R.id.home:
                 ((HomeActivity) context).onBackpressed();
                 return true;

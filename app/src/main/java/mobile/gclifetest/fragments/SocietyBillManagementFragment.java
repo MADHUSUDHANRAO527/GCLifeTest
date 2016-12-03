@@ -18,6 +18,9 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +29,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import mobile.gclifetest.activity.HomeActivity;
+import mobile.gclifetest.activity.R;
+import mobile.gclifetest.event.AddIdeasEvent;
+import mobile.gclifetest.http.SocietyBillPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
@@ -33,9 +40,6 @@ import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.FilePicker;
 import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
-import mobile.gclifetest.activity.HomeActivity;
-import mobile.gclifetest.activity.R;
-import mobile.gclifetest.http.SocietyBillPost;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -62,11 +66,11 @@ public class SocietyBillManagementFragment extends Fragment {
             dueStatusDataArr;
     boolean action = false;
     Context context;
-
+    View v;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+        v = inflater.inflate(
                 R.layout.societybillmanagement, container, false);
         context = getActivity();
         societyNameSpinner = (Spinner) v.findViewById(R.id.societySpin);
@@ -241,29 +245,29 @@ public class SocietyBillManagementFragment extends Fragment {
                 System.out.println(societyName + "!!!!!!!!!!!!!!!!!!!!!!");
                 if (societyName == "" || societyName.equals("")
                         || societyName == "null" || societyName == null) {
-                    Constants.showSnack(getActivity(),
+                    Constants.showSnack(v,
                             "Select society!",
                             "OK");
                 } else if (financialYr == "" || financialYr.equals("")
                         || financialYr == null || financialYr == "null") {
-                    Constants.showSnack(getActivity(),
+                    Constants.showSnack(v,
                             "Select financial year!",
                             "OK");
                 } else if (monthName == "" || monthName.equals("")
                         || monthName == null || monthName == "null") {
-                    Constants.showSnack(getActivity(),
+                    Constants.showSnack(v,
                             "Select month!",
                             "OK");
                 } else if (actionType == "" || actionType.equals("")
                         || actionType == null || actionType == "null") {
-                    Constants.showSnack(getActivity(),
+                    Constants.showSnack(v,
                             "Select View/Upload!",
                             "OK");
                 } else {
 
                     if (actionType == "Upload" || actionType.equals("Upload")) {
                         if (selectedFile == null || selectedFile.toString() == "null") {
-                            Constants.showSnack(getActivity(),
+                            Constants.showSnack(v,
                                     "Select a file to upload!",
                                     "OK");
                         } else {
@@ -363,7 +367,7 @@ public class SocietyBillManagementFragment extends Fragment {
 
                         selectedFile = new File(
                                 data.getStringExtra(FilePicker.EXTRA_FILE_PATH));
-                        Constants.showSnack(getActivity(),
+                        Constants.showSnack(v,
                                 selectedFile.getPath(),
                                 "OK");
                         fileNameTxt.setVisibility(View.VISIBLE);
@@ -414,13 +418,13 @@ public class SocietyBillManagementFragment extends Fragment {
         protected void onPostExecute(Void unused) {
             if (jsonBill == null || jsonBill.toString() == "null"
                     || jsonBill.equals("null")) {
-                Constants.showSnack(getActivity(),
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
                 pDialog.setVisibility(View.GONE);
                 fileNameTxt.setVisibility(View.GONE);
             } else {
-                Constants.showSnack(getActivity(),
+                Constants.showSnack(v,
                         "Uploaded file!",
                         "OK");
                 pDialog.setVisibility(View.GONE);
@@ -457,7 +461,7 @@ public class SocietyBillManagementFragment extends Fragment {
 
             if (jsonViewBill == null || jsonViewBill.toString() == "null"
                     || jsonViewBill.equals("null")) {
-                Constants.showSnack(getActivity(),
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
                 pDialog.setVisibility(View.GONE);
@@ -499,21 +503,21 @@ public class SocietyBillManagementFragment extends Fragment {
         }
     }
 
-    @Override
+    /*@Override
     public void onStart() {
         // TODO Auto-generated method stub
         super.onStart();
         System.out.println(action + " ACTION ^^^^^^^^^^^^^^^^6");
-        if (action == true) {
+        if (action) {
 
         } else {
-            if (financialYr == "" || financialYr.equals("")) {
-
+            if (financialYr.equals("")) {
+                Log.d("FYR", "");
             } else {
                 new ViewBill().execute();
             }
         }
-    }
+    }*/
 
     @Override
     public void onResume() {
@@ -521,5 +525,23 @@ public class SocietyBillManagementFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.sbmanagement);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(AddIdeasEvent event) {
+        if (event.success) {
+            new ViewBill().execute();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
     }
 }

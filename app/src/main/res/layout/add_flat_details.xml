@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:float="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#fff"
-    android:orientation="vertical" >
+    android:id="@+id/snackLay"
+    android:orientation="vertical">
 
     <ScrollView
         android:id="@+id/scroll"
@@ -13,7 +13,7 @@
         android:layout_height="fill_parent" >
 
         <LinearLayout
-            android:id="@+id/lay"
+
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="#fff"
@@ -113,28 +113,29 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
-                    android:gravity="left" >
+                    android:descendantFocusability="beforeDescendants"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:gravity="left">
 
-                    <com.wrapp.floatlabelededittext.FloatLabeledEditText
-                        android:id="@+id/flatNo"
-                        android:layout_width="fill_parent"
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/input_layout_password"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="10dp"
-                         android:cursorVisible="false"
-                        float:fletPadding="5dp" >
-
+                        android:layout_marginLeft="@dimen/margin_10"
+                        app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
                         <EditText
                             android:id="@+id/flatNoEdit"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
                             android:background="#00000000"
-                            android:cursorVisible="false"
                             android:gravity="left"
                             android:hint="Flat Number"
+                            android:paddingTop="@dimen/padding_8"
                             android:phoneNumber="true"
                             android:singleLine="true"
                             android:textSize="16sp" />
-                    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                    </android.support.design.widget.TextInputLayout>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -245,13 +246,13 @@
                         android:layout_marginTop="10dp"
                         android:spinnerMode="dialog" />
 
-                    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                    <android.support.design.widget.TextInputLayout
                         android:id="@+id/fromEdit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="10dp"
                         android:visibility="gone"
-                        float:fletPadding="5dp" >
+                        app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
 
                         <EditText
                             android:id="@+id/datewithOwnerEdit"
@@ -261,12 +262,13 @@
                             android:drawableLeft="@drawable/ic_calender"
                             android:drawablePadding="5dp"
                             android:focusable="false"
+                            android:paddingTop="@dimen/padding_8"
                             android:focusableInTouchMode="true"
                             android:gravity="left"
                             android:hint="  Relationship with owner"
                             android:singleLine="true"
                             android:textSize="16dp" />
-                    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                    </android.support.design.widget.TextInputLayout>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -288,12 +290,12 @@
                     android:layout_marginTop="5dp"
                     android:gravity="left" >
 
-                    <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                    <android.support.design.widget.TextInputLayout
                         android:id="@+id/liscenseEndson"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="10dp"
-                        float:fletPadding="5dp" >
+                        app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
 
                         <EditText
                             android:id="@+id/lisecnseEndsOntxtEdit"
@@ -304,11 +306,12 @@
                             android:drawablePadding="5dp"
                             android:focusable="false"
                             android:focusableInTouchMode="true"
+                            android:paddingTop="@dimen/padding_8"
                             android:gravity="left"
                             android:hint="  License Ends on"
                             android:singleLine="true"
                             android:textSize="16dp" />
-                    </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                    </android.support.design.widget.TextInputLayout>
                 </RelativeLayout>
 
                 <RelativeLayout

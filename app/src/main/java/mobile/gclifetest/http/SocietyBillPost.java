@@ -266,6 +266,7 @@ public class SocietyBillPost {
 		String host = hostname + "my_bill_confirmation.json?bill_id=" + billId
 				+ "&payment_mode=" + paymentMode + "&ref_no=" + refNum+"&bill_amount_paid="+billAmountPaid;
 		System.out.println(host + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		host=host.replaceAll(" ", "%20");
 		httget.setURI(new URI(host));
 		httget.setHeader("Accept", "*/*");
 		httget.setHeader("Accept-Encoding", "identity");

@@ -51,12 +51,12 @@ public class MySocietyFragment extends Fragment {
                 if (position == 1) {
                     if (user.getGclife_registration_flatdetails().get(0).getMember_type() == "Non_members" ||
                             user.getGclife_registration_flatdetails().get(0).getMember_type().equals("Non_members")) {
-                        Constants.showSnack(getActivity(), "You are not authorized person!", "OK");
+                        Constants.showSnack(v, "You are not authorized person!", "OK");
                     } else {
                         ((HomeActivity) context).addFragment(new MySocietyBillFragment());
                     }
                 } else {
-                    Constants.showSnack(getActivity(), "Coming soon!", "OK");
+                    Constants.showSnack(v, "Coming soon!", "OK");
                 }
             }
         });

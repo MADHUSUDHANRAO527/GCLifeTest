@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -21,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.android.volley.Response;
@@ -37,16 +39,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.pojoGson.FlatDetailsPojo;
-import mobile.gclifetest.pojoGson.UserDetailsPojo;
-import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.activity.UserProfile;
 import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.http.MemsPost;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -57,44 +59,49 @@ public class MemsListFragment extends Fragment {
     JSONObject veriJson;
     SharedPreferences userPref;
     String status, eventName = "MEMSVERIFI", statusReason = "";
-    int memId, pos;
+    int memId, pos, recordId;
     JSONObject json;
     static Typeface typefaceLight;
     ProgressBarCircularIndeterminate pDialog;
     ProgressBarCircularIndeterminate pDialogPop, pDialogBtm;
-    Dialog m_dialog;
+    Dialog m_dialog, filter_dialog;
     UserModelAdapter dataTaskGrpAdapter;
     TextView submitTxt, loginWithEMailTxt, discriptionEdit;
     CheckBox checkboxApprove, rejectCheckBox, deleteCheckBox;
     SharedPreferences.Editor editor;
     List<UserDetailsPojo> userList;
     List<UserDetailsPojo> globalUsersList = new ArrayList<>();
-    // UserDetailsPojo users;
     DatabaseHandler db;
     Gson gson;
     int limit = 10, currentPosition, offset = 0;
-
+    View v;
+    FloatingActionButton filterBtn;
+    String filter = "Inactive";
+    RadioGroup radioGroup;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+        v = inflater.inflate(
                 R.layout.list_members, container, false);
         context = getActivity();
         db = new DatabaseHandler(context);
         pDialog = (ProgressBarCircularIndeterminate)v.findViewById(R.id.pDialog);
         pDialogBtm = (ProgressBarCircularIndeterminate)v.findViewById(R.id.pDialogBtm);
         listviewMem = (ListView)v.findViewById(R.id.listViewMem);
-
+        filterBtn = (FloatingActionButton) v.findViewById(R.id.filterBtn);
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
         editor = userPref.edit();
-
         gson = new Gson();
+
+        filter_dialog = new Dialog(getActivity());
+        filter_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        filter_dialog.setContentView(R.layout.mem_filter_popup);
+        filter_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
 
         listviewMem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 Intent i = new Intent(getActivity(), UserProfile.class);
-
                 Gson gsonn = new Gson();
                 String json = gsonn.toJson(globalUsersList.get(position));
                 editor.putString("activityName", "mems_activity");
@@ -110,21 +117,80 @@ public class MemsListFragment extends Fragment {
             }.getType());
             dataTaskGrpAdapter = new UserModelAdapter(getActivity(), R.layout.member_row, userList);
             listviewMem.setAdapter(dataTaskGrpAdapter);
-            callListMems();
+            callListMems(filter);
         } else {
-            callListMems();
+            callListMems(filter);
             Log.d("DB NULL: " + eventName, "");
 
         }
+        filterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                TextView cancellTxt = (TextView) filter_dialog
+                        .findViewById(R.id.cancellTxt);
+                TextView submitTxt = (TextView) filter_dialog
+                        .findViewById(R.id.submitTxt);
+                radioGroup = (RadioGroup) filter_dialog.findViewById(R.id.myRadioGroup);
+                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+                    @Override
+                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                        // TODO Auto-generated method stub
+                        int pos = radioGroup.indexOfChild(filter_dialog.findViewById(checkedId));
+                        switch (pos) {
+                            case 0:
+                                filter = "Inactive";
+                                break;
+                            case 1:
+                                filter = "Approve";
+                                break;
+                            case 2:
+                                filter = "Delete";
+                                break;
+                            case 3:
+                                filter = "Reject";
+                                break;
+                            default:
+                                filter = "Inactive";
+                                break;
+                        }
+                    }
+                });
+                cancellTxt.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        filter_dialog.dismiss();
+                    }
+                });
+                submitTxt.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        globalUsersList = new ArrayList<UserDetailsPojo>();
+                        db.clearTable(DatabaseHandler.TABLE_MEMSVERIFI);
+                        // listviewMem.setAdapter(null);
+                        callListMems(filter);
+                        filter_dialog.dismiss();
+
+                    }
+                });
+                filter_dialog.show();
+            }
+        });
         return v;
     }
-    private void callListMems() {
+
+    private void callListMems(final String filter) {
         JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, MyApplication.HOSTNAME + "get_registered_users.json?user_id=" +
-                userPref.getString("USERID", "NV").replaceAll(" ", "%20") + "&limit=" + limit +"&offset="+offset,
+                userPref.getString("USERID", "NV").replaceAll(" ", "%20") + "&limit=" + limit + "&offset=" + offset + "&filter_type=" + filter,
                 (String) null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 //    pDialog.hide();
+                Log.d("MEMS LIST REQUEST : ", MyApplication.HOSTNAME + "get_registered_users.json?user_id=" +
+                        userPref.getString("USERID", "NV").replaceAll(" ", "%20") + "&limit=" + limit + "&offset=" + offset + "&filter_type=" + filter);
                 Log.d("Response", response.toString());
                 if (response != null) {
                     if (response.length() == 0
@@ -132,7 +198,8 @@ public class MemsListFragment extends Fragment {
                             || response.toString() == ""
                             || response.toString().equals("")) {
                         pDialog.setVisibility(View.GONE);
-                        Constants.showSnack(getActivity(),
+                        pDialogBtm.setVisibility(View.INVISIBLE);
+                        Constants.showSnack(v,
                                 "Oops! There is no members!",
                                 "OK");
                     } else {
@@ -145,9 +212,13 @@ public class MemsListFragment extends Fragment {
                                 .getLastVisiblePosition();
 
                         dataTaskGrpAdapter = new UserModelAdapter(getActivity(), R.layout.member_row, globalUsersList);
+
                         listviewMem.setAdapter(dataTaskGrpAdapter);
+
+                        dataTaskGrpAdapter.notifyDataSetChanged();
+
                         pDialog.setVisibility(View.GONE);
-                        pDialogBtm.setVisibility(View.GONE);
+                        pDialogBtm.setVisibility(View.INVISIBLE);
                         // Storing in DB
                         db.addEventNews(response, eventName);
                         //        //for updating new data
@@ -159,7 +230,7 @@ public class MemsListFragment extends Fragment {
                         int height = displayMetrics.heightPixels;
 
                         listviewMem.setSelectionFromTop(
-                                currentPosition + 1, height - 220);
+                                currentPosition, height - 220);
 
                         listviewMem
                                 .setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -176,6 +247,7 @@ public class MemsListFragment extends Fragment {
                                             AbsListView view, int scrollState) {
                                         // TODO Auto-generated method stub
                                         this.currentScrollState = scrollState;
+                                        pDialogBtm.setVisibility(View.INVISIBLE);
                                         if (view.getId() == listviewMem
                                                 .getId()) {
                                             final int currentFirstVisibleItem = listviewMem
@@ -208,13 +280,13 @@ public class MemsListFragment extends Fragment {
                                     }
 
                                     private void isScrollCompleted() {
-                                        pDialogBtm.setVisibility(View.VISIBLE);
                                         if (this.currentVisibleItemCount > 0
                                                 && this.currentScrollState == SCROLL_STATE_IDLE
                                                 && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
                                             offset = offset + 10;
-                                            callListMems();
-                                            pDialogBtm.setVisibility(View.GONE);
+                                            pDialogBtm.setVisibility(View.VISIBLE);
+                                            callListMems(filter);
+                                          //  pDialogBtm.setVisibility(View.GONE);
                                         }
                                     }
                                 });
@@ -229,7 +301,7 @@ public class MemsListFragment extends Fragment {
                 Log.d("Error = ", volleyError.toString());
 
                 pDialog.setVisibility(View.GONE);
-                Constants.showSnack(getActivity(),
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }
@@ -247,6 +319,13 @@ public class MemsListFragment extends Fragment {
             inflator = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
+
+        public int updateList(List<UserDetailsPojo> useList) {
+            notifyDataSetChanged();
+            return useList.size();
+
+        }
+
 
         @Override
         public int getCount() {
@@ -279,9 +358,9 @@ public class MemsListFragment extends Fragment {
                 holder = (ViewHolder) convertView.getTag();
             }
             holder.usernameTxt.setText(usersList.get(position).getUsername());
-            List<FlatDetailsPojo> flatsList = usersList.get(position).getGclife_registration_flatdetails();
+            final List<FlatDetailsPojo> flatsList = usersList.get(position).getGclife_registration_flatdetails();
             for (int i = 0; i < flatsList.size(); i++) {
-                holder.avenueNameTxt.setText(flatsList.get(i).getAvenue_name() + " , " + flatsList.get(i).getFlat_number() + " , " + flatsList.get(i).getBuildingid());
+                holder.avenueNameTxt.setText(flatsList.get(i).getAvenue_name()+ " , " + flatsList.get(i).getBuildingid()+" , " + flatsList.get(i).getFlat_number());
             }
             holder.profileImg.setOnClickListener(new View.OnClickListener() {
 
@@ -293,7 +372,6 @@ public class MemsListFragment extends Fragment {
                     String json = gsonn.toJson(usersList.get(position));
                     i.putExtra("EACH_USER_DET", json);
                     startActivity(i);
-                  
                 }
             });
             holder.settingsImg.setOnClickListener(new View.OnClickListener() {
@@ -322,12 +400,23 @@ public class MemsListFragment extends Fragment {
                     deleteCheckBox = (CheckBox) m_dialog
                             .findViewById(R.id.deleteCheckBox);
 
+                    if (usersList.get(position).getGclife_registration_flatdetails().get(0).getStatus().equalsIgnoreCase("Approve")) {
+                        checkboxApprove.setChecked(true);
+                        status = "Approve";
+                    } else if (usersList.get(position).getGclife_registration_flatdetails().get(0).getStatus().equalsIgnoreCase("Delete")) {
+                        deleteCheckBox.setChecked(true);
+                        status = "Delete";
+                    } else if (usersList.get(position).getGclife_registration_flatdetails().get(0).getStatus().equalsIgnoreCase("Reject")) {
+                        rejectCheckBox.setChecked(true);
+                        status = "Reject";
+                    }
                     submitTxt.setTypeface(typefaceLight);
                     cancellTxt.setTypeface(typefaceLight);
                     discriptionEdit.setTypeface(typefaceLight);
                     loginWithEMailTxt.setTypeface(typefaceLight);
                     Log.d("MEMID", String.valueOf(usersList.get(position).getId()));
                     memId = usersList.get(position).getId();
+                    recordId = flatsList.get(0).getId();
                     pos=position;
                     cancellTxt.setOnClickListener(new View.OnClickListener() {
 
@@ -342,7 +431,7 @@ public class MemsListFragment extends Fragment {
                         public void onClick(View v) {
                             statusReason = discriptionEdit.getText().toString();
                             if (status == null || status == "null" || status == "" || status.equals("")) {
-                                Constants.showSnack(getActivity(),
+                                Constants.showSnack(v,
                                         "Select atleast one action!",
                                         "OK");
                             } else {
@@ -428,7 +517,7 @@ public class MemsListFragment extends Fragment {
             // TODO Auto-generated method stub
             try {
                 Log.d("STATUS", status);
-                veriJson = MemsPost.activateMem(MyApplication.HOSTNAME, memId, status, statusReason);
+                veriJson = MemsPost.activateMem(MyApplication.HOSTNAME, memId, status, statusReason, recordId);
                 Log.d("MEM RESPONSE", veriJson.toString());
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -444,19 +533,19 @@ public class MemsListFragment extends Fragment {
             submitTxt.setVisibility(View.INVISIBLE);
             if (veriJson != null) {
                 if (status == "Reject" || status.equals("Reject")) {
-                    Constants.showSnack(getActivity(),
+                    Constants.showSnack(v,
                             "Rejected!",
                             "OK");
                 } else if (status == "Delete" || status.equals("status")) {
-                    Constants.showSnack(getActivity(),
+                    Constants.showSnack(v,
                             "Deleted!",
                             "OK");
                 } else if (status == "Approve" || status.equals("Approve")) {
-                    Constants.showSnack(getActivity(),
+                    Constants.showSnack(v,
                             "Approved!",
                             "OK");
                 } else {
-                    Constants.showSnack(getActivity(),
+                    Constants.showSnack(v,
                             "Oops! Something went wrong!",
                             "OK");
                 }
@@ -464,7 +553,7 @@ public class MemsListFragment extends Fragment {
                     Log.d("DB NOT NULL: " + eventName, db.getEventNews(eventName));
                     userList = gson.fromJson(db.getEventNews(eventName), new TypeToken<List<UserDetailsPojo>>() {
                     }.getType());
-                    userList.remove(pos);
+                   // userList.remove(pos);
                     String afterEdit = gson.toJson(userList);
                     try {
                         JSONArray arr = new JSONArray(afterEdit);
@@ -475,7 +564,7 @@ public class MemsListFragment extends Fragment {
 
                 }
             } else {
-                Constants.showSnack(getActivity(),
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }

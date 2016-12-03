@@ -1,5 +1,6 @@
 package mobile.gclifetest.activity;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
@@ -26,7 +28,6 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -36,18 +37,20 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mobile.gclifetest.http.SignUpPost;
+import mobile.gclifetest.http.SocietyNameGet;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
-import mobile.gclifetest.http.SignUpPost;
-import mobile.gclifetest.http.SocietyNameGet;
 
 public class Register extends BaseActivity {
 	TextView nextTxt;
@@ -70,17 +73,17 @@ public class Register extends BaseActivity {
 	EditText datewithOwnerEdit, lisecnseEndsOntxtEdit, flatNumEdit;
 	ProgressBarCircularIndeterminate pDialog,pDialog1;
 	JSONObject jsonSignupResult;
-	// View loginViewColor, flatDetailViewColor;
 	static final int DATE_DIALOG_FROMID = 0;
 	static final int DATE_DIALOG_TOID = 1;
 	JSONArray jsonResultArry;
 	ArrayAdapter<CharSequence> memberTypeAdapter;
 	Map<String, List<String>> societyMap = new HashMap<String, List<String>>();
-	Map<String, List<String>> buildingMap = new HashMap<String, List<String>>();
-	InternetConnectionDetector netConn;
+    public static Map<String, List<String>> buildingMap = new HashMap<String, List<String>>();
+    InternetConnectionDetector netConn;
 	Boolean isInternetPresent = false;
+    RelativeLayout snackLay;
 
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.register);
@@ -96,8 +99,8 @@ public class Register extends BaseActivity {
 		flatDteailTxt = (TextView) findViewById(R.id.flatDteailTxt);
 		pDialog1 = (ProgressBarCircularIndeterminate) findViewById(R.id.pDialog1);
 		flatDteailTxt.setTextColor(Color.parseColor("#C8C8C8"));
-
-		avenueSpinner = (Spinner) findViewById(R.id.avenueSpin);
+        snackLay = (RelativeLayout) findViewById(R.id.snackLay);
+        avenueSpinner = (Spinner) findViewById(R.id.avenueSpin);
 		societyNameSpinner = (Spinner) findViewById(R.id.societySpin);
 		flatNumEdit = (EditText) findViewById(R.id.flatNoEdit);
 		buildingSpinner = (Spinner) findViewById(R.id.buildingSpin);
@@ -212,41 +215,44 @@ public class Register extends BaseActivity {
 				mobileNum = mobileNumEdit.getText().toString();
 				if (userName == null || userName == "null" || userName == ""
 						|| userName.length() == 0) {
-					showSnack(Register.this,
-							"Please enter a valid username!",
+                    Constants.showSnack(v,
+                            "Please enter a valid username!",
 							"OK");
 				} else if (email == null || email == "null" || email == ""
 						|| email.length() == 0) {
-					showSnack(Register.this,
-							"Please enter your email!",
+                    Constants.showSnack(v,
+                            "Please enter your email!",
 							"OK");
 				} else if (email != null && !email.isEmpty()
 						&& !email.matches(checkPatternId)) {
-
-					showSnack(Register.this,
-							"Please enter a valid email address!",
+                    Constants.showSnack(v,
+                            "Please enter a valid email address!",
 							"OK");
 				} else if (password == null || password == "null"
 						|| password == "" || password.length() == 0) {
-					showSnack(Register.this,
-							"Please enter your password!",
+                    Constants.showSnack(v,
+                            "Please enter your password!",
 							"OK");
 				} else if (password.length() < 6) {
-					showSnack(Register.this,
-							"Your password must be at least 6 characters long!",
+                    Constants.showSnack(v,
+                            "Your password must be at least 6 characters long!",
 							"OK");
 				} else if (mobileNum == null || mobileNum == "null"
 						|| mobileNum == "" || mobileNum.length() == 0) {
-					showSnack(Register.this,
-							"Please enter mobile number!",
+                    Constants.showSnack(v,
+                            "Please enter mobile number!",
 							"OK");
 				} else if (mobileNum.length() < 10) {
-					showSnack(Register.this,
-							"Please enter proper mobile number!",
+                    Constants.showSnack(v,
+                            "Please enter proper mobile number!",
 							"OK");
 				} else {
 
 					if (isInternetPresent) {
+
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
 						loginDetailsTxt.setTextColor(Color
 								.parseColor("#C8C8C8"));
 						flatDteailTxt.setTextColor(Color.parseColor("#ffffff"));
@@ -258,9 +264,10 @@ public class Register extends BaseActivity {
 						editor.commit();
 						flatLay.setVisibility(View.VISIBLE);
 						layLogin.setVisibility(View.GONE);
-					} else {
-						showSnack(Register.this,
-								"Please check your internet settings!",
+
+                    } else {
+                        Constants.showSnack(v,
+                                "Please check your internet settings!",
 								"OK");
 					}
 
@@ -268,15 +275,7 @@ public class Register extends BaseActivity {
 
 			}
 		});
-		flatNumEdit.setCursorVisible(false);
-		flatNumEdit.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				flatNumEdit.setCursorVisible(true);
-			}
-		});
 		loginTab.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -302,37 +301,36 @@ public class Register extends BaseActivity {
 				mobileNum = mobileNumEdit.getText().toString();
 				if (userName == null || userName == "null" || userName == ""
 						|| userName.length() == 0) {
-					showSnack(Register.this,
-							"Please enter a valid username!",
+                    Constants.showSnack(v,
+                            "Please enter a valid username!",
 							"OK");
 				} else if (password == null || password == "null"
 						|| password == "" || password.length() == 0) {
-					showSnack(Register.this,
-							"Please enter your password!",
+                    Constants.showSnack(v,
+                            "Please enter your password!",
 							"OK");
 				} else if (password.length() < 6) {
-					showSnack(Register.this,
-							"Your password must be at least 6 characters long!",
+                    Constants.showSnack(v,
+                            "Your password must be at least 6 characters long!",
 							"OK");
 				} else if (mobileNum == null || mobileNum == "null"
 						|| mobileNum == "" || mobileNum.length() == 0) {
-					showSnack(Register.this,
-							"Please enter mobile number!",
+                    Constants.showSnack(v,
+                            "Please enter mobile number!",
 							"OK");
 				} else if (mobileNum.length() < 10) {
-					showSnack(Register.this,
-							"Please enter proper mobile number!",
+                    Constants.showSnack(v,
+                            "Please enter proper mobile number!",
 							"OK");
 				} else if (email == null || email == "null" || email == ""
 						|| email.length() == 0) {
-					showSnack(Register.this,
-							"Please enter your email!",
+                    Constants.showSnack(v,
+                            "Please enter your email!",
 							"OK");
 				} else if (email != null && !email.isEmpty()
 						&& !email.matches(checkPatternId)) {
-					
-					showSnack(Register.this,
-							"Please enter a valid email address!",
+                    Constants.showSnack(v,
+                            "Please enter a valid email address!",
 							"OK");
 				}else {
 					flatLay.setVisibility(View.VISIBLE);
@@ -357,41 +355,41 @@ public class Register extends BaseActivity {
 						+ "  ________________________");
 				if (avenueName == null || avenueName == "null"
 						|| avenueName == "" || avenueName.length() == 0) {
-					showSnack(Register.this,
-							"Please select Avenue Name!",
+                    Constants.showSnack(v,
+                            "Please select Avenue Name!",
 							"OK");
 				} else if (societyName == null || societyName == "null"
 						|| societyName == "" || societyName.length() == 0) {
-					showSnack(Register.this,
-							"Please select Society Name!",
+                    Constants.showSnack(v,
+                            "Please select Society Name!",
 							"OK");
 				} else if (buildingNum == null || buildingNum == "null"
 						|| buildingNum.length() == 0) {
-					showSnack(Register.this,
-							"Please enter Building Number!",
+                    Constants.showSnack(v,
+                            "Please enter Building Number!",
 							"OK");
 				} else if (flatNum == null || flatNum == "null"
 						|| flatNum.length() == 0) {
-					showSnack(Register.this,
-							"Please enter Flat Number!",
+                    Constants.showSnack(v,
+                            "Please enter Flat Number!",
 							"OK");
 				}
 
 				else if (flatType == null || flatType == "null"
 						|| flatType == "" || flatType.length() == 0) {
-					showSnack(Register.this,
-							"Please select Flat Type!",
+                    Constants.showSnack(v,
+                            "Please select Flat Type!",
 							"OK");
 				} else if (ownerType == null || ownerType == "null"
 						|| ownerType == "" || ownerType.length() == 0) {
-					showSnack(Register.this,
-							"Please select Owner Type!",
+                    Constants.showSnack(v,
+                            "Please select Owner Type!",
 							"OK");
 				} else if (memberType == null || memberType == "null"
 						|| memberType.length() == 0) {
 					System.out.println(memberType);
-					showSnack(Register.this,
-							"Please enter Member Type!",
+                    Constants.showSnack(v,
+                            "Please enter Member Type!",
 							"OK");
 				}
 
@@ -400,15 +398,15 @@ public class Register extends BaseActivity {
 						&& realtionShipWithOwner == null
 						&& realtionShipWithOwner.equals(null)
 						&& realtionShipWithOwner == "null") {
-					showSnack(Register.this,
-							"Please select a relation with owner!",
+                    Constants.showSnack(v,
+                            "Please select a relation with owner!",
 							"OK");
 
 				} else if (ownerType == "Licensee Owner"
 						|| ownerType.equals("Licensee Owner")&&liscenseDateStr.equals("") || liscenseDateStr == "") {
 					System.out.println(liscenseDateStr);
-					showSnack(Register.this,
-							"select a license end date!",
+                    Constants.showSnack(v,
+                            "select a license end date!",
 							"OK");
 				} 
 				
@@ -420,8 +418,8 @@ public class Register extends BaseActivity {
 						}
 						new SignUp().execute();
 					} else {
-						showSnack(Register.this,
-								"Please check your internet settings!",
+                        Constants.showSnack(v,
+                                "Please check your internet settings!",
 								"OK");
 					}
 
@@ -659,9 +657,6 @@ public class Register extends BaseActivity {
 								|| ownerType == "Dependant"
 								|| ownerType.equals("Dependant")) {
 
-							System.out
-									.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
 							ArrayAdapter<CharSequence> memberTypeAdapter = ArrayAdapter
 									.createFromResource(Register.this,
 											R.array.selectedmemberTypeArray,
@@ -675,18 +670,34 @@ public class Register extends BaseActivity {
 											Register.this));
 
 						} else {
+                            if (ownerType.equals("Individual Owner")
+                                    || ownerType.equals("Joint Owner")) {
 
-							ArrayAdapter<CharSequence> memberTypeAdapter = ArrayAdapter
-									.createFromResource(Register.this,
-											R.array.memberTypeArray,
-											R.layout.spinr_txt);
-							memberTypeAdapter
-									.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-							memberTypeSpinner
-									.setAdapter(new NothingSelectedSpinnerAdapter1(
-											memberTypeAdapter,
-											R.layout.member_spinner_nothing_selected,
-											Register.this));
+                                List<String> memsList = Arrays.asList(getResources().getStringArray(R.array.memberTypeOutNonmemberArray));
+                                ArrayAdapter<String> memberTypeAdapter = new ArrayAdapter<String>(Register.this,
+                                        R.layout.spinr_txt, memsList);
+                                memberTypeAdapter
+                                        .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                memberTypeSpinner
+                                        .setAdapter(new NothingSelectedSpinnerAdapter1(
+                                                memberTypeAdapter,
+                                                R.layout.member_spinner_nothing_selected,
+                                                Register.this));
+
+                            } else {
+                                ArrayAdapter<CharSequence> memberTypeAdapter = ArrayAdapter
+                                        .createFromResource(Register.this,
+                                                R.array.memberTypeArray,
+                                                R.layout.spinr_txt);
+                                memberTypeAdapter
+                                        .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                memberTypeSpinner
+                                        .setAdapter(new NothingSelectedSpinnerAdapter1(
+                                                memberTypeAdapter,
+                                                R.layout.member_spinner_nothing_selected,
+                                                Register.this));
+                            }
+
 						}
 						memberTypeSpinner.setEnabled(true);
 						if (ownerType == "Dependant"
@@ -776,8 +787,8 @@ public class Register extends BaseActivity {
 	public class SocietyNames extends AsyncTask<Void, Void, Void> {
 		@Override
 		protected void onPreExecute() {
-			pDialog1.setVisibility(View.VISIBLE);
-		}
+            //pDialog1.setVisibility(View.VISIBLE);
+        }
 
 		@Override
 		protected Void doInBackground(Void... params) {
@@ -879,8 +890,8 @@ public class Register extends BaseActivity {
 
 			} else {
 				pDialog1.setVisibility(View.GONE);
-				showSnack(Register.this,
-						"Oops! Something went wrong. Please wait a moment!",
+                Constants.showSnack(snackLay,
+                        "Oops! Something went wrong. Please wait a moment!",
 						"OK");
 			}
 		}
@@ -1005,8 +1016,8 @@ public class Register extends BaseActivity {
 								.getJSONObject("errors");
 
 						if (jsonError.has("email")) {
-							showSnack(Register.this,
-									"email has already been taken!",
+                            Constants.showSnack(snackLay,
+                                    "email has already been taken!",
 									"OK");
 							
 							flatLay.setVisibility(View.GONE);
@@ -1015,8 +1026,8 @@ public class Register extends BaseActivity {
 							flatDteailTxt.setTextColor(Color.parseColor("#C8C8C8"));
 							loginDetailsTxt.setTextColor(Color.parseColor("#ffffff"));
 						} else if (jsonError.has("mobile")) {
-							showSnack(Register.this,
-									"mobile no. has already been taken!",
+                            Constants.showSnack(snackLay,
+                                    "mobile no. has already been taken!",
 									"OK");
 							flatLay.setVisibility(View.GONE);
 							layLogin.setVisibility(View.VISIBLE);
@@ -1024,8 +1035,8 @@ public class Register extends BaseActivity {
 							flatDteailTxt.setTextColor(Color.parseColor("#C8C8C8"));
 							loginDetailsTxt.setTextColor(Color.parseColor("#ffffff"));
 						} else if (jsonError.has("flat")) {
-							showSnack(Register.this,
-									"Invalid flat number!",
+                            Constants.showSnack(snackLay,
+                                    "Invalid flat number!",
 									"OK");
 						}
 
@@ -1061,8 +1072,8 @@ public class Register extends BaseActivity {
 						startActivity(otp);
 						overridePendingTransition(R.anim.slide_in_left,
 								R.anim.slide_out_left);
-						showSnack(Register.this,
-								"OTP has sent to your mobile!",
+                        Constants.showSnack(snackLay,
+                                "OTP has sent to your mobile!",
 								"OK");
 					}
 
@@ -1074,9 +1085,8 @@ public class Register extends BaseActivity {
 			} else {
 				pDialog.setVisibility(View.GONE);
 				finishTxt.setVisibility(View.VISIBLE);
-
-				showSnack(Register.this,
-						"Oops! Something went wrong. Please wait a moment!",
+                Constants.showSnack(snackLay,
+                        "Oops! Something went wrong. Please wait a moment!",
 						"OK");
 			}
 		}
@@ -1095,13 +1105,5 @@ public class Register extends BaseActivity {
 			break;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-	void showSnack(Register login, String stringMsg, String ok) {
-		new SnackBar(Register.this, stringMsg, ok, new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-			}
-		}).show();
 	}
 }

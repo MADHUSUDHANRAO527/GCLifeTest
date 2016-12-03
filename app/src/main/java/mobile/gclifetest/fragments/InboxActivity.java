@@ -1,15 +1,17 @@
 package mobile.gclifetest.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.MenuItem;
 
-import mobile.gclifetest.materialDesign.PagerSlidingTabStrip;
 import mobile.gclifetest.activity.BaseActivity;
+import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.adapters.InboxPagerAdapter;
+import mobile.gclifetest.materialDesign.PagerSlidingTabStrip;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -25,6 +27,8 @@ public class InboxActivity  extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.frds_detail_tabstrip);
+        Intent i=getIntent();
+        Bundle bundle=i.getExtras();
 
         tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         pager = (ViewPager) findViewById(R.id.pager);
@@ -60,6 +64,9 @@ public class InboxActivity  extends BaseActivity {
                 // Code goes here
             }
         });
+        if (bundle != null) {
+            pager.setCurrentItem(1);
+        }
         setUpActionBar("Mail");
         getSupportActionBar().setElevation(0);
     }
@@ -69,8 +76,7 @@ public class InboxActivity  extends BaseActivity {
 
             case android.R.id.home:
                 onBackPressed();
-                overridePendingTransition(R.anim.slide_right_in,
-                        R.anim.slide_out_right);
+
                 return true;
             default:
                 break;
@@ -78,4 +84,12 @@ public class InboxActivity  extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(this, HomeActivity.class);
+        startActivity(i);
+        overridePendingTransition(R.anim.slide_right_in,
+                R.anim.slide_out_right);
+    }
 }

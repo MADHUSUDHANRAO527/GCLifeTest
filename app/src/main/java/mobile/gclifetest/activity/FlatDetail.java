@@ -1,27 +1,46 @@
 package mobile.gclifetest.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 
 public class FlatDetail extends BaseActivity {
     TextView avenueNameTxt, societyNameTxt, buidlingNameTxt, flatNumtxt,
             loginDetailsTxt, flatDteailTxt, flatTypetxt, ownwerTypetxt,
             memTypeTxt, dateFrmTypetxt, avenueHeadTxt,
             socityHeader, buildingHeader, flatNumHeader, flatTypeHeader,
-            ownerTypeHeader, memTypeHeader, relationSDateHeader, flatStatusTxt, flat_status_header;
+            ownerTypeHeader, memTypeHeader, relationSDateHeader, flatStatusTxt, flat_status_header, reset_txt, licenceEndDateHeader, licenceEndDateTxt;
     Typeface typefaceLight, typeMeduim;
-    LinearLayout relationStartLay;
-
+    LinearLayout relationStartLay, switchLay, licenceEndDateLay;
+    Switch pSwitch;
+    UserDetailsPojo user;
+    String swicthState;
+    SharedPreferences userPref;
+    RelativeLayout snackLay;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +59,10 @@ public class FlatDetail extends BaseActivity {
         memTypeTxt = (TextView) findViewById(R.id.memTypeTxt);
         ownwerTypetxt = (TextView) findViewById(R.id.ownerTypeTxt);
         dateFrmTypetxt = (TextView) findViewById(R.id.relationSDateTxt);
+        reset_txt = (TextView) findViewById(R.id.reset_txt);
         relationStartLay = (LinearLayout) findViewById(R.id.relationStartLay);
+        licenceEndDateLay = (LinearLayout) findViewById(R.id.licence_end_date_lay);
+        switchLay = (LinearLayout) findViewById(R.id.switchLay);
         avenueHeadTxt = (TextView) findViewById(R.id.avenueHeadTxt);
         socityHeader = (TextView) findViewById(R.id.socityHeader);
         buildingHeader = (TextView) findViewById(R.id.buildingHeader);
@@ -51,7 +73,10 @@ public class FlatDetail extends BaseActivity {
         memTypeHeader = (TextView) findViewById(R.id.memTypeHeader);
         ownerTypeHeader = (TextView) findViewById(R.id.ownerTypeHeader);
         relationSDateHeader = (TextView) findViewById(R.id.relationSDateHeader);
-
+        licenceEndDateHeader = (TextView) findViewById(R.id.licence_end_date);
+        licenceEndDateTxt = (TextView) findViewById(R.id.licence_end_date_txt);
+        pSwitch = (Switch) findViewById(R.id.privacySwitch);
+        snackLay = (RelativeLayout) findViewById(R.id.snackLay);
         avenueNameTxt.setTypeface(typefaceLight);
         societyNameTxt.setTypeface(typefaceLight);
         buidlingNameTxt.setTypeface(typefaceLight);
@@ -61,10 +86,13 @@ public class FlatDetail extends BaseActivity {
         memTypeTxt.setTypeface(typefaceLight);
         dateFrmTypetxt.setTypeface(typefaceLight);
         flatStatusTxt.setTypeface(typefaceLight);
+        licenceEndDateTxt.setTypeface(typefaceLight);
 
+        reset_txt.setTypeface(typeMeduim);
         avenueHeadTxt.setTypeface(typeMeduim);
         socityHeader.setTypeface(typeMeduim);
         buildingHeader.setTypeface(typeMeduim);
+        licenceEndDateHeader.setTypeface(typeMeduim);
         flatNumHeader.setTypeface(typeMeduim);
         ownerTypeHeader.setTypeface(typeMeduim);
         flatTypeHeader.setTypeface(typeMeduim);
@@ -76,8 +104,12 @@ public class FlatDetail extends BaseActivity {
         Bundle bundle = intent.getExtras();
         String flatDetails = bundle.getString("DETAILS");
         Gson gson = new GsonBuilder().create();
-        FlatDetailsPojo flats = gson.fromJson(flatDetails,
+        final FlatDetailsPojo flats = gson.fromJson(flatDetails,
                 FlatDetailsPojo.class);
+
+        userPref = getSharedPreferences("USER", MODE_PRIVATE);
+        String jsonUser = userPref.getString("USER_DATA", "NV");
+        user = gson.fromJson(jsonUser, UserDetailsPojo.class);
 
         avenueNameTxt.setText(flats.getAvenue_name());
         societyNameTxt.setText(flats.getSocietyid());
@@ -89,6 +121,13 @@ public class FlatDetail extends BaseActivity {
         } else {
             relationStartLay.setVisibility(View.GONE);
         }
+     //   Log.d("END DATE", flats.getTenurestart());
+        if (flats.getTenurestart() == null) {
+            licenceEndDateLay.setVisibility(View.GONE);
+        } else {
+            licenceEndDateLay.setVisibility(View.VISIBLE);
+            licenceEndDateTxt.setText(flats.getTenurestart());
+        }
         ownwerTypetxt.setText(flats.getOwnertypeid());
         flatTypetxt.setText(flats.getFlat_type());
         if (flats.getMember_type() == "Non_members" || flats.getMember_type().equals("Non_members")) {
@@ -96,15 +135,74 @@ public class FlatDetail extends BaseActivity {
         } else {
             memTypeTxt.setText(flats.getMember_type());
         }
-        if (flats.getStatus() == "Inactive" || flats.getStatus().equals("Inactive")) {
+
+        if (flats.getStatus().equals("Inactive")) {
             flatStatusTxt.setText("Approval Pending");
+            pSwitch.setChecked(false);
         } else if (flats.getStatus().equalsIgnoreCase("Reject")) {
             flatStatusTxt.setText("Rejected / Suspended");
+            pSwitch.setChecked(false);
         } else if (flats.getStatus().equalsIgnoreCase("Delete")) {
             flatStatusTxt.setText("Deleted");
+            pSwitch.setChecked(false);
         } else {
             flatStatusTxt.setText("Approved");
+            pSwitch.setChecked(true);
         }
+
+        Log.d("EMAIL : ", user.getEmail());
+        if (user.getEmail().equalsIgnoreCase("gclife@gmail.com")) {
+            switchLay.setVisibility(View.GONE);
+        } else {
+            switchLay.setVisibility(View.GONE);
+        }
+
+        pSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    swicthState = "on";
+                } else {
+                    swicthState = "off";
+                }
+                activateUsers(flats.getId(), swicthState);
+            }
+        });
+    }
+
+    private void activateUsers(int userId, String swicthState) {
+        String host = MyApplication.HOSTNAME + "reset_user.json?flat_id=" + userId + "&status=" + swicthState;
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, host.replaceAll(" ", "%20"), (String) null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("SWITCH RESPONSE : ", response.toString());
+                try {
+                    if (response.getString("status").equals("Inactive")) {
+                        flatStatusTxt.setText("Approval Pending");
+                    } else if (response.getString("status").equalsIgnoreCase("Reject")) {
+                        flatStatusTxt.setText("Rejected / Suspended");
+                    } else if (response.getString("status").equalsIgnoreCase("Delete")) {
+                        flatStatusTxt.setText("Deleted");
+                    } else {
+                        flatStatusTxt.setText("Approved");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                volleyError.printStackTrace();
+                Log.d("Error = ", volleyError.toString());
+                Constants.showSnack(snackLay,
+                        "Oops! Something went wrong. Please check internet connection!",
+                        "OK");
+            }
+        });
+        MyApplication.queue.add(request);
+
     }
 
     @Override

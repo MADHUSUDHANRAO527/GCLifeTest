@@ -22,7 +22,6 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -32,17 +31,19 @@ import org.json.JSONObject;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.pojoGson.UserDetailsPojo;
-import mobile.gclifetest.utils.MyApplication;
-import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 import mobile.gclifetest.http.SignUpPost;
 import mobile.gclifetest.http.SocietyNameGet;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 
 public class AddFlats extends BaseActivity {
 	Typeface typefaceLight;
@@ -63,9 +64,8 @@ public class AddFlats extends BaseActivity {
 	RelativeLayout reltionwithOwnerLay, line6,dateToLay;
 	Editor editor;
 	JSONObject jsonFlatResults;
-
 	JSONArray jsonResultArry;
-
+    RelativeLayout snackLay;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -87,6 +87,7 @@ public class AddFlats extends BaseActivity {
 		line6 = (RelativeLayout) findViewById(R.id.line6);
 		lisecnseEndsOntxtEdit = (EditText) findViewById(R.id.lisecnseEndsOntxtEdit);
 		finishTxt = (TextView) findViewById(R.id.finishTxt);
+        snackLay=(RelativeLayout)findViewById(R.id.snackLay);
 		typefaceLight = Typeface.createFromAsset(getAssets(),
 				"fonts/RobotoLight.ttf");
 		userPref = getSharedPreferences("USER", MODE_PRIVATE);
@@ -283,7 +284,7 @@ public class AddFlats extends BaseActivity {
 				buildingNum = String.valueOf(buildingSpinner.getSelectedItem());
 				flatTypeSpinner.setEnabled(true);
 
-				flatNumEdit.setCursorVisible(false);
+			//	flatNumEdit.setCursorVisible(false);
 
 			}
 
@@ -293,14 +294,14 @@ public class AddFlats extends BaseActivity {
 				flatTypeSpinner.setEnabled(false);
 			}
 		});
-		flatNumEdit.setOnClickListener(new OnClickListener() {
+		/*flatNumEdit.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				flatNumEdit.setCursorVisible(true);
 			}
-		});
+		});*/
 		flatTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 
 			@Override
@@ -356,17 +357,31 @@ public class AddFlats extends BaseActivity {
 
 						} else {
 
-							ArrayAdapter<CharSequence> memberTypeAdapter = ArrayAdapter
-									.createFromResource(AddFlats.this,
-											R.array.memberTypeArray,
-											R.layout.spinr_txt);
-							memberTypeAdapter
-									.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-							memberTypeSpinner
-									.setAdapter(new NothingSelectedSpinnerAdapter1(
-											memberTypeAdapter,
-											R.layout.member_spinner_nothing_selected,
-											AddFlats.this));
+							if (ownerType.equals("Individual Owner")
+									|| ownerType.equals("Joint Owner")) {
+								List<String> memsList = Arrays.asList(getResources().getStringArray(R.array.memberTypeOutNonmemberArray));
+								ArrayAdapter<String> memberTypeAdapter = new ArrayAdapter<String>(AddFlats.this,
+										R.layout.spinr_txt, memsList);
+								memberTypeAdapter
+										.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+								memberTypeSpinner
+										.setAdapter(new NothingSelectedSpinnerAdapter1(
+												memberTypeAdapter,
+												R.layout.member_spinner_nothing_selected,
+												AddFlats.this));
+							} else {
+								ArrayAdapter<CharSequence> memberTypeAdapter = ArrayAdapter
+										.createFromResource(AddFlats.this,
+												R.array.memberTypeArray,
+												R.layout.spinr_txt);
+								memberTypeAdapter
+										.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+								memberTypeSpinner
+										.setAdapter(new NothingSelectedSpinnerAdapter1(
+												memberTypeAdapter,
+												R.layout.member_spinner_nothing_selected,
+												AddFlats.this));
+							}
 						}
 
 						memberTypeSpinner.setEnabled(true);
@@ -466,48 +481,48 @@ public class AddFlats extends BaseActivity {
 
 				if (avenueName == null || avenueName == "null"
 						|| avenueName == "" || avenueName.length() == 0) {
-					showSnack(AddFlats.this, "Please select Avenue Name!", "OK");
+					Constants.showSnack(v, "Please select Avenue Name!", "OK");
 				} else if (societyName == null || societyName == "null"
 						|| societyName == "" || societyName.length() == 0) {
-					showSnack(AddFlats.this, "Please select Society Name!",
+					Constants.showSnack(v, "Please select Society Name!",
 							"OK");
 				} else if (buildingNum == null || buildingNum == "null"
 						|| buildingNum.length() == 0) {
 
-					showSnack(AddFlats.this, "Please enter Building Number!",
+					Constants.showSnack(v, "Please enter Building Number!",
 							"OK");
 				} else if (flatNum == null || flatNum == "null"
 						|| flatNum.length() == 0) {
-					showSnack(AddFlats.this, "Please enter Flat Number!", "OK");
+					Constants.showSnack(v, "Please enter Flat Number!", "OK");
 				}
 
 				else if (flatType == null || flatType == "null"
 						|| flatType == "" || flatType.length() == 0) {
-					showSnack(AddFlats.this, "Please select Flat Type!", "OK");
+					Constants.showSnack(v, "Please select Flat Type!", "OK");
 				} else if (ownerType == null || ownerType == "null"
 						|| ownerType == "" || ownerType.length() == 0) {
-					showSnack(AddFlats.this, "Please select Owner Type!", "OK");
+					Constants.showSnack(v, "Please select Owner Type!", "OK");
 				} else if (memberType == null || memberType == "null"
 						|| memberType.length() == 0) {
-					showSnack(AddFlats.this, "Please enter Member Type!", "OK");
+					Constants.showSnack(v, "Please enter Member Type!", "OK");
 				} else if (ownerType == "Dependant Owner"
 						&& ownerType.equals("Dependant Owner")
 						&& realtionShipWithOwner == null
 						&& realtionShipWithOwner.equals(null)
 						&& realtionShipWithOwner == "null") {
-					showSnack(AddFlats.this,
+					Constants.showSnack(v,
 							"Please select a relation with owner!",
 							"OK");
 
 				} else if (ownerType == "Licensee Owner"
 						|| ownerType.equals("Licensee Owner")&&liscenseDateStr.equals("") || liscenseDateStr == "") {
 					System.out.println(liscenseDateStr);
-					showSnack(AddFlats.this,
+					Constants.showSnack(v,
 							"select a license end date!",
 							"OK");
 				} else {
 
-					new AddFlatDetail().execute();
+					new AddFlatDetail(v).execute();
 
 				}
 
@@ -517,6 +532,11 @@ public class AddFlats extends BaseActivity {
 	}
 
 	public class AddFlatDetail extends AsyncTask<Void, Void, Void> {
+		View view;
+		public AddFlatDetail(View v) {
+			view=v;
+		}
+
 		@Override
 		protected void onPreExecute() {
 			pDialog.setVisibility(View.VISIBLE);
@@ -568,7 +588,7 @@ public class AddFlats extends BaseActivity {
 						JSONObject jsonError = jsonFlatResults
 								.getJSONObject("errors");
 						if (jsonError.has("flat")) {
-							showSnack(AddFlats.this,
+							Constants.showSnack(view,
 									"Invalid flat number!",
 									"OK");
 						}
@@ -607,7 +627,7 @@ public class AddFlats extends BaseActivity {
 				pDialog.setVisibility(View.GONE);
 				finishTxt.setVisibility(View.VISIBLE);
 
-				showSnack(AddFlats.this,
+				Constants.showSnack(view,
 						"Oops! Something went wrong. Please wait a moment!",
 						"OK");
 			}
@@ -722,7 +742,7 @@ public class AddFlats extends BaseActivity {
 				}
 
 			} else {
-				showSnack(AddFlats.this,
+				Constants.showSnack(snackLay,
 						"Oops! Something went wrong. Please wait a moment!",
 						"OK");
 				pDialog1.setVisibility(View.GONE);
@@ -802,12 +822,12 @@ public class AddFlats extends BaseActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	void showSnack(AddFlats flats, String stringMsg, String ok) {
+	/*void showSnack(AddFlats flats, String stringMsg, String ok) {
 		new SnackBar(AddFlats.this, stringMsg, ok, new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 			}
 		}).show();
-	}
+	}*/
 }

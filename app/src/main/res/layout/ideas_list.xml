@@ -1,5 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/snackLay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
@@ -20,7 +20,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:drawableLeft="@android:drawable/ic_menu_search"
-            android:hint="Search your friends"
+            android:hint=""
             android:imeOptions="actionSearch"
             android:inputType="text" />
 
@@ -50,6 +50,7 @@
         android:id="@+id/activity_main_swipe_refresh_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/pDialogBtm"
         android:layout_below="@+id/searchLay">
 
         <ListView
@@ -59,6 +60,7 @@
             android:layout_gravity="left|start"
             android:background="#ffeeeeee"
             android:cacheColorHint="@android:color/transparent"
+            android:footerDividersEnabled="false"
             android:divider="#00000000" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -73,7 +75,7 @@
         android:textSize="16sp"
         android:visibility="gone" />
 
-    <com.gc.materialdesign.views.ButtonFloat
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/addBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,8 +84,7 @@
         android:layout_marginBottom="30dp"
         android:layout_marginRight="24dp"
         android:background="#3f51b5"
-        materialdesign:animate="false"
-        materialdesign:iconDrawable="@drawable/ic_action_new" />
+        android:src="@drawable/ic_action_new" />
 
     <mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate
         android:id="@+id/pDialog"
@@ -100,5 +101,5 @@
         android:layout_centerInParent="true"
         android:background="#1E88E5"
         android:layout_alignParentBottom="true"
-        android:visibility="gone" />
+        android:visibility="invisible" />
 </RelativeLayout>

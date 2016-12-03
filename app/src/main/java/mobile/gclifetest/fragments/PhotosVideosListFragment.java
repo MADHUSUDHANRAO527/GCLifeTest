@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
@@ -48,7 +49,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
-import com.gc.materialdesign.views.ButtonFloat;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -87,7 +87,7 @@ import mobile.gclifetest.utils.MyApplication;
  */
 public class PhotosVideosListFragment extends Fragment {
     Context context;
-    ButtonFloat addBtn;
+    FloatingActionButton addBtn;
     ProgressBarCircularIndeterminate pDialog, pDialogBtm;
     InternetConnectionDetector netConn;
     UserDetailsPojo user;
@@ -110,22 +110,22 @@ public class PhotosVideosListFragment extends Fragment {
     Runnable run;
     RelativeLayout searchLay;
     ProgressBar progressBar;
-    boolean progressShow = true;
+    boolean progressShow = true, imPagination = true;
     EditText searchEdit;
     String searchStr = "";
     ImageView clearImg;
     ImageLoader imageLoader;
     DisplayImageOptions options;
     int limit = 10, currentPosition, offset = 0;
-
+    View v;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+        v = inflater.inflate(
                 R.layout.ideas_list, container, false);
         context = getActivity();
         db = new DatabaseHandler(getActivity());
-        addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+        addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
         pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
         listviewIdeas = (ListView) v.findViewById(R.id.listview);
         mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.activity_main_swipe_refresh_layout);
@@ -135,7 +135,7 @@ public class PhotosVideosListFragment extends Fragment {
         searchLay = (RelativeLayout) v.findViewById(R.id.searchLay);
         clearImg = (ImageView) v.findViewById(R.id.clearImg);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
-                R.color.green, R.color.blue);
+                android.R.color.holo_green_dark, R.color.blue);
         typefaceLight = Typeface.createFromAsset(context.getAssets(),
                 "fonts/RobotoLight.ttf");
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
@@ -150,10 +150,11 @@ public class PhotosVideosListFragment extends Fragment {
                 .showImageOnLoading(R.drawable.no_media).build();
 
         addBtn.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
+               /* Intent i=new Intent(getActivity(),YoutubeUpload.class);
+                startActivity(i);*/
                 PhotosCreateFragment fragment = new PhotosCreateFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("EventName", eventName);
@@ -165,7 +166,6 @@ public class PhotosVideosListFragment extends Fragment {
         String jsonUser = userPref.getString("USER_DATA", "NV");
         user = gson.fromJson(jsonUser, UserDetailsPojo.class);
         flatsList = user.getGclife_registration_flatdetails();
-
         flats = flatsList.get(0);
 
         listviewIdeas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -293,10 +293,19 @@ public class PhotosVideosListFragment extends Fragment {
                 //    pDialog.hide();
                 Log.d("Response", response.toString());
                 if (response.toString() == "[]" || response.length() == 0) {
-                    Constants.showSnack(context,
-                            "Oops! There is no " + eventName + "!", "");
+                    if (searchStr.length() > 0) {
+                        Constants.showSnack(v,
+                                "Search result not found, please try with another search criteria!", "");
+                    } else {
+                        Constants.showSnack(v,
+                                "No further " + eventName + " content is available!", "");
+                    }
+
+                    if (imPagination) {
+                        listviewIdeas.setAdapter(null);
+                    }
                     pDialog.setVisibility(View.GONE);
-                    pDialogBtm.setVisibility(View.GONE);
+                    pDialogBtm.setVisibility(View.INVISIBLE);
                 } else if (response != null) {
                     eventsPojo = gson.fromJson(response.toString(), new TypeToken<List<EventsPojo>>() {
                     }.getType());
@@ -308,7 +317,7 @@ public class PhotosVideosListFragment extends Fragment {
                             getActivity(), globalEventsPojo);
                     listviewIdeas.setAdapter(adapter);
                     pDialog.setVisibility(View.GONE);
-                    pDialogBtm.setVisibility(View.GONE);
+                    pDialogBtm.setVisibility(View.INVISIBLE);
                     // Storing in DB
                     db.addEventNews(response, eventName);
                     //for updating new data
@@ -320,7 +329,7 @@ public class PhotosVideosListFragment extends Fragment {
                     int height = displayMetrics.heightPixels;
 
                     listviewIdeas.setSelectionFromTop(
-                            currentPosition + 1, height - 220);
+                            currentPosition, height - 220);
 
                     listviewIdeas
                             .setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -337,7 +346,7 @@ public class PhotosVideosListFragment extends Fragment {
                                         AbsListView view, int scrollState) {
                                     // TODO Auto-generated method stub
                                     this.currentScrollState = scrollState;
-                                    pDialogBtm.setVisibility(View.GONE);
+                                    pDialogBtm.setVisibility(View.INVISIBLE);
                                     if (view.getId() == listviewIdeas
                                             .getId()) {
                                         final int currentFirstVisibleItem = listviewIdeas
@@ -362,7 +371,7 @@ public class PhotosVideosListFragment extends Fragment {
                                                      int visibleItemCount,
                                                      int totalItemCount) {
                                     // TODO Auto-generated method stub
-                                    pDialogBtm.setVisibility(View.GONE);
+                                    pDialogBtm.setVisibility(View.INVISIBLE);
                                     this.currentFirstVisibleItem = firstVisibleItem;
                                     this.currentVisibleItemCount = visibleItemCount;
                                     this.totalItemCount = totalItemCount;
@@ -376,8 +385,9 @@ public class PhotosVideosListFragment extends Fragment {
                                             && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
                                         offset = offset + 10;
                                         progressShow = false;
+                                        imPagination = false;
                                         callEventsList(searchStr);
-                                        pDialogBtm.setVisibility(View.GONE);
+                                        pDialogBtm.setVisibility(View.INVISIBLE);
                                     }
                                 }
                             });
@@ -391,7 +401,7 @@ public class PhotosVideosListFragment extends Fragment {
                 Log.d("Error = ", volleyError.toString());
 
                 pDialog.setVisibility(View.GONE);
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }
@@ -404,7 +414,6 @@ public class PhotosVideosListFragment extends Fragment {
         List<EventsPojo> eventsPojos = new ArrayList<EventsPojo>();
         private LayoutInflater inflator;
         private Context context;
-        ArrayList<String> likeCheckArr = new ArrayList<String>();
 
         public ListIdeasBaseAdapter(Activity activity,
                                     List<EventsPojo> eventsPojo) {
@@ -478,17 +487,17 @@ public class PhotosVideosListFragment extends Fragment {
                 holder.comntCountTxt.setText(String.valueOf(eventsPojos.get(position).getEvent_comments().size()));
             }
             eid = String.valueOf(eventsPojos.get(position).getId());
+            final ArrayList<String> likeCheckArr = new ArrayList<String>();
             if (eventsPojos.get(position).getEvent_likes().size() > 0) {
                 holder.likesCountTxt.setText(String.valueOf(eventsPojos.get(position).getEvent_likes().size()));
-                likeCheckArr.add(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()));
-            }
-            imageLoader.displayImage(eventsPojos.get(position).getEvent_images().get(0).getImage_url(), holder.shareeImg, options);
-            /*if (String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId())  == null||String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()) == ""
-                    || String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()).equals("")) {
+                for (int i = 0; i < eventsPojos.get(position).getEvent_likes().size(); i++) {
+                    likeCheckArr.add(String.valueOf(eventsPojos.get(position).getEvent_likes().get(i).getUser_id()));
+                }
 
-			} else {
-				likeCheckArr.add(String.valueOf(eventsPojos.get(position).getEvent_likes().get(position).getId()));
-			}*/
+            }
+            if (eventsPojos.get(position).getEvent_images().size() > 0) {
+                imageLoader.displayImage(eventsPojos.get(position).getEvent_images().get(0).getImage_url(), holder.shareeImg, options);
+            }
 
             holder.detailClick.setOnClickListener(new View.OnClickListener() {
 
@@ -554,8 +563,10 @@ public class PhotosVideosListFragment extends Fragment {
                     onShareItem(v, holder.shareeImg);
                 }
             });
+            System.out.println(eventsPojos.get(position).getEvent_likes() + " !!!!!!!!!SIZE!!!!!!!!!!" + likeCheckArr.toString());
+
             if (eventsPojos.get(position).getEvent_likes().size() > 0) {
-                if (likeCheckArr.contains(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()))) {
+                if (likeCheckArr.contains(userPref.getString("USERID", "NV"))) {
                     holder.likeImg.setImageResource(R.drawable.liked);
                 } else {
                     holder.likeImg.setImageResource(R.drawable.unlike);
@@ -567,19 +578,17 @@ public class PhotosVideosListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-                    if (eventsPojos.get(position).getEvent_likes().isEmpty() || eventsPojos.get(position).getEvent_likes().toString() == "[]") {
+
+                    if (likeCheckArr.contains(userPref.getString("USERID", "NV"))) {
+                        Constants.showSnack(v, "Oops! You already liked it!",
+                                "OK");
+                    } else {
                         eid = String.valueOf(eventsPojos.get(position).getId());
                         int likes = Integer.valueOf(String.valueOf(eventsPojos.get(position).getEvent_likes().size()));
                         int lik = likes + 1;
                         holder.likesCountTxt.setText(String.valueOf(lik));
                         holder.likeImg.setImageResource(R.drawable.liked);
                         LikeUnlike();
-                    } else {
-                        if (likeCheckArr.contains(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()))) {
-                            Constants.showSnack(context, "Oops! You already liked it!",
-                                    "OK");
-                            // holder.likeImg.setImageResource(R.drawable.unlike);
-                        }
                     }
                 }
             });
@@ -631,11 +640,11 @@ public class PhotosVideosListFragment extends Fragment {
 
             if (jsonLike != null) {
                 if (jsonLike.has("errors")) {
-                    Constants.showSnack(context, "Oops! You already liked it!",
+                    Constants.showSnack(v, "Oops! You already liked it!",
                             "OK");
                 }
             } else {
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }
@@ -687,7 +696,7 @@ public class PhotosVideosListFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void unused) {
-            Constants.showSnack(context,
+            Constants.showSnack(v,
                     "Deleted!",
                     "OK");
             adapter.notifyDataSetChanged();
@@ -750,6 +759,7 @@ public class PhotosVideosListFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(eventName);
+        searchEdit.setHint("Search your " + eventName.toLowerCase());
     }
 
     @Override
@@ -761,7 +771,7 @@ public class PhotosVideosListFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(AddIdeasEvent event) {
         if (event.success) {
-            pDialogBtm.setVisibility(View.GONE);
+            pDialogBtm.setVisibility(View.INVISIBLE);
             globalEventsPojo.clear();
             callEventsList(searchStr);
         }

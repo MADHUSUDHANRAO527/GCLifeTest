@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,7 +33,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
-import com.gc.materialdesign.views.ButtonFloat;
 import com.google.android.gms.common.AccountPicker;
 
 import org.greenrobot.eventbus.EventBus;
@@ -50,11 +50,11 @@ import java.util.Map;
 import java.util.Set;
 
 import mobile.gclifetest.activity.HomeActivity;
-import mobile.gclifetest.activity.PhotosList;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.custom.CustomImgGalleryActivity;
 import mobile.gclifetest.custom.GalleryImgAdapter;
 import mobile.gclifetest.event.AddIdeasEvent;
+import mobile.gclifetest.fragments.PhotosVideosListFragment;
 import mobile.gclifetest.http.EvenstPost;
 import mobile.gclifetest.http.SocietyNameGet;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
@@ -74,7 +74,7 @@ import mobile.gclifetest.youtube.util.DialogUtil;
 public class PhotosCreateFrag extends Fragment {
     Context context;
     private String videoFileName = "";
-    ButtonFloat addBtn;
+    FloatingActionButton addBtn;
     EditText titleEdit;
     JSONObject jsonResult;
     String ideaTitle, ext, fileName, mediaUrl = "", eventName, selectedAven = "", selectedSoci = "", selectedMem = "";
@@ -107,15 +107,16 @@ public class PhotosCreateFrag extends Fragment {
     private String selectedGoogleAccount;
     private FetchTokenHandler fetchTokenHandler = null;
     private UploadProgressHandler uploadProgressHandler = null;
+    View v;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+         v = inflater.inflate(
                 R.layout.photos_create, container, false);
         context = getActivity();
 
         userPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE);
-        addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+        addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
         titleEdit = (EditText) v.findViewById(R.id.titleEdit);
         finishTxt = (TextView) v.findViewById(R.id.finishTxt);
         selectedMediaTxt = (TextView) v.findViewById(R.id.selectedMedia);
@@ -454,7 +455,7 @@ public class PhotosCreateFrag extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 finishTxt.setVisibility(View.VISIBLE);
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
             }
@@ -565,7 +566,7 @@ public class PhotosCreateFrag extends Fragment {
 
             } else {
 
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
             }
@@ -668,7 +669,7 @@ public class PhotosCreateFrag extends Fragment {
     }
 
     public void onBackPressed() {
-        Intent soc = new Intent(getActivity(), PhotosList.class);
+        Intent soc = new Intent(getActivity(), PhotosVideosListFragment.class);
         soc.putExtra("EventName", eventName);
         startActivity(soc);
     }

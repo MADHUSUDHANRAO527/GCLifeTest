@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +31,7 @@ import java.util.HashMap;
 
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
+import mobile.gclifetest.event.AddIdeasEvent;
 import mobile.gclifetest.http.SocietyBillPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.utils.Constants;
@@ -49,11 +52,13 @@ public class ViewBillDetailFragment extends Fragment {
     ViewHolder holder;
     int pos, cash = 1, cheque = 2, dd = 3;
     EditText amountEdit, narrationEdit, billAmountPaidEdit;
-    ListTotDataAdapter adapterFiles;
+    View v;
+    ListTotDataAdapter billAdapter;
+    ArrayList<HashMap<String, String>> totDataList = new ArrayList<HashMap<String, String>>();
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+         v = inflater.inflate(
                 R.layout.view_bill_detail, container, false);
         context = getActivity();
         listview = (ListView) v.findViewById(R.id.viewBillDetailListview);
@@ -62,7 +67,7 @@ public class ViewBillDetailFragment extends Fragment {
         String totData = bundle.getString("TOT_DATA");
         try {
             totDataArr = new JSONArray(totData);
-            ArrayList<HashMap<String, String>> totDataList = new ArrayList<HashMap<String, String>>();
+
 
             for (int i = 0; i < totDataArr.length(); i++) {
                 HashMap<String, String> map = new HashMap<String, String>();
@@ -86,9 +91,9 @@ public class ViewBillDetailFragment extends Fragment {
 
                 totDataList.add(map);
             }
-             adapterFiles = new ListTotDataAdapter(getActivity(),
+             billAdapter = new ListTotDataAdapter(getActivity(),
                     totDataList);
-            listview.setAdapter(adapterFiles);
+            listview.setAdapter(billAdapter);
 
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -117,6 +122,10 @@ public class ViewBillDetailFragment extends Fragment {
             return false;
         }
 
+        public int updateList(ArrayList<HashMap<String, String>> listt){
+            notifyDataSetChanged();
+            return listt.size();
+        }
         @Override
         public int getCount() {
             // TODO Auto-generated method stub
@@ -235,7 +244,7 @@ public class ViewBillDetailFragment extends Fragment {
                                                                         paymentTypeAdapter,
                                                                         R.layout.payment_type_spnr_txt, context));
 
-
+                                                        Log.d("PAYMENT MODE: ",listt.get(positionn).get("PAYMENT_MODE")+1);
                                                         paymentTypeSpin.setSelection(paymentTypeAdapter.getPosition(listt.get(positionn).get("PAYMENT_MODE")) + 1);
                                                         actionTypeSpiner.setSelection(actionTypeAdapter.getPosition(listt.get(positionn).get("STATUS")) + 1);
 
@@ -279,15 +288,7 @@ public class ViewBillDetailFragment extends Fragment {
 
                                                                     }
                                                                 });
-                                                      /*  if(paymentType!=null){
-                                                            paymentTypeSpin.setSelection(paymentTypeAdapter.getPosition(paymentType) + 1);
-                                                        }
-                                                        if(spnrVal!=null){
-                                                            actionTypeSpiner.setSelection(actionTypeAdapter.getPosition(spnrVal) + 1);
-                                                        }
-                                                        if(narration!=null){
-                                                            narrationEdit.setText(narration);
-                                                        }*/
+
 
                                                         submitTxt.setOnClickListener(new View.OnClickListener() {
 
@@ -302,11 +303,11 @@ public class ViewBillDetailFragment extends Fragment {
                                                                 if (paymentType == null || paymentType == "null"
                                                                         || paymentType == ""
                                                                         || paymentType.equals("")) {
-                                                                    Constants.showSnack(getActivity(),
+                                                                    Constants.showSnack(v,
                                                                             "Please enter payment mode!", "OK");
                                                                 } else if (spnrVal == null || spnrVal == "null"
                                                                         || spnrVal == "" || spnrVal.equals("")) {
-                                                                    Constants.showSnack(getActivity(),
+                                                                    Constants.showSnack(v,
                                                                             "Please select paid/not paid!", "OK");
                                                                 } else {
                                                                     billAmountPaidEdit.setText(billAmountPaidEdit.getText().toString());
@@ -353,26 +354,33 @@ public class ViewBillDetailFragment extends Fragment {
         @Override
         protected void onPostExecute(Void unused) {
             if (jsonConfrm != null) {
-
-                // holder.statusImg.setVisibility(View.GONE);
-                // holder.statusTxt.setVisibility(View.VISIBLE);
                 try {
-
-                    System.out.println(jsonConfrm.getString("status")
-                            + " !!!!!!!!!!!!!!!!!!!!!!! ");
-
-                    // holder.statusTxt.setText(jsonConfrm.getString("status"));
-
                     ((JSONObject) totDataArr.get(pos)).put("status",
                             jsonConfrm.get("confirmed_status"));
                     ((JSONObject) totDataArr.get(pos)).put("bill_amount_paid",
                             billAmountPaidEdit.getText().toString());
+                    ((JSONObject) totDataArr.get(pos)).put("payment_mode",
+                            paymentType);
+                    ((JSONObject) totDataArr.get(pos)).put("ref_no",
+                            narrationEdit.getText().toString());
                     System.out.println(totDataArr + " !!*******************!");
-                    /*
-                     * Intent intent = getIntent(); finish();
-					 * startActivity(intent);
-					 */
-                    ArrayList<HashMap<String, String>> totDataList = new ArrayList<HashMap<String, String>>();
+
+                    HashMap<String, String> map = new HashMap<String, String>();
+                 //   JSONObject jsonData = totDataArr.getJSONObject(0);
+                    map.put("FLATID", jsonConfrm.getString("flat_id") + " , " + jsonConfrm.getString("building_master_id"));
+                    map.put("AMOUNT", jsonConfrm.getString("bill_amt"));
+                    map.put("STATUS", jsonConfrm.getString("status"));
+                    map.put("ID", jsonConfrm.getString("id"));
+                    map.put("PAYMENT_MODE", jsonConfrm.getString("payment_mode"));
+                    map.put("REF_NO", jsonConfrm.getString("ref_no"));
+                    map.put("bill_amount_paid", jsonConfrm.getString("bill_amount_paid"));
+                    totDataList.remove(pos);
+                    totDataList.add(pos-1,map);
+                    billAdapter.updateList(totDataList);
+                    //to refresh prev frag
+                    EventBus.getDefault().post(new AddIdeasEvent(true));
+
+                  /*  ArrayList<HashMap<String, String>> totDataList = new ArrayList<HashMap<String, String>>();
 
                     for (int i = 0; i < totDataArr.length(); i++) {
                         HashMap<String, String> map = new HashMap<String, String>();
@@ -386,10 +394,11 @@ public class ViewBillDetailFragment extends Fragment {
                         map.put("bill_amount_paid", jsonData.getString("bill_amount_paid"));
                         totDataList.add(map);
                     }
-                     adapterFiles = new ListTotDataAdapter(getActivity(),
+                    listview.setAdapter(null);
+                    ListTotDataAdapter adapterFiles = new ListTotDataAdapter(getActivity(),
                             totDataList);
-                    listview.setAdapter(adapterFiles);
-                    adapterFiles.notifyDataSetChanged();
+                    listview.setAdapter(adapterFiles);*/
+                    //billAdapter.updateList(totDataList);
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -400,7 +409,7 @@ public class ViewBillDetailFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 m_dialog.dismiss();
-                Constants.showSnack(getActivity(),
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
             }
@@ -432,5 +441,4 @@ public class ViewBillDetailFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

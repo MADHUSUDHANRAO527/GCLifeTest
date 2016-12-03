@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -32,7 +33,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import mobile.gclifetest.activity.HomeActivity;
+import mobile.gclifetest.activity.R;
+import mobile.gclifetest.http.SocietyBillPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
@@ -40,9 +45,6 @@ import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.ListViewUtils;
 import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
-import mobile.gclifetest.activity.HomeActivity;
-import mobile.gclifetest.activity.R;
-import mobile.gclifetest.http.SocietyBillPost;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -60,11 +62,11 @@ public class MySocietyBillFragment extends Fragment {
     LinearLayout bill_sumryLay;
     String refNum = "", spnrVal, billId, billAmountPaid, paymentType;
     Dialog m_dialog;
-
+    View v;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+        v = inflater.inflate(
                 R.layout.mysocietybill, container, false);
         context = getActivity();
         societyNameSpinner = (Spinner) v.findViewById(R.id.societySpin);
@@ -89,24 +91,29 @@ public class MySocietyBillFragment extends Fragment {
                 .getGclife_registration_flatdetails();
 
         List<String> sociList = new ArrayList<String>();
-        List<String> buildingList = new ArrayList<String>();
-
+        ArrayList<String> listSociety = new ArrayList<String>();
+        final Map<String, String> societyMap = new HashMap<String, String>();
         for (int i = 0; i < flatsList.size(); i++) {
+
             FlatDetailsPojo flatsListt = user
                     .getGclife_registration_flatdetails().get(i);
             societyName = flatsListt.getSocietyid();
             if (!sociList.contains(societyName)) {
                 sociList.add(societyName);
             }
+            buildingName = flatsListt.getBuildingid();
+
+            listSociety.add(societyName);
+            societyMap.put(societyName, buildingName+ " , " +flatsListt.getFlat_number());
         }
-        for (int i = 0; i < flatsList.size(); i++) {
+       /* for (int i = 0; i < flatsList.size(); i++) {
             FlatDetailsPojo flatsListt = user
                     .getGclife_registration_flatdetails().get(i);
             buildingName = flatsListt.getBuildingid();
             if (!buildingList.contains(buildingName)) {
                 buildingList.add(buildingName + " , " + flatsListt.getFlat_number());
             }
-        }
+        }*/
 
         System.out.println(sociList + "  ---------------------------------");
         // society spinner
@@ -119,13 +126,14 @@ public class MySocietyBillFragment extends Fragment {
         societyNameSpinner.setAdapter(new NothingSelectedSpinnerAdapter1(
                 societyAdapter, R.layout.society_spinner_nothing_selected,
                 getActivity()));
-        // building spinner
+
+        ArrayList<String> buildingList = new ArrayList<String>();
+        buildingList.add("Building Number");
         ArrayAdapter<String> buildingAdapter = new ArrayAdapter<String>(getActivity(),
                 R.layout.spinr_txt, buildingList);
 
         buildingAdapter
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         buildingSpinner.setAdapter(new NothingSelectedSpinnerAdapter1(
                 buildingAdapter, R.layout.building_spinner_nothing_selected,
                 getActivity()));
@@ -147,6 +155,29 @@ public class MySocietyBillFragment extends Fragment {
                         // TODO Auto-generated method stub
                         societyName = String.valueOf(societyNameSpinner
                                 .getSelectedItem());
+                        ArrayList<String> buildingList = new ArrayList<String>();
+                        if (societyName == null || societyName.equalsIgnoreCase("null")) {
+                            System.out.println(societyMap);
+                            System.out.println(buildingList);
+
+                        }else {
+                            if (!buildingList.contains(buildingName)) {
+                                buildingList.add(societyMap.get(societyName));
+                            }
+                            System.out.println(societyMap);
+                            System.out.println(buildingList);
+
+                            // building spinner
+                            ArrayAdapter<String> buildingAdapter = new ArrayAdapter<String>(getActivity(),
+                                    R.layout.spinr_txt, buildingList);
+
+                            buildingAdapter
+                                    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            buildingSpinner.setAdapter(new NothingSelectedSpinnerAdapter1(
+                                    buildingAdapter, R.layout.building_spinner_nothing_selected,
+                                    getActivity()));
+
+                        }
 
                     }
 
@@ -199,13 +230,13 @@ public class MySocietyBillFragment extends Fragment {
                 System.out.println(societyName + "!!!!!!!!!!!!!!!!!!!!!!");
                 if (societyName == "" || societyName.equals("")
                         || societyName == "null" || societyName == null) {
-                    Constants.showSnack(getActivity(), "Select society!", "OK");
+                    Constants.showSnack(v, "Select society!", "OK");
                 } else if (buildingName == "" || buildingName.equals("")
-                        || buildingName == null || buildingName == "null") {
-                    Constants.showSnack(getActivity(), "Select Building Name!", "OK");
+                        || buildingName == null || buildingName == "null"||buildingName.equalsIgnoreCase("Building Number")) {
+                    Constants.showSnack(v, "Select Building Name!", "OK");
                 } else if (financialYr == "" || financialYr.equals("")
                         || financialYr == null || financialYr == "null") {
-                    Constants.showSnack(getActivity(), "Select financial year!", "OK");
+                    Constants.showSnack(v, "Select financial year!", "OK");
                 } else {
 
                     new ViewMySociBill().execute();
@@ -231,8 +262,7 @@ public class MySocietyBillFragment extends Fragment {
                 jsonViewBill = SocietyBillPost.callSociMyBill(
                         userPref.getString("USERID", "NV"), societyName,
                         buildingName, financialYr, MyApplication.HOSTNAME);
-                System.out
-                        .println(jsonViewBill + " ******************************");
+                System.out.println(jsonViewBill + " !!!!!!!!!!!!!!!!!!!!*");
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -244,7 +274,7 @@ public class MySocietyBillFragment extends Fragment {
         protected void onPostExecute(Void unused) {
             if (jsonViewBill == null || jsonViewBill.toString() == "null"
                     || jsonViewBill.equals("null")) {
-                Constants.showSnack(getActivity(), "Oops! Something went wrong. Please wait a moment!", "OK");
+                Constants.showSnack(v, "Oops! Something went wrong. Please wait a moment!", "OK");
                 pDialog.setVisibility(View.GONE);
             } else {
                 try {
@@ -257,34 +287,43 @@ public class MySocietyBillFragment extends Fragment {
 
                     JSONArray totDetailArr = jsonViewBill
                             .getJSONArray("bill_detail");
+                    if (totDetailArr.length() > 0) {
+                        ArrayList<HashMap<String, String>> totDataList = new ArrayList<HashMap<String, String>>();
 
-                    ArrayList<HashMap<String, String>> totDataList = new ArrayList<HashMap<String, String>>();
-
-                    for (int i = 0; i < totDetailArr.length(); i++) {
-                        HashMap<String, String> map = new HashMap<String, String>();
-                        JSONObject jsonData = totDetailArr.getJSONObject(i);
-                        map.put("ID", jsonData.getString("id"));
-                        map.put("MONTH", jsonData.getString("month"));
-                        map.put("YEAR", jsonData.getString("fy"));
-                        map.put("PAYMENT_MODE", jsonData.getString("payment_mode"));
-                        if (jsonData.isNull("ref_no")) {
-                            map.put("REF_NO", "");
-                        } else {
-                            map.put("REF_NO", jsonData.getString("ref_no"));
+                        for (int i = 0; i < totDetailArr.length(); i++) {
+                            HashMap<String, String> map = new HashMap<String, String>();
+                            JSONObject jsonData = totDetailArr.getJSONObject(i);
+                            map.put("ID", jsonData.getString("id"));
+                            map.put("MONTH", jsonData.getString("month"));
+                            map.put("YEAR", jsonData.getString("fy"));
+                            map.put("PAYMENT_MODE", jsonData.getString("payment_mode"));
+                            if (jsonData.isNull("ref_no")) {
+                                map.put("REF_NO", "");
+                            } else {
+                                map.put("REF_NO", jsonData.getString("ref_no"));
+                            }
+                            map.put("bill_amount_paid", jsonData.getString("bill_amount_paid"));
+                            map.put("AMOUNT", jsonData.getString("bill_amt"));
+                            map.put("STATUS", jsonData.getString("status"));
+                            totDataList.add(map);
                         }
-
-
-                        map.put("bill_amount_paid", jsonData.getString("bill_amount_paid"));
-                        map.put("AMOUNT", jsonData.getString("bill_amt"));
-                        map.put("STATUS", jsonData.getString("status"));
-                        totDataList.add(map);
+                        ListDetailAdapter adapterFiles = new ListDetailAdapter(
+                                getActivity(), totDataList);
+                        detailsListview.setAdapter(adapterFiles);
+                        ListViewUtils.setDynamicHeight(detailsListview);
+                        pDialog.setVisibility(View.GONE);
+                        bill_sumryLay.setVisibility(View.VISIBLE);
+                    } else {
+                        ArrayList<HashMap<String, String>> emptyArr = new ArrayList<>();
+                        Constants.showSnack(v, "No data found!", "");
+                        ListDetailAdapter adapterFiles = new ListDetailAdapter(
+                                getActivity(), emptyArr);
+                        detailsListview.setAdapter(adapterFiles);
+                        ListViewUtils.setDynamicHeight(detailsListview);
+                        pDialog.setVisibility(View.GONE);
+                        bill_sumryLay.setVisibility(View.GONE);
                     }
-                    ListDetailAdapter adapterFiles = new ListDetailAdapter(
-                            getActivity(), totDataList);
-                    detailsListview.setAdapter(adapterFiles);
-                    ListViewUtils.setDynamicHeight(detailsListview);
-                    pDialog.setVisibility(View.GONE);
-                    bill_sumryLay.setVisibility(View.VISIBLE);
+
 
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
@@ -350,6 +389,8 @@ public class MySocietyBillFragment extends Fragment {
                         .findViewById(R.id.statusTxt);
                 holder.statusImg = (ImageView) convertView
                         .findViewById(R.id.statusImg);
+                holder.viewImg = (ImageView) convertView
+                        .findViewById(R.id.view_img);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -362,6 +403,13 @@ public class MySocietyBillFragment extends Fragment {
                     + yr);
             holder.amountTxt.setText(listt.get(positionn).get("AMOUNT"));
             holder.statusTxt.setText(listt.get(positionn).get("STATUS"));
+            if (listt.get(positionn).get("STATUS").equalsIgnoreCase("Confirmed")) {
+                holder.statusImg.setVisibility(View.GONE);
+                holder.viewImg.setVisibility(View.VISIBLE);
+            } else {
+                holder.statusImg.setVisibility(View.VISIBLE);
+                holder.viewImg.setVisibility(View.GONE);
+            }
 
             holder.statusImg.setOnClickListener(new View.OnClickListener() {
 
@@ -380,7 +428,7 @@ public class MySocietyBillFragment extends Fragment {
                             .findViewById(R.id.narrationEdit);
                     final EditText billAmountPaidEdit = (EditText) m_dialog
                             .findViewById(R.id.billAmountPaidEdit);
-                    final com.wrapp.floatlabelededittext.FloatLabeledEditText amountEditt = (com.wrapp.floatlabelededittext.FloatLabeledEditText) m_dialog
+                    final TextInputLayout amountEditt = (TextInputLayout) m_dialog
                             .findViewById(R.id.amounttEdit);
 
                     final Spinner actionTypeSpiner = (Spinner) m_dialog
@@ -451,7 +499,7 @@ public class MySocietyBillFragment extends Fragment {
                             // TODO Auto-generated method stub
                             paymentType = String.valueOf(paymentTypeSpin
                                     .getSelectedItem());
-
+                            // paymentType=paymentType.replaceAll("", "%20");
                         }
 
                         @Override
@@ -493,7 +541,7 @@ public class MySocietyBillFragment extends Fragment {
                             if (paymentType == null || paymentType == "null"
                                     || paymentType == ""
                                     || paymentType.equals("")) {
-                                Constants.showSnack(getActivity(),
+                                Constants.showSnack(v,
                                         "Please enter payment mode!",
                                         "OK");
                             } else {
@@ -510,7 +558,7 @@ public class MySocietyBillFragment extends Fragment {
 
         public class ViewHolder {
             public TextView flatNumTxt, amountTxt, statusTxt;
-            ImageView statusImg;
+            ImageView statusImg, viewImg;
             RelativeLayout line, line1;
         }
     }
@@ -543,7 +591,7 @@ public class MySocietyBillFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 m_dialog.dismiss();
-                Constants.showSnack(getActivity(),
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please wait a moment!",
                         "OK");
             }

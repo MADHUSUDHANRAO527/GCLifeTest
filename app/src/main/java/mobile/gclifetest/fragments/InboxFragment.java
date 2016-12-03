@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -39,8 +40,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
-import com.gc.materialdesign.views.ButtonFloat;
-import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -48,20 +47,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.pojoGson.InboxPojo;
-import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.activity.InboxDetail;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.http.EvenstPost;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.pojoGson.InboxPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -90,13 +88,13 @@ public class InboxFragment extends Fragment {
     ListView listviewSent;
     DatabaseHandler db;
     SwipeRefreshLayout mSwipeRefreshLayout;
-    // ArrayAdapter<String> adapter;
     ListSendMailBaseAdapter adapterSentRcv;
     AutoCompleteAdapter adapter;
     ArrayList<String> strngArr = new ArrayList<String>();
     JSONObject jsonDelete;
     List<InboxPojo> inboxPojo;
     Gson gson;
+    View v;
     int limit = 10, currentPosition, offset = 0;
     public static InboxFragment newInstance(int position) {
         InboxFragment f = new InboxFragment();
@@ -123,7 +121,7 @@ public class InboxFragment extends Fragment {
         userPref = getActivity().getSharedPreferences("USER", 0);
         gson = new Gson();
         db = new DatabaseHandler(getActivity());
-        View v;
+
 
         if (position == 0) {
             v = infaltor.inflate(R.layout.inbox_write, container, false);
@@ -149,19 +147,15 @@ public class InboxFragment extends Fragment {
                     System.out.println(toStr);
                     subjectStr = subEdit.getText().toString();
                     discStr = discriptionEdit.getText().toString();
-                    try {
-                        discStr = URLEncoder.encode(discStr, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
+
                     if (toStr == "" || toStr.equals("") || toStr == null
                             || toStr == "null") {
-                        showSnack(getActivity(), "Enter username!", "OK");
+                        Constants.showSnack(v, "Enter username!", "OK");
                     } else if (subjectStr == "" || subjectStr.equals("")
                             || subjectStr == null || subjectStr == "null") {
-                        showSnack(getActivity(), "Enter subject!", "OK");
+                        Constants.showSnack(v, "Enter subject!", "OK");
                     } else if (subjectStr.length() > 180) {
-                        showSnack(getActivity(), "Subject length should not be more than 180!", "OK");
+                        Constants.showSnack(v, "Subject length should not be more than 180!", "OK");
                     } else {
 
                         System.out
@@ -185,7 +179,7 @@ public class InboxFragment extends Fragment {
                                         "");
 
                             } else {
-                                showSnack(getActivity(), uname
+                                Constants.showSnack(v, uname
                                         + " is not registered!", "OK");
                                 break;
                             }
@@ -282,7 +276,7 @@ public class InboxFragment extends Fragment {
 
         } else if (position == 1) {
             v = infaltor.inflate(R.layout.ideas_list, container, false);
-            ButtonFloat addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+            FloatingActionButton addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
             pDialog = (ProgressBarCircularIndeterminate) v
                     .findViewById(R.id.pDialog);
             listviewSent = (ListView) v.findViewById(R.id.listview);
@@ -290,7 +284,7 @@ public class InboxFragment extends Fragment {
                     .findViewById(R.id.activity_main_swipe_refresh_layout);
 
             mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
-                    R.color.green, R.color.blue);
+                    android.R.color.holo_green_dark, R.color.blue);
 
             listviewSent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -364,7 +358,7 @@ public class InboxFragment extends Fragment {
         } else {
             v = infaltor.inflate(R.layout.ideas_list, container, false);
 
-            ButtonFloat addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+            FloatingActionButton addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
             pDialog = (ProgressBarCircularIndeterminate) v
                     .findViewById(R.id.pDialog);
             addBtn.setVisibility(View.GONE);
@@ -373,7 +367,7 @@ public class InboxFragment extends Fragment {
                     .findViewById(R.id.activity_main_swipe_refresh_layout);
 
             mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
-                    R.color.green, R.color.blue);
+                    android.R.color.holo_green_dark, R.color.blue);
             msgType = "sent";
             listviewSent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -488,18 +482,11 @@ public class InboxFragment extends Fragment {
                     // AutoCompleteTextView
                     toEdit.setTextColor(Color.BLACK);
                     toEdit.setThreshold(1);
-
                 }
-
             } else {
-
-                showSnack(
-                        getActivity(),
-                        "Oops! Something went wrong. Please check internet connection!",
+                Constants.showSnack(v, "Oops! Something went wrong. Please check internet connection!",
                         "OK");
-
             }
-
         }
     }
 
@@ -701,12 +688,13 @@ public class InboxFragment extends Fragment {
         @Override
         protected void onPostExecute(Void unused) {
             if (msgJObj.has("status")) {
-                showSnack(
-                        getActivity(),
+                Constants.showSnack(
+                        v,
                         "Oops! Internal Server Error",
                         "OK");
             } else if (msgJObj != null) {
-                showSnack(getActivity(), "Mail has sent!", "OK");
+                Constants.showSnack(
+                        v, "Mail has sent!", "OK");
                 subEdit.setText("");
                 discriptionEdit.setText("");
                 toEdit.setText("");
@@ -715,8 +703,8 @@ public class InboxFragment extends Fragment {
             } else {
                 sendTxt.setVisibility(View.VISIBLE);
                 pDialog1.setVisibility(View.GONE);
-                showSnack(
-                        getActivity(),
+                Constants.showSnack(
+                        v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }
@@ -960,14 +948,14 @@ public class InboxFragment extends Fragment {
         }
     }
 
-    void showSnack(FragmentActivity flats, String stringMsg, String ok) {
+   /* void showSnack(FragmentActivity flats, String stringMsg, String ok) {
         new SnackBar(getActivity(), stringMsg, ok, new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
             }
         }).show();
-    }
+    }*/
 
     public class DeleteEvent extends AsyncTask<Void, Void, Void> {
         @Override
@@ -990,7 +978,8 @@ public class InboxFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void unused) {
-            showSnack(getActivity(),
+            Constants.showSnack(
+                    v,
                     "Deleted!",
                     "OK");
             adapterSentRcv.notifyDataSetChanged();

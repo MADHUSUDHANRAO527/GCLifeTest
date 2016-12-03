@@ -70,7 +70,7 @@ public class AdminGridFragment extends Fragment {
                     if(allowAdmin=true){
                         ((HomeActivity) context).addFragment(new AdminBillManagementFragment());
                     }else {
-                        Constants.showSnack(getActivity(), "You are not authorized person!", "");
+                        Constants.showSnack(v, "You are not authorized person!", "");
                     }
 
                 }

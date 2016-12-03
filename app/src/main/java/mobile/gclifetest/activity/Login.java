@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,12 +19,12 @@ import com.google.gson.GsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import mobile.gclifetest.http.SignUpPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 import mobile.gclifetest.utils.MyApplication;
-import mobile.gclifetest.http.SignUpPost;
 
 public class Login extends BaseActivity {
 	TextView login, signUp, loginwithEmailTxt;
@@ -37,6 +38,7 @@ public class Login extends BaseActivity {
 	ProgressBarCircularIndeterminate pDialog;
 	InternetConnectionDetector netConn;
 	Boolean isInternetPresent = false;
+	RelativeLayout snackLay;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -48,7 +50,7 @@ public class Login extends BaseActivity {
 		emailEdit = (EditText) findViewById(R.id.emailSignIn);
 		passwordEdit = (EditText) findViewById(R.id.passwordSignIn);
 		pDialog = (ProgressBarCircularIndeterminate) findViewById(R.id.progressBarCircularIndetermininate);
-
+		snackLay=(RelativeLayout)findViewById(R.id.snackLay);
 		userPref = getSharedPreferences("USER", MODE_PRIVATE);
 		editor = userPref.edit();
 
@@ -70,7 +72,7 @@ public class Login extends BaseActivity {
 		if (isInternetPresent) {
 
 		} else {
-			Constants.showSnack(Login.this, "Please check network connection!", "OK");
+			Constants.showSnack(snackLay, "Please check network connection!", "OK");
 
 		}
 		login.setOnClickListener(new OnClickListener() {
@@ -83,13 +85,13 @@ public class Login extends BaseActivity {
 				if (email == null || email == "null" || email == ""
 						|| email.length() == 0) {
 
-					Constants.showSnack(Login.this, "Please enter your email!", "OK");
+					Constants.showSnack(v, "Please enter your email!", "OK");
 				} else if (password == null || password == "null"
 						|| password == "" || password.length() == 0) {
-					Constants.showSnack(Login.this, "Please enter your password!", "OK");
+					Constants.showSnack(v, "Please enter your password!", "OK");
 				} else if (password.length() < 6) {
 					Constants.showSnack(
-							Login.this,
+							v,
 							"Your password must be at least 6 characters long!",
 							"OK");
 				} else {
@@ -98,7 +100,7 @@ public class Login extends BaseActivity {
 					if (isInternetPresent) {
 						new SignIn().execute();
 					} else {
-						Constants.showSnack(Login.this,
+						Constants.showSnack(v,
 								"Please check network connection!", "OK");
 
 					}
@@ -119,7 +121,7 @@ public class Login extends BaseActivity {
 					overridePendingTransition(R.anim.slide_in_left,
 							R.anim.slide_out_left);
 				} else {
-					Constants.showSnack(Login.this, "Please check network connection!",
+					Constants.showSnack(v, "Please check network connection!",
 							"OK");
 
 				}
@@ -165,7 +167,7 @@ public class Login extends BaseActivity {
 			if (jsonSignInResult != null) {
 
 				if (jsonSignInResult.has("error")) {
-					Constants.showSnack(Login.this,
+					Constants.showSnack(snackLay,
 							"You have entered wrong Email or Password!", "OK");
 					pDialog.setVisibility(View.GONE);
 					login.setVisibility(View.VISIBLE);
@@ -201,7 +203,7 @@ public class Login extends BaseActivity {
 			} else {
 				pDialog.setVisibility(View.GONE);
 				login.setVisibility(View.VISIBLE);
-				Constants.showSnack(Login.this,
+				Constants.showSnack(snackLay,
 						"Oops! Something went wrong. Please wait a moment!",
 						"OK");
 			}

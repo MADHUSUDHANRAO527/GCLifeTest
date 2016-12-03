@@ -10,10 +10,10 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gc.materialdesign.widgets.SnackBar;
 import com.google.gson.Gson;
 
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 
 public class SplashActivity extends Activity {
@@ -57,7 +57,7 @@ public class SplashActivity extends Activity {
                     overridePendingTransition(R.anim.slide_in_left,
                             R.anim.slide_out_left);
                 } else {
-                    showSnack(SplashActivity.this, "Please check network connection!",
+                    Constants.showSnack(v, "Please check network connection!",
                             "OK");
                 }
             }
@@ -74,7 +74,7 @@ public class SplashActivity extends Activity {
                     overridePendingTransition(R.anim.slide_in_left,
                             R.anim.slide_out_left);
                 } else {
-                    showSnack(SplashActivity.this, "Please check network connection!",
+                    Constants.showSnack(v, "Please check network connection!",
                             "OK");
                 }
             }
@@ -96,16 +96,6 @@ public class SplashActivity extends Activity {
 
         mBackPressed = System.currentTimeMillis();
     }
-
-    void showSnack(SplashActivity login, String stringMsg, String ok) {
-        new SnackBar(SplashActivity.this, stringMsg, ok, new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-            }
-        }).show();
-    }
-
     @Override
     protected void onStart() {
         super.onStart();

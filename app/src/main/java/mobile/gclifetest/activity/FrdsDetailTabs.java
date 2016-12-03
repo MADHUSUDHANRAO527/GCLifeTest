@@ -38,7 +38,6 @@ public class FrdsDetailTabs extends Fragment {
 		Bundle b = getActivity().getIntent().getExtras();
 		if (position == 0) {
 			v = infaltor.inflate(R.layout.frds_detail, container, false);
-			
 			TextView unameTxt = (TextView) v.findViewById(R.id.unameTxt);
 			TextView emailTxt = (TextView) v.findViewById(R.id.emailTxt);
 			TextView mobileTxt = (TextView) v.findViewById(R.id.mobileNumTxt);
@@ -55,7 +54,6 @@ public class FrdsDetailTabs extends Fragment {
 			memTypeTxt = (TextView) v.findViewById(R.id.memTypeTxt);
 			ownwerTypetxt = (TextView) v.findViewById(R.id.ownerTypeTxt);
 			relationStartLay=(LinearLayout)v.findViewById(R.id.relationStartLay);
-			
 			relationStartLay.setVisibility(View.GONE);
 			avenueNameTxt.setText(b.getString("avenue_name"));
 			societyNameTxt.setText(b.getString("societyid"));
@@ -64,8 +62,6 @@ public class FrdsDetailTabs extends Fragment {
 			flatTypetxt.setText(b.getString("flat_type"));
 			memTypeTxt.setText(b.getString("member_type"));
 			ownwerTypetxt.setText(b.getString("ownertypeid"));
-			
-			
 		}
 
 		TypedValue tv = new TypedValue();

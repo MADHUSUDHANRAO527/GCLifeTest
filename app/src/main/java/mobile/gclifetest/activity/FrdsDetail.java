@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -25,7 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.gc.materialdesign.views.ButtonFloat;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -42,7 +42,6 @@ public class FrdsDetail extends BaseActivity {
     PagerSlidingTabStrip tabs;
     ViewPager pager;
     MyPagerAdapter adapter;
-
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,14 +89,14 @@ public class FrdsDetail extends BaseActivity {
         private int position, actionBarHeight;
         private static final String ARG_POSITION = "position";
         TextView unameTxt, emailTxt, mobileNumTxt, emrNumTxt, occupationtxt,
-                dobTxt;
+                dobTxt, genderTxt;
         Typeface typefaceLight, typeMeduim;
-        LinearLayout layUserDet, flatDetailsLay;
+        LinearLayout layUserDet, flatDetailsLay, privacyLay;
         SharedPreferences userPref;
         List<FlatDetailsPojo> flatsList = new ArrayList<FlatDetailsPojo>();
         ListView listviewFlats;
         ImageView imageProfile, mobileNumImg, mobileSmsImg;
-        ButtonFloat addFlats;
+        FloatingActionButton addFlats;
         UserDetailsPojo user;
         String memDet, userStatus;
         static ImageLoader imageLoader;
@@ -138,15 +137,16 @@ public class FrdsDetail extends BaseActivity {
             unameTxt = (TextView) v.findViewById(R.id.unameTxt);
             mobileNumTxt = (TextView) v.findViewById(R.id.mobileNumTxt);
             listviewFlats = (ListView) v.findViewById(R.id.flatsList);
-            addFlats = (ButtonFloat) v.findViewById(R.id.addFlats);
+            addFlats = (FloatingActionButton) v.findViewById(R.id.addFlats);
             layUserDet = (LinearLayout) v.findViewById(R.id.layUserDet);
             flatDetailsLay = (LinearLayout) v.findViewById(R.id.flatDetailsLay);
             emrNumTxt = (TextView) v.findViewById(R.id.emeryNumTxt);
             imageProfile = (ImageView) v.findViewById(R.id.imageProfile);
             mobileNumImg= (ImageView) v.findViewById(R.id.mobileNumImg);
             mobileSmsImg= (ImageView) v.findViewById(R.id.mobileSmsImg);
-
+            privacyLay = (LinearLayout) v.findViewById(R.id.privacy_lay);
             occupationtxt = (TextView) v.findViewById(R.id.occuTxt);
+            genderTxt = (TextView) v.findViewById(R.id.gender_txt);
             dobTxt = (TextView) v.findViewById(R.id.dobTxt);
             userImg = (de.hdodenhof.circleimageview.CircleImageView) v.findViewById(R.id.imageProfile);
             typefaceLight = Typeface.createFromAsset(getActivity().getAssets(),
@@ -167,18 +167,11 @@ public class FrdsDetail extends BaseActivity {
             unameTxt.setText(user.getUsername());
             emailTxt.setText(user.getEmail());
             mobileNumTxt.setText(user.getMobile());
+            genderTxt.setText(user.getGender());
             if (user.getPrivacy() == true) {
-                mobileNumTxt.setVisibility(View.GONE);
-                emailTxt.setVisibility(View.GONE);
-                emrNumTxt.setVisibility(View.GONE);
-                occupationtxt.setVisibility(View.GONE);
-                dobTxt.setVisibility(View.GONE);
+                privacyLay.setVisibility(View.GONE);
             } else {
-                mobileNumTxt.setVisibility(View.VISIBLE);
-                emailTxt.setVisibility(View.VISIBLE);
-                emrNumTxt.setVisibility(View.VISIBLE);
-                occupationtxt.setVisibility(View.VISIBLE);
-                dobTxt.setVisibility(View.VISIBLE);
+                privacyLay.setVisibility(View.VISIBLE);
             }
 
             emrNumTxt.setText(user.getEmeNum());
@@ -221,6 +214,7 @@ public class FrdsDetail extends BaseActivity {
                 layUserDet.setVisibility(View.GONE);
                 listviewFlats.setVisibility(View.VISIBLE);
             }
+
 
             TypedValue tv = new TypedValue();
 
@@ -314,7 +308,7 @@ public class FrdsDetail extends BaseActivity {
                 }
 
                 holder.avenueNameTxt.setText(flats.getAvenue_name());
-                holder.flatNumTxt.setText(flats.getBuildingid());
+                holder.flatNumTxt.setText(flats.getBuildingid() + "," + flats.getFlat_number());
 
                 return convertView;
             }

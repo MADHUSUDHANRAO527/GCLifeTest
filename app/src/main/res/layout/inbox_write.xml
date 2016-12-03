@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:float="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <ScrollView
         android:id="@+id/scroll"
@@ -17,14 +16,13 @@
             android:background="@drawable/rounded_corner_signinpopup"
             android:orientation="vertical" >
 
-            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/userNameEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginTop="10dp"
-                float:fletPadding="5dp" >
+                android:layout_marginTop="10dp">
 
                 <AutoCompleteTextView
                     android:id="@+id/toEdit"
@@ -33,9 +31,10 @@
                     android:background="#00000000"
                     android:focusableInTouchMode="true"
                     android:hint="To"
+                    android:paddingTop="@dimen/padding_8"
                     android:inputType="textAutoComplete|textAutoCorrect"
                     android:singleLine="false" />
-            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            </android.support.design.widget.TextInputLayout>
 
             <ImageView
                 android:id="@+id/searchImg"
@@ -60,13 +59,12 @@
                 android:orientation="horizontal" >
             </RelativeLayout>
 
-            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/passEdt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/line"
-                android:layout_marginLeft="15dp"
-                float:fletPadding="5dp" >
+                android:layout_marginLeft="15dp">
 
                 <EditText
                     android:id="@+id/fromEdit"
@@ -75,10 +73,11 @@
                     android:background="#00000000"
                     android:focusable="true"
                     android:maxLength="180"
+                    android:paddingTop="@dimen/padding_8"
                     android:focusableInTouchMode="true"
                     android:hint="Subject"
                     android:singleLine="true" />
-            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            </android.support.design.widget.TextInputLayout>
 
             <RelativeLayout
                 android:id="@+id/line1"
@@ -93,15 +92,12 @@
             </RelativeLayout>
             <!-- add some padding -->
 
-            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/mobileNumLay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/line1"
-                android:layout_marginLeft="15dp"
-                float:fletPadding="5dp" >
-
-                <!-- float:fletPadding="10dp" -->
+                android:layout_marginLeft="15dp">
 
                 <EditText
                     android:id="@+id/discrpEdit"
@@ -109,10 +105,11 @@
                     android:layout_height="200dp"
                     android:background="#00000000"
                     android:focusable="true"
+                    android:paddingTop="@dimen/padding_8"
                     android:focusableInTouchMode="true"
                     android:gravity="top"
                     android:hint="Description" />
-            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            </android.support.design.widget.TextInputLayout>
 
             <RelativeLayout
                 android:id="@+id/line2"

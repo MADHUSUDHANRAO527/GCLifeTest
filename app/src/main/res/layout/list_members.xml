@@ -13,11 +13,16 @@
         android:layout_marginBottom="250dp"
         android:visibility="visible" />
 
+
     <ListView
         android:id="@+id/listViewMem"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-    </ListView>
+        android:layout_height="match_parent"
+        android:layout_gravity="left|start"
+        android:background="#ffeeeeee"
+        android:cacheColorHint="@android:color/transparent"
+        android:divider="#00000000"
+        android:footerDividersEnabled="false" />
     <mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate
         android:id="@+id/pDialogBtm"
         android:layout_width="32dp"
@@ -25,5 +30,18 @@
         android:layout_centerInParent="true"
         android:background="#1E88E5"
         android:layout_alignParentBottom="true"
+        android:visibility="invisible" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/filterBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginRight="24dp"
+        android:background="#3f51b5"
+        android:src="@drawable/filter"
+        android:tint="@color/list_background"
         android:visibility="visible" />
 </RelativeLayout>

@@ -1,10 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:float="http://schemas.android.com/apk/res-auto"
-    xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/sign_in_bg"
+    android:id="@+id/snackLay"
     android:gravity="center">
 
     <RelativeLayout
@@ -25,13 +24,13 @@
             android:textSize="22sp"
             android:textStyle="bold"></TextView>
 
-        <com.wrapp.floatlabelededittext.FloatLabeledEditText
+        <android.support.design.widget.TextInputLayout
             android:id="@+id/mailEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/loginwithEmailTxt"
             android:layout_marginLeft="15dp"
-            float:fletPadding="5dp">
+            app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
 
             <EditText
                 android:id="@+id/emailSignIn"
@@ -42,11 +41,13 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:hint="  Email"
+                android:drawablePadding="@dimen/padding_4"
                 android:singleLine="true"
                 android:textColor="#fff"
+                android:paddingTop="@dimen/padding_8"
                 android:textColorHint="#FFFFFF"
                 android:textSize="18sp" />
-        </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+        </android.support.design.widget.TextInputLayout>
 
         <RelativeLayout
             android:id="@+id/line1"
@@ -58,18 +59,14 @@
             android:layout_marginTop="5dp"
             android:background="#ccc"
             android:orientation="horizontal"></RelativeLayout>
-        <!-- add some padding -->
 
-        <com.wrapp.floatlabelededittext.FloatLabeledEditText
+        <android.support.design.widget.TextInputLayout
             android:id="@+id/passEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/line1"
             android:layout_marginLeft="15dp"
-            float:fletPadding="5dp">
-
-            <!-- float:fletPadding="10dp" -->
-
+            app:hintTextAppearance="@style/TextAppearance.App.TextInputLayout">
             <EditText
                 android:id="@+id/passwordSignIn"
                 android:layout_width="match_parent"
@@ -79,12 +76,14 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:hint="  Password"
+                android:drawablePadding="@dimen/padding_4"
+                android:paddingTop="@dimen/padding_8"
                 android:inputType="textPassword"
                 android:singleLine="true"
                 android:textColor="#fff"
                 android:textColorHint="#FFFFFF"
                 android:textSize="18sp" />
-        </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+        </android.support.design.widget.TextInputLayout>
 
         <RelativeLayout
             android:id="@+id/line"

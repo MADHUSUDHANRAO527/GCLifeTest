@@ -1,7 +1,5 @@
 <resources>
-
     <string name="app_name">GC Life Test</string>
-
     <string-array name="avenueArray">
         <item> </item>
     </string-array>
@@ -28,6 +26,13 @@
         <item>Chairman</item>
         <item>Treasurer</item>
         <item>Non member</item>
+    </string-array>
+    <string-array name="memberTypeOutNonmemberArray">
+        <item>Member</item>
+        <item>Committee member</item>
+        <item>Secretary</item>
+        <item>Chairman</item>
+        <item>Treasurer</item>
     </string-array>
     <string-array name="selectedmemberTypeArray">
         <item>Non member</item>
@@ -108,4 +113,6 @@
     <string name="googleAccountNotSelected">Google Account Not Selected</string>
     <string name="googleAccountNotSupported">Probably your device does not support Google account.</string>
     <string name="appAuthorized">The app has been authorized. You can now upload your video now.</string>
+    //search
+    <string name="search_frds">Search your friends</string>
 </resources>

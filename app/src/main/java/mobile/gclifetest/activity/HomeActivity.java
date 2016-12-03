@@ -19,6 +19,7 @@ import java.util.Stack;
 
 import mobile.gclifetest.fragments.HomeFragment;
 import mobile.gclifetest.fragments.IdeasDetailFragment;
+import mobile.gclifetest.fragments.InboxActivity;
 
 /**
  * Created by MRaoKorni on 8/1/2016.
@@ -42,7 +43,7 @@ public class HomeActivity extends BaseActivity {
         //getOverflowMenu();
         notificationPref = context.getSharedPreferences("NOTIFICATION", Context.MODE_PRIVATE);
 
-        if (notificationPref.getString("notification", "NV").equals("+ve")) {
+        //   if (notificationPref.getString("notification", "NV").equals("+ve")) {
             Intent intent = getIntent();
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
@@ -51,19 +52,24 @@ public class HomeActivity extends BaseActivity {
                 IdeasDetailFragment fragment = new IdeasDetailFragment();
                 bundle = new Bundle();
                 bundle.putString("EventName", eventName);
+                if (eventName.equals("Inbox")){
+                    Intent i = new Intent(this, InboxActivity.class);
+                    i.putExtra("from_notification","true");
+                    startActivity(i);
+                }
                 bundle.putString("id", eid);
                 fragment.setArguments(bundle);
                 replaceFragment(new HomeFragment());
                 ((HomeActivity) context).addFragment(fragment);
                 SharedPreferences.Editor editor = notificationPref.edit();
-                editor.clear();
-                editor.commit();
+          //      editor.clear();
+          //      editor.commit();
             } else {
                 replaceFragment(new HomeFragment());
             }
-        } else {
-            replaceFragment(new HomeFragment());
-        }
+        // } else {
+        //    replaceFragment(new HomeFragment());
+        // }
     }
 
     private void initToolbar() {

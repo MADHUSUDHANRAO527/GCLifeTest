@@ -15,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -151,14 +150,16 @@ public class CustomVideoGalleryActivity extends Activity {
                 totVideoSize=totVideoSize+sizeInMb;
                 allPath[i] = selected.get(i).sdcardPath;
             }
-
-            if(totVideoSize>15){
+            Intent data = new Intent().putExtra("all_path", allPath);
+            setResult(RESULT_OK, data);
+            finish();
+          /*  if(totVideoSize>15){
                 Toast.makeText(CustomVideoGalleryActivity.this, "Video size must be below 15 Mb", Toast.LENGTH_SHORT).show();
             }else{
                 Intent data = new Intent().putExtra("all_path", allPath);
                 setResult(RESULT_OK, data);
                 finish();
-            }
+            }*/
 
         }
     };

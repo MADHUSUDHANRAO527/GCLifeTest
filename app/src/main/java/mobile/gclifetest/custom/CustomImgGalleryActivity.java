@@ -18,7 +18,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.gc.materialdesign.widgets.SnackBar;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -89,11 +88,12 @@ public class CustomImgGalleryActivity extends Activity {
     private void init() {
         handler = new Handler();
         gridGallery = (GridView) findViewById(R.id.gridGallery);
-        gridGallery.setFastScrollEnabled(true);
+    //    gridGallery.setFastScrollEnabled(true);
         adapter = new GalleryImgAdapter(getApplicationContext(), imageLoader);
         PauseOnScrollListener listener = new PauseOnScrollListener(imageLoader,
                 true, true);
-        gridGallery.setOnScrollListener(listener);
+      //  gridGallery.setOnScrollListener(listener);
+      //  gridGallery.setVerticalScrollBarEnabled(false);
         findViewById(R.id.llBottomContainer).setVisibility(View.VISIBLE);
         gridGallery.setOnItemClickListener(mItemMulClickListener);
         adapter.setMultiplePick(true);
@@ -218,15 +218,5 @@ public class CustomImgGalleryActivity extends Activity {
         // show newest photo at beginning of the list
         Collections.reverse(galleryList);
         return galleryList;
-    }
-
-    void showSnack(CustomImgGalleryActivity flats, String stringMsg, String ok) {
-        new SnackBar(CustomImgGalleryActivity.this, stringMsg, ok,
-                new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                    }
-                }).show();
     }
 }

@@ -23,30 +23,30 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import mobile.gclifetest.pojoGson.EventsPojo;
-import mobile.gclifetest.pojoGson.FlatDetailsPojo;
-import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.fragments.IdeasDetailFragment;
 import mobile.gclifetest.http.EvenstPost;
 import mobile.gclifetest.http.MemsPost;
+import mobile.gclifetest.pojoGson.EventsPojo;
+import mobile.gclifetest.pojoGson.FlatDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by MRaoKorni on 8/2/2016.
  */
 public class ListIdeasAdapter extends BaseAdapter {
-    List<EventsPojo> eventsPojos = new ArrayList<EventsPojo>();
+    private List<EventsPojo> eventsPojos = new ArrayList<EventsPojo>();
     private LayoutInflater inflator;
     private Context context;
-    ArrayList<String> likeCheckArr = new ArrayList<String>();
-    String eventName, eid, deleteEveId;
-    SharedPreferences userPref;
-    FlatDetailsPojo flats;
-    Dialog m_dialog;
-    JSONObject jsonLike, jsonDelete;
 
+    private String eventName, eid, deleteEveId;
+    private SharedPreferences userPref;
+    private FlatDetailsPojo flats;
+    private Dialog m_dialog;
+    private JSONObject jsonLike, jsonDelete;
+    View v;
     public ListIdeasAdapter(Context activity,
                             List<EventsPojo> eventsPojo,FlatDetailsPojo flat,String eventNam) {
         // TODO Auto-generated constructor stub
@@ -54,7 +54,7 @@ public class ListIdeasAdapter extends BaseAdapter {
         this.eventsPojos = eventsPojo;
         inflator = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
+        userPref = context.getSharedPreferences("USER", Context.MODE_PRIVATE);
         this.flats=flat;
         eventName=eventNam;
     }
@@ -82,6 +82,8 @@ public class ListIdeasAdapter extends BaseAdapter {
                         ViewGroup parent) {
         // TODO Auto-generated method stub
         final ViewHolder holder;
+        EventsPojo eventPojo = eventsPojos.get(position);
+        v = convertView;
         if (convertView == null) {
             convertView = inflator.inflate(R.layout.idea_list_row, parent,
                     false);
@@ -114,30 +116,27 @@ public class ListIdeasAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.titleTxt.setText(eventsPojos.get(position).getTitle());
-        holder.sDiscTxt.setText(eventsPojos.get(position).getSdesc());
-        if (eventsPojos.get(position).getEvent_images().size() > 0) {
-            holder.attchCountTxt.setText(String.valueOf(eventsPojos.get(position).getEvent_images().size()));
-        }
-        if (eventsPojos.get(position).getEvent_comments().size() > 0) {
-            holder.comntCountTxt.setText(String.valueOf(eventsPojos.get(position).getEvent_comments().size()));
-        }
+        holder.titleTxt.setText(eventPojo.getTitle());
+        holder.sDiscTxt.setText(eventPojo.getSdesc());
+        holder.attchCountTxt.setText(String.valueOf(eventPojo.getEvent_images().size()));
+        // }
+        // if (eventsPojos.get(position).getEvent_comments().size() > 0) {
+        holder.comntCountTxt.setText(String.valueOf(eventPojo.getEvent_comments().size()));
+        // }
         eid = String.valueOf(eventsPojos.get(position).getId());
+        final ArrayList<String> likeCheckArr = new ArrayList<String>();
         if (eventsPojos.get(position).getEvent_likes().size() > 0) {
             holder.likesCountTxt.setText(String.valueOf(eventsPojos.get(position).getEvent_likes().size()));
-            likeCheckArr.add(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()));
+            for (int i = 0; i < eventsPojos.get(position).getEvent_likes().size(); i++) {
+                likeCheckArr.add(String.valueOf(eventsPojos.get(position).getEvent_likes().get(i).getUser_id()));
+            }
+
         }
 
         holder.detailClick.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
-              /*  Intent i = new Intent(context, IdeasDetail.class);
-                i.putExtra("EventName", eventName);
-                i.putExtra("id", String.valueOf(eventsPojos.get(position).getId()));
-                context.startActivity(i);*/
-
                 IdeasDetailFragment fragment = new IdeasDetailFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString("EventName", eventName);
@@ -212,8 +211,10 @@ public class ListIdeasAdapter extends BaseAdapter {
                         "Share via"));
             }
         });
+        System.out.println(eventsPojos.get(position).getEvent_likes() + " !!!!!!!!!SIZE!!!!!!!!!!" + likeCheckArr.toString());
+
         if (eventsPojos.get(position).getEvent_likes().size() > 0) {
-            if (likeCheckArr.contains(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()))) {
+            if (likeCheckArr.contains(userPref.getString("USERID", "NV"))) {
                 holder.likeImg.setImageResource(R.drawable.liked);
             } else {
                 holder.likeImg.setImageResource(R.drawable.unlike);
@@ -225,52 +226,18 @@ public class ListIdeasAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                   /* if (likeCheckArr.contains(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()))) {
-                        showSnack(IdeasList.this, "Oops! You already liked it!",
+
+                if (likeCheckArr.contains(userPref.getString("USERID", "NV"))) {
+                    Constants.showSnack(v, "Oops! You already liked it!",
                                 "OK");
-                        // holder.likeImg.setImageResource(R.drawable.unlike);
-                    } else {
-                        eid = String.valueOf(eventsPojos.get(position).getId());
-                        int likes = Integer.valueOf(String.valueOf(eventsPojos.get(0).getEvent_likes().size()));
-                        int lik = likes + 1;
-                        holder.likesCountTxt.setText(String.valueOf(lik));
-                        holder.likeImg.setImageResource(R.drawable.liked);
-                        LikeUnlike();
-                    }*/
-                if (eventsPojos.get(position).getEvent_likes().isEmpty() || eventsPojos.get(position).getEvent_likes().toString() == "[]") {
+                } else {
                     eid = String.valueOf(eventsPojos.get(position).getId());
                     int likes = Integer.valueOf(String.valueOf(eventsPojos.get(position).getEvent_likes().size()));
                     int lik = likes + 1;
                     holder.likesCountTxt.setText(String.valueOf(lik));
                     holder.likeImg.setImageResource(R.drawable.liked);
                     LikeUnlike();
-                } else {
-                    if (likeCheckArr.contains(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()))) {
-                        Constants.showSnack(context, "Oops! You already liked it!",
-                                "OK");
-                        // holder.likeImg.setImageResource(R.drawable.unlike);
                     }
-                }
-                    /*if (eventsPojos.get(position).getEvent_likes().size() > 0) {
-                        if (likeCheckArr.contains(String.valueOf(eventsPojos.get(position).getEvent_likes().get(0).getId()))) {
-                            showSnack(IdeasList.this, "Oops! You already liked it!",
-                                    "OK");
-                            // holder.likeImg.setImageResource(R.drawable.unlike);
-                        } else {
-                            eid = String.valueOf(eventsPojos.get(position).getId());
-                            int likes = Integer.valueOf(String.valueOf(eventsPojos.get(0).getEvent_likes().size()));
-                            int lik = likes + 1;
-                            holder.likesCountTxt.setText(String.valueOf(lik));
-                            holder.likeImg.setImageResource(R.drawable.liked);
-                            LikeUnlike();
-                        }
-                    }*/
-                   /* eid = String.valueOf(eventsPojos.get(position).getId());
-                    int likes = Integer.valueOf(String.valueOf(eventsPojos.get(0).getEvent_likes().size()));
-                    int lik = likes + 1;
-                    holder.likesCountTxt.setText(String.valueOf(lik));
-                    holder.likeImg.setImageResource(R.drawable.liked);
-                    LikeUnlike();*/
             }
         });
         return convertView;
@@ -323,7 +290,7 @@ public class ListIdeasAdapter extends BaseAdapter {
             if (jsonLike != null) {
 
             } else {
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }
@@ -340,8 +307,9 @@ public class ListIdeasAdapter extends BaseAdapter {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                System.out.println(deleteEveId + " **************");
+
                 jsonDelete = EvenstPost.makeDelete(MyApplication.HOSTNAME, deleteEveId, "events");
+                System.out.println(jsonDelete + " **************");
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -351,12 +319,9 @@ public class ListIdeasAdapter extends BaseAdapter {
 
         @Override
         protected void onPostExecute(Void unused) {
-            //	m_dialog.dismiss();
-            //	pDialogPop.setVisibility(View.GONE);
-            //	submitTxt.setVisibility(View.INVISIBLE);
-            Constants.showSnack(context,
+            /*Constants.showSnack(v,
                     "Deleted!",
-                    "OK");
+                    "OK");*/
             notifyDataSetChanged();
         }
     }

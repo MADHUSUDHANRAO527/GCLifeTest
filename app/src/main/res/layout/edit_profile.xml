@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:float="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/snackLay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -42,13 +41,13 @@
                 android:textSize="16sp"
                 android:visibility="gone" />
 
-            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/userNameEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_marginTop="10dp"
-                float:fletPadding="5dp">
+                app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
 
                 <EditText
                     android:id="@+id/userName"
@@ -56,10 +55,11 @@
                     android:layout_height="wrap_content"
                     android:background="#00000000"
                     android:focusable="true"
+                    android:paddingTop="@dimen/padding_8"
                     android:focusableInTouchMode="true"
                     android:hint="Full name"
                     android:singleLine="true" />
-            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            </android.support.design.widget.TextInputLayout>
 
             <RelativeLayout
                 android:id="@+id/line"
@@ -71,14 +71,12 @@
                 android:background="#ccc"
                 android:orientation="horizontal"></RelativeLayout>
 
-            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/mail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                float:fletPadding="5dp">
-
-                <!-- float:fletPadding="10dp" -->
+                app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
 
                 <EditText
                     android:id="@+id/mailEdit"
@@ -88,8 +86,9 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:hint="Gmail Id"
+                    android:paddingTop="@dimen/padding_8"
                     android:singleLine="true" />
-            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            </android.support.design.widget.TextInputLayout>
 
             <RelativeLayout
                 android:id="@+id/line3"
@@ -101,15 +100,12 @@
                 android:background="#ccc"
                 android:orientation="horizontal"></RelativeLayout>
 
-            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            <android.support.design.widget.TextInputLayout
                 android:id="@+id/mobileNumLay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                float:fletPadding="5dp">
-
-                <!-- float:fletPadding="10dp" -->
-
+                app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
                 <EditText
                     android:id="@+id/mobileNumEdit"
                     android:layout_width="match_parent"
@@ -119,9 +115,10 @@
                     android:focusableInTouchMode="true"
                     android:hint="Mobile Number"
                     android:inputType="number"
+                    android:paddingTop="@dimen/padding_8"
                     android:maxLength="10"
                     android:singleLine="true" />
-            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            </android.support.design.widget.TextInputLayout>
 
             <RelativeLayout
                 android:id="@+id/line2"
@@ -134,13 +131,14 @@
                 android:orientation="horizontal"></RelativeLayout>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
                 android:padding="5dp"
+                android:gravity="left"
                 android:text="Gender"
-                android:textColor="#4169E1"
+                android:textColor="#000000"
                 android:textSize="16sp" />
 
             <RelativeLayout
@@ -177,14 +175,11 @@
                 </RadioGroup>
             </RelativeLayout>
 
-            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                float:fletPadding="5dp">
-
-                <!-- float:fletPadding="10dp" -->
-
+                app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
                 <EditText
                     android:id="@+id/emeContaNum"
                     android:layout_width="match_parent"
@@ -192,11 +187,12 @@
                     android:background="#00000000"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
+                    android:paddingTop="@dimen/padding_8"
                     android:hint="Emergency contact Number"
                     android:inputType="number"
                     android:maxLength="10"
                     android:singleLine="true" />
-            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            </android.support.design.widget.TextInputLayout>
 
             <RelativeLayout
                 android:layout_width="fill_parent"
@@ -207,14 +203,11 @@
                 android:background="#ccc"
                 android:orientation="horizontal"></RelativeLayout>
 
-            <com.wrapp.floatlabelededittext.FloatLabeledEditText
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
-                float:fletPadding="5dp">
-
-                <!-- float:fletPadding="10dp" -->
-
+                app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
                 <EditText
                     android:id="@+id/occupationNumEdit"
                     android:layout_width="match_parent"
@@ -223,8 +216,9 @@
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:hint="Occupation"
+                    android:paddingTop="@dimen/padding_8"
                     android:singleLine="true" />
-            </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+            </android.support.design.widget.TextInputLayout>
 
             <RelativeLayout
                 android:layout_width="fill_parent"
@@ -243,12 +237,12 @@
                 android:layout_marginTop="5dp"
                 android:gravity="left">
 
-                <com.wrapp.floatlabelededittext.FloatLabeledEditText
+                <android.support.design.widget.TextInputLayout
                     android:id="@+id/liscenseEndson"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    float:fletPadding="5dp">
+                    app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
 
                     <EditText
                         android:id="@+id/dobEdit"
@@ -259,10 +253,11 @@
                         android:focusable="false"
                         android:focusableInTouchMode="true"
                         android:gravity="left"
+                        android:paddingTop="@dimen/padding_8"
                         android:hint="Date of birth"
                         android:singleLine="true"
                         android:textSize="16dp" />
-                </com.wrapp.floatlabelededittext.FloatLabeledEditText>
+                </android.support.design.widget.TextInputLayout>
             </RelativeLayout>
 
             <RelativeLayout

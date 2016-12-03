@@ -9,16 +9,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.gc.materialdesign.widgets.SnackBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
-import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.http.SignUpPost;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.MyApplication;
 
 public class OTP extends BaseActivity implements OnClickListener {
 	TextView resendOtpTxt, submitTxt, otpTxt;
@@ -30,7 +30,7 @@ public class OTP extends BaseActivity implements OnClickListener {
 	JSONObject jsonResult;
 	ProgressBarCircularIndeterminate pDialog;
 	ProgressBarCircularIndeterminate pDialogResend;
-
+	LinearLayout snackLay;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,7 +41,7 @@ public class OTP extends BaseActivity implements OnClickListener {
 		otpTxt = (TextView) findViewById(R.id.otpTxt);
 		pDialog = (ProgressBarCircularIndeterminate) findViewById(R.id.progressBarCircularIndetermininate);
 		pDialogResend = (ProgressBarCircularIndeterminate) findViewById(R.id.progressBarResend);
-
+		snackLay=(LinearLayout)findViewById(R.id.snackLay);
 		typefaceLight = Typeface.createFromAsset(getAssets(),
 				"fonts/RobotoLight.ttf");
 		resendOtpTxt.setTypeface(typefaceLight);
@@ -87,7 +87,7 @@ public class OTP extends BaseActivity implements OnClickListener {
 			otpStr = otpEditxt.getText().toString();
 			if (otpStr == null || otpStr.equals("null") || otpStr == ""
 					|| otpStr.equals("")) {
-				showSnack(OTP.this,
+				Constants.showSnack(snackLay,
 						"Please enter OTP!",
 						"OK");
 			} else {
@@ -130,7 +130,7 @@ public class OTP extends BaseActivity implements OnClickListener {
 					pDialog.setVisibility(View.INVISIBLE);
 					submitTxt.setVisibility(View.VISIBLE);
 
-					showSnack(OTP.this,
+					Constants.showSnack(snackLay,
 							"You have entered wrong OTP!",
 							"OK");
 
@@ -161,7 +161,7 @@ public class OTP extends BaseActivity implements OnClickListener {
 			} else {
 				pDialog.setVisibility(View.INVISIBLE);
 				submitTxt.setVisibility(View.VISIBLE);
-				showSnack(OTP.this,
+				Constants.showSnack(snackLay,
 						"Oops! Something went wrong. Please wait a moment!",
 						"OK");
 			}
@@ -196,13 +196,13 @@ public class OTP extends BaseActivity implements OnClickListener {
 				if (jsonResult.has("success")) {
 					pDialogResend.setVisibility(View.INVISIBLE);
 					resendOtpTxt.setVisibility(View.VISIBLE);
-					showSnack(OTP.this,
+					Constants.showSnack(snackLay,
 							"OTP has sent!",
 							"OK");
 				} else {
 					pDialogResend.setVisibility(View.INVISIBLE);
 					resendOtpTxt.setVisibility(View.VISIBLE);
-					showSnack(OTP.this,
+					Constants.showSnack(snackLay,
 							"Oops! Something went wrong. Please wait a moment!",
 							"OK");
 				}
@@ -210,18 +210,10 @@ public class OTP extends BaseActivity implements OnClickListener {
 			} else {
 				pDialogResend.setVisibility(View.INVISIBLE);
 				resendOtpTxt.setVisibility(View.VISIBLE);
-				showSnack(OTP.this,
+				Constants.showSnack(snackLay,
 						"Oops! Something went wrong. Please wait a moment!",
 						"OK");
 			}
 		}
-	}
-	void showSnack(OTP login, String stringMsg, String ok) {
-		new SnackBar(OTP.this, stringMsg, ok, new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-			}
-		}).show();
 	}
 }

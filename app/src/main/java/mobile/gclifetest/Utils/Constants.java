@@ -1,15 +1,13 @@
 package mobile.gclifetest.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.gc.materialdesign.widgets.SnackBar;
 
 import mobile.gclifetest.activity.R;
 
@@ -69,12 +67,9 @@ public class Constants {
         editor.commit();
     }
 
-    public static void showSnack(Context context, String stringMsg, String ok) {
-        new SnackBar((Activity) context, stringMsg, ok, new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-            }
-        }).show();
+    public static void showSnack(View view, String stringMsg, String ok) {
+        Snackbar snackbar = Snackbar
+                .make(view, stringMsg, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 }

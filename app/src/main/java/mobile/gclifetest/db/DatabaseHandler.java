@@ -24,7 +24,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_FRIENDS = "Friends";
     private static final String TABLE_MAILRECV = "MAILRECV";
     private static final String TABLE_MAILSENT = "MAILSENT";
-    private static final String TABLE_MEMSVERIFI = "MEMSVERIFI";
+    public static final String TABLE_MEMSVERIFI = "MEMSVERIFI";
     private static final String EVENT_LIST = "EVENTS";
     private static final String EVENT_ID = "EVENT_ID";
 
@@ -94,5 +94,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(EVENT_LIST, eventNews.toString());
         db.update(tableName, values, null, null);
     }
-
+    public void clearTable(String tableName)   {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(tableName, null,null);
+    }
 }

@@ -22,10 +22,6 @@ import com.google.gson.GsonBuilder;
 
 import org.json.JSONObject;
 
-import mobile.gclifetest.pojoGson.UserDetailsPojo;
-import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.InternetConnectionDetector;
-import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.Login;
 import mobile.gclifetest.activity.R;
@@ -33,6 +29,10 @@ import mobile.gclifetest.activity.UserProfile;
 import mobile.gclifetest.adapters.HomeAdapter;
 import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.http.MemsPost;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.InternetConnectionDetector;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by MRaoKorni on 8/1/2016.
@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
     InternetConnectionDetector netConn;
     Boolean isInternetPresent = false;
     JSONObject jsonLatestusers;
-
+    View v;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -55,7 +55,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+        v = inflater.inflate(
                 R.layout.home, container, false);
         context = getActivity();
         gv = (GridView) v.findViewById(R.id.grid);
@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment {
                 new LatestUserDetails().execute();
             } else {
 
-                Constants.showSnack(getActivity(), "Please check network connection!",
+                Constants.showSnack(v, "Please check network connection!",
                         "OK");
 
             }
@@ -94,7 +94,6 @@ public class HomeFragment extends Fragment {
 
                 userStatus = user.getActive();
 
-                System.out.println(userStatus);
                 InternetConnectionDetector netConn = new InternetConnectionDetector(
                         getActivity());
                 Boolean isInternetPresent = netConn.isConnectingToInternet();
@@ -102,7 +101,7 @@ public class HomeFragment extends Fragment {
                     isInternetPresent = true;
                 } else {
 
-                    Constants.showSnack(getActivity(), "Please check network connection!",
+                    Constants.showSnack(v, "Please check network connection!",
                             "OK");
 
                 }
@@ -159,21 +158,21 @@ public class HomeFragment extends Fragment {
                                 allowAdmin=false;
                             } else {
                                 allowAdmin=true;
-                                //((HomeActivity) context).addFragment(new AdminGridFragment());
+                                break;
                             }
+                            Log.d("MEMBER_TYPE", user.getGclife_registration_flatdetails().get(i).getMember_type()+" *****");
+
                         }
-                        if(allowAdmin=true){
+                        if (allowAdmin) {
                             ((HomeActivity) context).addFragment(new AdminGridFragment());
                         }else {
-                            Constants.showSnack(getActivity(), "You are not authorized person!", "");
+                            Constants.showSnack(v, "You are not authorized person!", "");
                         }
-
-
                     } else {
-                        Constants.showSnack(getActivity(), "Coming soon!", "OK");
+                        Constants.showSnack(v, "Coming soon!", "OK");
                     }
                 } else {
-                    Constants.showSnack(getActivity(), "Please contact admin!", "OK");
+                    Constants.showSnack(v, "Please contact admin!", "OK");
                 }
 
             }
@@ -208,14 +207,10 @@ public class HomeFragment extends Fragment {
                 Gson gson = new GsonBuilder().create();
                 MyApplication.user = gson.fromJson(jsonLatestusers.toString(),
                         UserDetailsPojo.class);
-
                 Gson gsonn = new Gson();
                 String json = gsonn.toJson(MyApplication.user);
-
                 editor.putString("USER_DATA", json);
                 editor.commit();
-            } else {
-
             }
         }
     }
@@ -238,7 +233,7 @@ public class HomeFragment extends Fragment {
                 editor.clear();
                 editor.commit();
                 context.deleteDatabase(DatabaseHandler.DATABASE_NAME);
-                Constants.showSnack(getActivity(), "You have been logged out!", "OK");
+                Constants.showSnack(v, "You have been logged out!", "OK");
                 Intent i = new Intent(getActivity(), Login.class);
                 startActivity(i);
                 break;

@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
@@ -44,7 +45,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
-import com.gc.materialdesign.views.ButtonFloat;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -58,6 +58,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import mobile.gclifetest.activity.BaseActivity;
+import mobile.gclifetest.activity.FrdsDetail;
+import mobile.gclifetest.activity.HomeActivity;
+import mobile.gclifetest.activity.R;
+import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.http.SocietyNameGet;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
@@ -65,19 +71,13 @@ import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
-import mobile.gclifetest.activity.BaseActivity;
-import mobile.gclifetest.activity.FrdsDetail;
-import mobile.gclifetest.activity.HomeActivity;
-import mobile.gclifetest.activity.R;
-import mobile.gclifetest.db.DatabaseHandler;
-import mobile.gclifetest.http.SocietyNameGet;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
  */
 public class FrdsListFragment extends Fragment {
     Context context;
-    ButtonFloat addBtn;
+    FloatingActionButton addBtn;
     ProgressBarCircularIndeterminate pDialog, pDialogBtm;
     InternetConnectionDetector netConn;
     UserDetailsPojo user;
@@ -109,14 +109,14 @@ public class FrdsListFragment extends Fragment {
     boolean progressShow = true;
     ImageView clearImg;
     int limit = 15, currentPosition, offset = 0;
-
+    View v;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(
+        v = inflater.inflate(
                 R.layout.ideas_list, container, false);
         context = getActivity();
-        addBtn = (ButtonFloat) v.findViewById(R.id.addBtn);
+        addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
         pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
         listviewIdeas = (ListView) v.findViewById(R.id.listview);
         searchLay = (RelativeLayout) v.findViewById(R.id.searchLay);
@@ -129,9 +129,10 @@ public class FrdsListFragment extends Fragment {
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         clearImg = (ImageView) v.findViewById(R.id.clearImg);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
-                R.color.green, R.color.blue);
+                android.R.color.holo_green_dark, R.color.blue);
         gson = new Gson();
         db = new DatabaseHandler(context);
+        searchEdit.setHint(R.string.search_frds);
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
         if (db.getEventNews(eventName) != "null") {
             Log.d("DB NOT NULL: " + eventName, db.getEventNews(eventName));
@@ -143,11 +144,9 @@ public class FrdsListFragment extends Fragment {
             listviewIdeas.setAdapter(adapterfrds);
             progressShow = false;
             callFrdsList();
-
         } else {
             callFrdsList();
             Log.d("DB NULL: " + eventName, "");
-
         }
         mSwipeRefreshLayout
                 .setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -236,7 +235,7 @@ public class FrdsListFragment extends Fragment {
 
                 if (jsonResultArry == null
                         || jsonResultArry.toString() == "null") {
-                    Constants.showSnack(context,
+                    Constants.showSnack(v,
                             "Please wait! Societies are loading...!", "OK");
                 } else {
                     final Dialog m_dialog = new Dialog(getActivity());
@@ -512,10 +511,16 @@ public class FrdsListFragment extends Fragment {
                             || jsonResultArry.toString().equals("")) {
                         pDialog.setVisibility(View.GONE);
                         progressBar.setVisibility(View.GONE);
-                        Constants.showSnack(context, "Oops! There is no Friends!", "OK");
+                        if (searchStr.length() > 0) {
+                            Constants.showSnack(v,
+                                    "Searched friend details are not found, please try with another search criteria!", "");
+                        } else {
+                            Constants.showSnack(v, "No further Friends content is available!", "OK");
+                        }
+
+
                         userListPojo.clear();
                         adapterfrds.notifyDataSetChanged();
-                        //   listviewIdeas.setAdapter(adapterfrds);
                         currentPosition = listviewIdeas
                                 .getLastVisiblePosition();
                         DisplayMetrics displayMetrics =
@@ -523,7 +528,7 @@ public class FrdsListFragment extends Fragment {
                         int height = displayMetrics.heightPixels;
 
                         listviewIdeas.setSelectionFromTop(
-                                currentPosition + 1, height - 220);
+                                currentPosition, height - 220);
                     } else {
                         userListPojo = gson.fromJson(jsonResultArry.toString(), new TypeToken<List<UserDetailsPojo>>() {
                         }.getType());
@@ -536,9 +541,7 @@ public class FrdsListFragment extends Fragment {
                         adapterfrds = new ListFreindsBaseAdapter(
                                 getActivity(), globalUserListPojo);
                         listviewIdeas.setAdapter(adapterfrds);
-
                         pDialog.setVisibility(View.GONE);
-                        pDialogBtm.setVisibility(View.GONE);
                         progressBar.setVisibility(View.GONE);
                         db.addEventNews(jsonResultArry, eventName);
                         //for updating new data
@@ -566,6 +569,7 @@ public class FrdsListFragment extends Fragment {
                                             AbsListView view, int scrollState) {
                                         // TODO Auto-generated method stub
                                         this.currentScrollState = scrollState;
+                                        pDialogBtm.setVisibility(View.INVISIBLE);
                                         if (view.getId() == listviewIdeas
                                                 .getId()) {
                                             final int currentFirstVisibleItem = listviewIdeas
@@ -594,21 +598,18 @@ public class FrdsListFragment extends Fragment {
                                         this.currentFirstVisibleItem = firstVisibleItem;
                                         this.currentVisibleItemCount = visibleItemCount;
                                         this.totalItemCount = totalItemCount;
-                                        pDialogBtm.setVisibility(View.GONE);
-
+                                        pDialogBtm.setVisibility(View.INVISIBLE);
                                     }
-
                                     private void isScrollCompleted() {
-                                        pDialogBtm.setVisibility(View.VISIBLE);
                                         if (this.currentVisibleItemCount > 0
                                                 && this.currentScrollState == SCROLL_STATE_IDLE
                                                 && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
                                             offset = offset + 15;
                                             progressShow=false;
+                                            pDialogBtm.setVisibility(View.VISIBLE);
                                             callFrdsList();
-                                            pDialogBtm.setVisibility(View.GONE);
+                                            pDialogBtm.setVisibility(View.INVISIBLE);
                                         }
-
                                     }
                                 });
                     }
@@ -623,7 +624,7 @@ public class FrdsListFragment extends Fragment {
 
                 Log.d("Error = ", volleyError.toString());
                 pDialog.setVisibility(View.GONE);
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }
@@ -799,7 +800,7 @@ public class FrdsListFragment extends Fragment {
                 }
 
             } else {
-                Constants.showSnack(context,
+                Constants.showSnack(v,
                         "Oops! Something went wrong. Please check internet connection!",
                         "OK");
             }

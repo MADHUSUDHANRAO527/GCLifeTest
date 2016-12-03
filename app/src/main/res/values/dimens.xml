@@ -33,6 +33,7 @@
     <dimen name="margin_8">8dp</dimen>
     <dimen name="margin_10">10dp</dimen>
     <dimen name="margin_16">16dp</dimen>
+    <dimen name="margin_32">32dp</dimen>
     <dimen name="margin_64">64dp</dimen>
     <dimen name="space_or_default_margin_padding">8dp</dimen>
 
