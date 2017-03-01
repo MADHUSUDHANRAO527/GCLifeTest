@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
@@ -16,44 +17,69 @@ import android.os.Build;
 import android.os.PowerManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+import java.io.UnsupportedEncodingException;
+
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.fragments.InboxActivity;
+import mobile.gclifetest.utils.Constants;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     String message, title, category;
     Context mContext;
     String eid, notiId;
+    SharedPreferences userPref;
+    SharedPreferences.Editor editor;
     @Override
     public void onReceive(Context context, Intent intent) {
         mContext = context;
         category = intent.getExtras().getString("category");
         title = intent.getExtras().getString("tittle");
         message = intent.getExtras().getString("message");
+
+        String[] totMsg = message.split("-");
+        String postedBy = totMsg[0];
+        String msg = totMsg[1];
+
         eid = intent.getExtras().getString("event");
+        userPref = mContext.getSharedPreferences("USER", MODE_PRIVATE);
         notiId = intent.getExtras().getString("notId");
-
-        System.out.println(eid + " ID: " + category + " CAT: " + title + " TIT: " + message + " : MSG " + " " + " NOTI ID" + notiId);
-        Intent notificationIntent;
-        if (category.equals("News") || category.equals("Notice") ||
-                category.equals("Ideas") ||  category.equals("Photos") ||category.equals("Videos")) {
-            notificationIntent = new Intent(context, HomeActivity.class);
-            notificationIntent.putExtra("EventName", category);
-            notificationIntent.putExtra("id", eid);
-
-        } else if (category == "Inbox" || category.equals("Inbox")) {
-            notificationIntent = new Intent(context, InboxActivity.class);
+        String eventId = userPref.getString("EventId", "NV");
+        if (eventId.equals(intent.getExtras().getString("event"))) {
+            System.out.println(" SAME EVENT ID !!!!!!!! !!!!" + notiId);
         } else {
-            notificationIntent = new Intent(context, HomeActivity.class);
-        }
-        notificationIntent.setAction(notiId);
-        generateNotification(context, title, message, notiId, notificationIntent);
-        ComponentName comp = new ComponentName(context.getPackageName(),
-                GcmMessagerHandler.class.getName());
+            editor = userPref.edit();
+            editor.putString("EventId", eid);
+            editor.apply();
+            System.out.println(eid + " ID: " + category + " CAT: " + title + " TIT: " + message + " : MSG " + " " + " NOTI ID" + notiId);
+            Intent notificationIntent;
+            if (category.equals("News") || category.equals("Notice") ||
+                    category.equals("Ideas") || category.equals("Photos") || category.equals("Videos")) {
+                notificationIntent = new Intent(context, HomeActivity.class);
+                notificationIntent.putExtra("EventName", category);
+                notificationIntent.putExtra("id", eid);
 
-        // Start the service, keeping the device awake while it is launching.
-        startWakefulService(context, (intent.setComponent(comp)));
-        setResultCode(Activity.RESULT_OK);
+            } else if (category == "Inbox" || category.equals("Inbox")) {
+                notificationIntent = new Intent(context, InboxActivity.class);
+            } else {
+                notificationIntent = new Intent(context, HomeActivity.class);
+            }
+            notificationIntent.setAction(notiId);
+            try {
+                generateNotification(context, title, postedBy+"-"+Constants.decodeString(msg), notiId, notificationIntent);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            ComponentName comp = new ComponentName(context.getPackageName(),
+                    GcmMessagerHandler.class.getName());
+
+            // Start the service, keeping the device awake while it is launching.
+            startWakefulService(context, (intent.setComponent(comp)));
+            setResultCode(Activity.RESULT_OK);
+        }
+
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

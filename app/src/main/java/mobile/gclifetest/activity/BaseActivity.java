@@ -11,9 +11,12 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.inputmethod.InputMethodManager;
 
+import com.flurry.android.FlurryAgent;
+
 import java.lang.reflect.Field;
 import java.util.Stack;
 
+import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.MyApplication;
 
 /**
@@ -59,25 +62,6 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-  /*  public void replaceFragment(Fragment fragment) {
-        if (mFragmentStack != null) {
-            Log.e("Size", mFragmentStack.size() + "");
-        }
-        mFragmentStack = new Stack<>();
-        FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        transaction.replace(R.id.layout_frame_content, fragment);
-        mFragmentStack.push(fragment);
-        transaction.commitAllowingStateLoss();
-    }
-
-    public void addFragment(android.support.v4.app.Fragment fragment) {
-        android.support.v4.app.FragmentTransaction transaction = mFragmentManager.beginTransaction();
-        transaction.add(R.id.layout_frame_content, fragment);
-        mFragmentStack.lastElement().onPause();
-        transaction.hide(mFragmentStack.lastElement());
-        mFragmentStack.push(fragment);
-        transaction.commit();
-    }*/
 
     public void clearFragmentStack() {
         if (mFragmentStack.size() >= 2) {
@@ -90,27 +74,15 @@ public class BaseActivity extends AppCompatActivity {
             ft.commitAllowingStateLoss();
         }
     }
-   /* public void onBackpressed() {
-        if (mFragmentStack.size() >= 1) {
-            FragmentTransaction ft = mFragmentManager.beginTransaction();
-            mFragmentStack.lastElement().onPause();
-            ft.remove(mFragmentStack.pop());
-            mFragmentStack.lastElement().onResume();
-            ft.show(mFragmentStack.lastElement());
-            ft.commitAllowingStateLoss();
-        }*//* else {
-            if (doubleBackToExitPressedOnce) {
-                super.onBackPressed();
-                return;
-            }
-            this.doubleBackToExitPressedOnce = true;
-            Toast.makeText(this, "Please Tap BACK again to exit", Toast.LENGTH_SHORT).show();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    doubleBackToExitPressedOnce = false;
-                }
-            }, 2000);
-        }*//*
-    }*/
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(this, Constants.flurryApiKey);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(this);
+    }
 }

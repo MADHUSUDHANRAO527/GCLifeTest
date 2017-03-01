@@ -13,7 +13,6 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
-import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 
 public class SplashActivity extends Activity {
@@ -57,8 +56,7 @@ public class SplashActivity extends Activity {
                     overridePendingTransition(R.anim.slide_in_left,
                             R.anim.slide_out_left);
                 } else {
-                    Constants.showSnack(v, "Please check network connection!",
-                            "OK");
+                    Toast.makeText(getApplication(), "Please check network connection!",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -74,8 +72,7 @@ public class SplashActivity extends Activity {
                     overridePendingTransition(R.anim.slide_in_left,
                             R.anim.slide_out_left);
                 } else {
-                    Constants.showSnack(v, "Please check network connection!",
-                            "OK");
+                   Toast.makeText(getApplication(), "Please check network connection!",Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -486,26 +486,24 @@
                     android:background="#ccc"
                     android:orientation="horizontal" >
                 </RelativeLayout>
-
                 <RelativeLayout
                     android:id="@+id/dateToLay"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
                     android:layout_marginTop="5dp"
-                    android:gravity="left"
-                    android:visibility="gone" >
+                    android:gravity="left">
 
                     <android.support.design.widget.TextInputLayout
                         android:id="@+id/liscenseEndson"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="10dp"
                         app:hintTextAppearance="@style/TextAppearance.App.TextInputLayoutBlack">
 
                         <EditText
                             android:id="@+id/lisecnseEndsOntxtEdit"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="#00000000"
                             android:drawableLeft="@drawable/ic_calender"
@@ -518,6 +516,16 @@
                             android:singleLine="true"
                             android:textSize="16dp" />
                     </android.support.design.widget.TextInputLayout>
+
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="0.8dp"
+                        android:layout_below="@+id/liscenseEndson"
+                        android:layout_marginLeft="18dp"
+                        android:layout_marginRight="18dp"
+                        android:layout_marginTop="5dp"
+                        android:background="#ccc"
+                        android:orientation="horizontal" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -537,7 +545,6 @@
                         android:text="FINISH"
                         android:textColor="#4169E1"
                         android:textSize="16sp" />
-
                     <mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate
                         android:id="@+id/progressBarCircularIndetermininate"
                         android:layout_width="32dp"

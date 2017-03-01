@@ -1,12 +1,12 @@
 package mobile.gclifetest.custom;
 
-import java.util.ArrayList;
-
-import mobile.gclifetest.activity.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore.Video.Thumbnails;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +14,12 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+
+import java.util.ArrayList;
+
+import mobile.gclifetest.activity.R;
+
+import static mobile.gclifetest.custom.CustomVideoGalleryActivity.isSizeAccpetable;
 
 public class GalleryVideoAdapter extends BaseAdapter {
 
@@ -114,16 +120,17 @@ public class GalleryVideoAdapter extends BaseAdapter {
 
 		if (data.get(position).isSeleted) {
 			data.get(position).isSeleted = false;
-		} else {
-			data.get(position).isSeleted = true;
-		}
+            isSizeAccpetable = false;
+        } else {
+            data.get(position).isSeleted = true;
+        }
 
 		((ViewHolder) v.getTag()).imgQueueMultiSelected.setSelected(data
 				.get(position).isSeleted);
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
 		final ViewHolder holder;
 		if (convertView == null) {
@@ -135,12 +142,12 @@ public class GalleryVideoAdapter extends BaseAdapter {
 
 			holder.imgQueueMultiSelected = (ImageView) convertView
 					.findViewById(R.id.imgQueueMultiSelected);
-
-			if (isActionMultiplePick) {
-				holder.imgQueueMultiSelected.setVisibility(View.VISIBLE);
-			} else {
-				holder.imgQueueMultiSelected.setVisibility(View.GONE);
-			}
+            //      holder.pbar = (ProgressBar) convertView.findViewById(R.id.pBar);
+            if (isActionMultiplePick) {
+                holder.imgQueueMultiSelected.setVisibility(View.VISIBLE);
+            } else {
+                holder.imgQueueMultiSelected.setVisibility(View.GONE);
+            }
 
 			convertView.setTag(holder);
 
@@ -150,12 +157,19 @@ public class GalleryVideoAdapter extends BaseAdapter {
 		holder.imgQueue.setTag(position);
 
 		try {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("UI thread", "I am the UI thread");
+                    Bitmap bmThumbnail;
+                    bmThumbnail = ThumbnailUtils.createVideoThumbnail(data.get(position).sdcardPath, Thumbnails.MICRO_KIND);
+                    holder.imgQueue.setImageBitmap(bmThumbnail);
 
-			
-			Bitmap bmThumbnail;
-	        bmThumbnail = ThumbnailUtils.createVideoThumbnail(data.get(position).sdcardPath, Thumbnails.MICRO_KIND);
-	        holder.imgQueue.setImageBitmap(bmThumbnail);
-			
+                }
+            });
+
+
+
 			/*imageLoader.displayImage("file://" + data.get(position).sdcardPath,
 					holder.imgQueue, new SimpleImageLoadingListener() {
 						@Override
@@ -183,7 +197,8 @@ public class GalleryVideoAdapter extends BaseAdapter {
 	public class ViewHolder {
 		ImageView imgQueue;
 		ImageView imgQueueMultiSelected;
-	}
+        //     ProgressBar pbar;
+    }
 
 	public void clearCache() {
 		imageLoader.clearDiscCache();

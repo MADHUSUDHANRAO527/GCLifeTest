@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
@@ -49,8 +50,7 @@ public class MySocietyFragment extends Fragment {
                                     int position, long id) {
                 System.out.println(position + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
                 if (position == 1) {
-                    if (user.getGclife_registration_flatdetails().get(0).getMember_type() == "Non_members" ||
-                            user.getGclife_registration_flatdetails().get(0).getMember_type().equals("Non_members")) {
+                    if (user.getGclife_registration_flatdetails().get(0).getMember_type().equals("Non_members")) {
                         Constants.showSnack(v, "You are not authorized person!", "OK");
                     } else {
                         ((HomeActivity) context).addFragment(new MySocietyBillFragment());
@@ -80,5 +80,16 @@ public class MySocietyFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.my_society);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

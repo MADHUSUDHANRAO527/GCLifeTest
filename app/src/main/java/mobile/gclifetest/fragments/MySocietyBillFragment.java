@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -53,7 +54,7 @@ public class MySocietyBillFragment extends Fragment {
     Context context;
     Spinner societyNameSpinner, buildingSpinner, finaYrTypeSpinner;
     SharedPreferences userPref;
-    String societyName, buildingName, financialYr;
+    String societyName, buildingName, flatNum, financialYr;
     UserDetailsPojo user;
     TextView totBilAmountTxt, paidAmountTxt, balnceAmountTxt, submitTxt;
     ProgressBarCircularIndeterminate pDialog;
@@ -63,6 +64,7 @@ public class MySocietyBillFragment extends Fragment {
     String refNum = "", spnrVal, billId, billAmountPaid, paymentType;
     Dialog m_dialog;
     View v;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -91,31 +93,36 @@ public class MySocietyBillFragment extends Fragment {
                 .getGclife_registration_flatdetails();
 
         List<String> sociList = new ArrayList<String>();
-        ArrayList<String> listSociety = new ArrayList<String>();
-        final Map<String, String> societyMap = new HashMap<String, String>();
+        //  ArrayList<String> listSociety = new ArrayList<String>();
+        final Map<String, ArrayList<String>> listSocietyBuildingFlats = new HashMap<>();
+       // final Map<String, String> societyMap = new HashMap<String, String>();
         for (int i = 0; i < flatsList.size(); i++) {
-
+            ArrayList<String> buildingFlatList = new ArrayList<>();
             FlatDetailsPojo flatsListt = user
                     .getGclife_registration_flatdetails().get(i);
             societyName = flatsListt.getSocietyid();
-            if (!sociList.contains(societyName)) {
-                sociList.add(societyName);
-            }
             buildingName = flatsListt.getBuildingid();
+            flatNum = flatsListt.getFlat_number();
+            if (flatsListt.getStatus().equals("Approve")) {
+                if (!sociList.contains(societyName)) {
+                    sociList.add(societyName);
+                    // listSociety.add(societyName);
+                    buildingFlatList.add(buildingName + " , " + flatNum);
+                } else {
+                    ArrayList<String> newArraylIst = listSocietyBuildingFlats.get(societyName);
+                    newArraylIst.add(buildingName + " , " + flatNum);
+                    buildingFlatList = newArraylIst;
+                }
 
-            listSociety.add(societyName);
-            societyMap.put(societyName, buildingName+ " , " +flatsListt.getFlat_number());
-        }
-       /* for (int i = 0; i < flatsList.size(); i++) {
-            FlatDetailsPojo flatsListt = user
-                    .getGclife_registration_flatdetails().get(i);
-            buildingName = flatsListt.getBuildingid();
-            if (!buildingList.contains(buildingName)) {
-                buildingList.add(buildingName + " , " + flatsListt.getFlat_number());
+                listSocietyBuildingFlats.put(societyName, buildingFlatList);
+
+                //  buildingListMap.add(societyMap);
             }
-        }*/
+        }
 
         System.out.println(sociList + "  ---------------------------------");
+        System.out.println(listSocietyBuildingFlats + "  ---------------------------------");
+        //   System.out.println(buildingListMap + "******************************");
         // society spinner
         ArrayAdapter<String> societyAdapter = new ArrayAdapter<String>(getActivity(),
                 R.layout.spinr_txt, sociList);
@@ -157,14 +164,11 @@ public class MySocietyBillFragment extends Fragment {
                                 .getSelectedItem());
                         ArrayList<String> buildingList = new ArrayList<String>();
                         if (societyName == null || societyName.equalsIgnoreCase("null")) {
-                            System.out.println(societyMap);
                             System.out.println(buildingList);
-
-                        }else {
+                        } else {
                             if (!buildingList.contains(buildingName)) {
-                                buildingList.add(societyMap.get(societyName));
+                                buildingList=listSocietyBuildingFlats.get(societyName);
                             }
-                            System.out.println(societyMap);
                             System.out.println(buildingList);
 
                             // building spinner
@@ -212,6 +216,8 @@ public class MySocietyBillFragment extends Fragment {
                                        long arg3) {
                 // TODO Auto-generated method stub
                 buildingName = String.valueOf(buildingSpinner.getSelectedItem());
+                flatNum = buildingName.substring(buildingName.lastIndexOf(",") + 1);
+                flatNum = flatNum.replace(" ", "");
                 buildingName = buildingName.split(" , ")[0];
             }
 
@@ -228,11 +234,12 @@ public class MySocietyBillFragment extends Fragment {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 System.out.println(societyName + "!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println(buildingName + "-" + flatNum + "-" + financialYr + " ############!!!*");
                 if (societyName == "" || societyName.equals("")
                         || societyName == "null" || societyName == null) {
                     Constants.showSnack(v, "Select society!", "OK");
                 } else if (buildingName == "" || buildingName.equals("")
-                        || buildingName == null || buildingName == "null"||buildingName.equalsIgnoreCase("Building Number")) {
+                        || buildingName == null || buildingName == "null" || buildingName.equalsIgnoreCase("Building Number")) {
                     Constants.showSnack(v, "Select Building Name!", "OK");
                 } else if (financialYr == "" || financialYr.equals("")
                         || financialYr == null || financialYr == "null") {
@@ -261,7 +268,7 @@ public class MySocietyBillFragment extends Fragment {
 
                 jsonViewBill = SocietyBillPost.callSociMyBill(
                         userPref.getString("USERID", "NV"), societyName,
-                        buildingName, financialYr, MyApplication.HOSTNAME);
+                        buildingName, flatNum, financialYr, MyApplication.HOSTNAME);
                 System.out.println(jsonViewBill + " !!!!!!!!!!!!!!!!!!!!*");
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -307,12 +314,14 @@ public class MySocietyBillFragment extends Fragment {
                             map.put("STATUS", jsonData.getString("status"));
                             totDataList.add(map);
                         }
-                        ListDetailAdapter adapterFiles = new ListDetailAdapter(
-                                getActivity(), totDataList);
-                        detailsListview.setAdapter(adapterFiles);
-                        ListViewUtils.setDynamicHeight(detailsListview);
-                        pDialog.setVisibility(View.GONE);
-                        bill_sumryLay.setVisibility(View.VISIBLE);
+                        if (getActivity() != null) {
+                            ListDetailAdapter adapterFiles = new ListDetailAdapter(
+                                    getActivity(), totDataList);
+                            detailsListview.setAdapter(adapterFiles);
+                            ListViewUtils.setDynamicHeight(detailsListview);
+                            pDialog.setVisibility(View.GONE);
+                            bill_sumryLay.setVisibility(View.VISIBLE);
+                        }
                     } else {
                         ArrayList<HashMap<String, String>> emptyArr = new ArrayList<>();
                         Constants.showSnack(v, "No data found!", "");
@@ -399,8 +408,7 @@ public class MySocietyBillFragment extends Fragment {
                     .get(positionn)
                     .get("YEAR")
                     .substring(2, 4);
-            holder.flatNumTxt.setText(listt.get(positionn).get("MONTH") + ","
-                    + yr);
+            holder.flatNumTxt.setText(listt.get(positionn).get("MONTH"));
             holder.amountTxt.setText(listt.get(positionn).get("AMOUNT"));
             holder.statusTxt.setText(listt.get(positionn).get("STATUS"));
             if (listt.get(positionn).get("STATUS").equalsIgnoreCase("Confirmed")) {
@@ -416,90 +424,139 @@ public class MySocietyBillFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-                    m_dialog = new Dialog(context);
-                    m_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                    m_dialog.setContentView(R.layout.admin_bill_approval_popup);
-                    m_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
 
-                    EditText amountEdit = (EditText) m_dialog
-                            .findViewById(R.id.amountEdit);
+                    popUp(holder, positionn, true);
+                }
+            });
+            holder.viewImg.setOnClickListener(new View.OnClickListener() {
 
-                    final EditText referenseNumEdit = (EditText) m_dialog
-                            .findViewById(R.id.narrationEdit);
-                    final EditText billAmountPaidEdit = (EditText) m_dialog
-                            .findViewById(R.id.billAmountPaidEdit);
-                    final TextInputLayout amountEditt = (TextInputLayout) m_dialog
-                            .findViewById(R.id.amounttEdit);
+                @Override
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
 
-                    final Spinner actionTypeSpiner = (Spinner) m_dialog
-                            .findViewById(R.id.actionTypeSpin);
-                    final Spinner paymentTypeSpin = (Spinner) m_dialog
-                            .findViewById(R.id.paymentTypeSpin);
+                    popUp(holder, positionn, false);
+                }
+            });
+            return convertView;
+        }
 
-                    TextView submitTxt = (TextView) m_dialog
-                            .findViewById(R.id.submitTxt);
-                    pDialog = (ProgressBarCircularIndeterminate) m_dialog
-                            .findViewById(R.id.progressBarCircularIndetermininate);
+        private void popUp(ViewHolder holder, final int positionn, boolean isEditable) {
+            m_dialog = new Dialog(context);
+            m_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            m_dialog.setContentView(R.layout.admin_bill_approval_popup);
+            m_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
 
-                    holder.line = (RelativeLayout) m_dialog
-                            .findViewById(R.id.line);
-                    holder.line1 = (RelativeLayout) m_dialog
-                            .findViewById(R.id.line2);
+            EditText amountEdit = (EditText) m_dialog
+                    .findViewById(R.id.amountEdit);
+            amountEdit.setEnabled(isEditable);
 
-                    holder.line.setVisibility(View.GONE);
-                    holder.line1.setVisibility(View.GONE);
+            final EditText referenseNumEdit = (EditText) m_dialog
+                    .findViewById(R.id.narrationEdit);
 
-                    amountEdit.setVisibility(View.GONE);
-                    actionTypeSpiner.setVisibility(View.GONE);
-                    amountEditt.setVisibility(View.GONE);
-                    if (listt.get(positionn).get("REF_NO") == null || listt.get(positionn).get("REF_NO").equalsIgnoreCase("null")) {
-                        referenseNumEdit.setText("");
-                    } else {
-                        referenseNumEdit.setText(listt.get(positionn).get("REF_NO"));
-                    }
+            referenseNumEdit.setEnabled(isEditable);
+            final EditText billAmountPaidEdit = (EditText) m_dialog
+                    .findViewById(R.id.billAmountPaidEdit);
+            final TextInputLayout amountEditt = (TextInputLayout) m_dialog
+                    .findViewById(R.id.amounttEdit);
 
-                    if (listt.get(positionn).get("bill_amount_paid") == "" || listt.get(positionn).get("bill_amount_paid").equals("")
-                            || listt.get(positionn).get("bill_amount_paid") == null || listt.get(positionn).get("bill_amount_paid").equalsIgnoreCase("null")) {
-                        billAmountPaidEdit.setText(listt.get(positionn).get("AMOUNT"));
-                    } else {
-                        billAmountPaidEdit.setText(listt.get(positionn).get("bill_amount_paid"));
-                    }
-
-                    ArrayAdapter<CharSequence> paymentTypeAdapter = ArrayAdapter
-                            .createFromResource(context,
-                                    R.array.paymentTypeArray, R.layout.spinr_txt);
-                    paymentTypeAdapter
-                            .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                    paymentTypeSpin
-                            .setAdapter(new NothingSelectedSpinnerAdapter1(
-                                    paymentTypeAdapter,
-                                    R.layout.payment_type_spnr_txt, context));
+            billAmountPaidEdit.setEnabled(isEditable);
+            amountEditt.setEnabled(isEditable);
 
 
-                    ArrayAdapter<CharSequence> actionTypeAdapter = ArrayAdapter
-                            .createFromResource(context,
-                                    R.array.statusBillArray, R.layout.spinr_txt);
-                    actionTypeAdapter
-                            .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            final Spinner actionTypeSpiner = (Spinner) m_dialog
+                    .findViewById(R.id.actionTypeSpin);
+            final Spinner paymentTypeSpin = (Spinner) m_dialog
+                    .findViewById(R.id.paymentTypeSpin);
 
-                    actionTypeSpiner
-                            .setAdapter(new NothingSelectedSpinnerAdapter1(
-                                    actionTypeAdapter,
-                                    R.layout.admin_bill_spnr_txt, context));
-                    paymentTypeSpin.setSelection(paymentTypeAdapter.getPosition(listt.get(positionn).get("PAYMENT_MODE")) + 1);
+            actionTypeSpiner.setEnabled(isEditable);
+            paymentTypeSpin.setEnabled(isEditable);
 
-                    amountEdit.setText(listt.get(positionn).get("AMOUNT"));
+            TextView submitTxt = (TextView) m_dialog
+                    .findViewById(R.id.submitTxt);
+            pDialog = (ProgressBarCircularIndeterminate) m_dialog
+                    .findViewById(R.id.progressBarCircularIndetermininate);
 
-                    paymentTypeSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            holder.line = (RelativeLayout) m_dialog
+                    .findViewById(R.id.line);
+            holder.line1 = (RelativeLayout) m_dialog
+                    .findViewById(R.id.line2);
+
+            holder.line.setVisibility(View.GONE);
+            holder.line1.setVisibility(View.GONE);
+
+            submitTxt.setEnabled(isEditable);
+
+            amountEdit.setVisibility(View.GONE);
+            actionTypeSpiner.setVisibility(View.GONE);
+            amountEditt.setVisibility(View.GONE);
+            if (listt.get(positionn).get("REF_NO") == null || listt.get(positionn).get("REF_NO").equalsIgnoreCase("null")) {
+                referenseNumEdit.setText("");
+            } else {
+                referenseNumEdit.setText(listt.get(positionn).get("REF_NO"));
+            }
+
+            if (listt.get(positionn).get("bill_amount_paid") == "" || listt.get(positionn).get("bill_amount_paid").equals("")
+                    || listt.get(positionn).get("bill_amount_paid") == null || listt.get(positionn).get("bill_amount_paid").equalsIgnoreCase("null")) {
+                billAmountPaidEdit.setText(listt.get(positionn).get("AMOUNT"));
+            } else {
+                billAmountPaidEdit.setText(listt.get(positionn).get("bill_amount_paid"));
+            }
+
+            ArrayAdapter<CharSequence> paymentTypeAdapter = ArrayAdapter
+                    .createFromResource(context,
+                            R.array.paymentTypeArray, R.layout.spinr_txt);
+            paymentTypeAdapter
+                    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            paymentTypeSpin
+                    .setAdapter(new NothingSelectedSpinnerAdapter1(
+                            paymentTypeAdapter,
+                            R.layout.payment_type_spnr_txt, context));
+
+
+            ArrayAdapter<CharSequence> actionTypeAdapter = ArrayAdapter
+                    .createFromResource(context,
+                            R.array.statusBillArray, R.layout.spinr_txt);
+            actionTypeAdapter
+                    .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            actionTypeSpiner
+                    .setAdapter(new NothingSelectedSpinnerAdapter1(
+                            actionTypeAdapter,
+                            R.layout.admin_bill_spnr_txt, context));
+            paymentTypeSpin.setSelection(paymentTypeAdapter.getPosition(listt.get(positionn).get("PAYMENT_MODE")) + 1);
+
+            amountEdit.setText(listt.get(positionn).get("AMOUNT"));
+
+            paymentTypeSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                @Override
+                public void onItemSelected(AdapterView<?> arg0,
+                                           View arg1, int arg2, long arg3) {
+                    // TODO Auto-generated method stub
+                    paymentType = String.valueOf(paymentTypeSpin
+                            .getSelectedItem());
+                    // paymentType=paymentType.replaceAll("", "%20");
+                }
+
+                @Override
+                public void onNothingSelected(
+                        AdapterView<?> arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
+
+            actionTypeSpiner
+                    .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
                         @Override
                         public void onItemSelected(AdapterView<?> arg0,
                                                    View arg1, int arg2, long arg3) {
                             // TODO Auto-generated method stub
-                            paymentType = String.valueOf(paymentTypeSpin
+                            spnrVal = String.valueOf(actionTypeSpiner
                                     .getSelectedItem());
-                            // paymentType=paymentType.replaceAll("", "%20");
+
                         }
 
                         @Override
@@ -510,50 +567,26 @@ public class MySocietyBillFragment extends Fragment {
                         }
                     });
 
-                    actionTypeSpiner
-                            .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            submitTxt.setOnClickListener(new View.OnClickListener() {
 
-                                @Override
-                                public void onItemSelected(AdapterView<?> arg0,
-                                                           View arg1, int arg2, long arg3) {
-                                    // TODO Auto-generated method stub
-                                    spnrVal = String.valueOf(actionTypeSpiner
-                                            .getSelectedItem());
-
-                                }
-
-                                @Override
-                                public void onNothingSelected(
-                                        AdapterView<?> arg0) {
-                                    // TODO Auto-generated method stub
-
-                                }
-                            });
-
-                    submitTxt.setOnClickListener(new View.OnClickListener() {
-
-                        @Override
-                        public void onClick(View v) {
-                            // TODO Auto-generated method stub
-                            refNum = referenseNumEdit.getText().toString();
-                            billAmountPaid = billAmountPaidEdit.getText().toString();
-                            billId = listt.get(positionn).get("ID");
-                            if (paymentType == null || paymentType == "null"
-                                    || paymentType == ""
-                                    || paymentType.equals("")) {
-                                Constants.showSnack(v,
-                                        "Please enter payment mode!",
-                                        "OK");
-                            } else {
-                                new UpdateMyBillStatus().execute();
-                            }
-                        }
-                    });
-                    m_dialog.show();
+                @Override
+                public void onClick(View v) {
+                    // TODO Auto-generated method stub
+                    refNum = referenseNumEdit.getText().toString();
+                    billAmountPaid = billAmountPaidEdit.getText().toString();
+                    billId = listt.get(positionn).get("ID");
+                    if (paymentType == null || paymentType == "null"
+                            || paymentType == ""
+                            || paymentType.equals("")) {
+                        Constants.showSnack(v,
+                                "Please enter payment mode!",
+                                "OK");
+                    } else {
+                        new UpdateMyBillStatus().execute();
+                    }
                 }
             });
-
-            return convertView;
+            m_dialog.show();
         }
 
         public class ViewHolder {
@@ -617,5 +650,17 @@ public class MySocietyBillFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.my_Society_bill);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

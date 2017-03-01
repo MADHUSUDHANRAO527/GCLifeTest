@@ -1,5 +1,6 @@
 package mobile.gclifetest.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,10 +17,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import mobile.gclifetest.activity.HomeActivity;
@@ -29,6 +33,7 @@ import mobile.gclifetest.activity.UserProfile;
 import mobile.gclifetest.adapters.HomeAdapter;
 import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.http.MemsPost;
+import mobile.gclifetest.http.SignUpPost;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
@@ -46,12 +51,15 @@ public class HomeFragment extends Fragment {
     SharedPreferences.Editor editor;
     InternetConnectionDetector netConn;
     Boolean isInternetPresent = false;
-    JSONObject jsonLatestusers;
+    JSONObject jsonLatestusers, logOutJson;
+    ProgressDialog pDialogLogout;
     View v;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -72,9 +80,11 @@ public class HomeFragment extends Fragment {
             if (isInternetPresent) {
                 new LatestUserDetails().execute();
             } else {
-
-                Constants.showSnack(v, "Please check network connection!",
-                        "OK");
+                if (v != null && getActivity() != null) {
+                    Toast.makeText(getActivity(), "Please check network connection!", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "Please check network connection!", Toast.LENGTH_LONG).show();
+                }
 
             }
         }
@@ -149,23 +159,24 @@ public class HomeFragment extends Fragment {
                         ((HomeActivity) context).addFragment(new ImpContactsFragment());
                     } else if (position == 9) {
                         Log.d("MEM TYPE", user.getGclife_registration_flatdetails().get(0).getMember_type());
-                        boolean allowAdmin=true;
+                        boolean allowAdmin = true;
                         for (int i = 0; i < user.getGclife_registration_flatdetails().size(); i++) {
-                            if (user.getGclife_registration_flatdetails().get(i).getMember_type() == "Non_members" ||
-                                    user.getGclife_registration_flatdetails().get(i).getMember_type().equals("Non_members") || user.getGclife_registration_flatdetails().get(i).getMember_type() == "Member" ||
-                                    user.getGclife_registration_flatdetails().get(i).getMember_type().equals("Member")) {
-
-                                allowAdmin=false;
+                            if ((user.getGclife_registration_flatdetails().get(i).getMember_type().equals("Non_members") ||
+                                    user.getGclife_registration_flatdetails().get(i).getMember_type().equals("Member"))) {
+                                allowAdmin = false;
                             } else {
-                                allowAdmin=true;
-                                break;
+                                if(user.getGclife_registration_flatdetails().get(i).getStatus().equals("Approve")){
+                                    allowAdmin = true;
+                                    break;
+                                }else {
+                                    allowAdmin = false;
+                                }
                             }
-                            Log.d("MEMBER_TYPE", user.getGclife_registration_flatdetails().get(i).getMember_type()+" *****");
-
+                            Log.d("MEMBER_TYPE", user.getGclife_registration_flatdetails().get(i).getMember_type() + " *****"+user.getGclife_registration_flatdetails().get(i).getStatus());
                         }
                         if (allowAdmin) {
                             ((HomeActivity) context).addFragment(new AdminGridFragment());
-                        }else {
+                        } else {
                             Constants.showSnack(v, "You are not authorized person!", "");
                         }
                     } else {
@@ -219,23 +230,15 @@ public class HomeFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // TODO Add your menu entries here
         inflater.inflate(R.menu.logout_menu, menu);
-      /*  inflater.inflate(R.menu.logout_menu, menu);
-        MenuItem itemLogout = menu.findItem(R.id.logOut);
-        itemLogout.setVisible(true);*/
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
             case R.id.logOut:
-                editor.clear();
-                editor.commit();
-                context.deleteDatabase(DatabaseHandler.DATABASE_NAME);
-                Constants.showSnack(v, "You have been logged out!", "OK");
-                Intent i = new Intent(getActivity(), Login.class);
-                startActivity(i);
+                new LogOut().execute();
+
                 break;
             case R.id.refreh:
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -251,10 +254,77 @@ public class HomeFragment extends Fragment {
         }
         return false;
     }
+
+    public class LogOut extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            pDialogLogout = new ProgressDialog(getActivity());
+            pDialogLogout.setMessage("logging out!");
+            pDialogLogout.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // TODO Auto-generated method stub
+
+            try {
+                logOutJson = SignUpPost.logOut(MyApplication.HOSTNAME,
+                        userPref.getString("USERID", "NV"));
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void unused) {
+            if (logOutJson != null) {
+                System.out.println(logOutJson + " @@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                try {
+                    if (logOutJson.getBoolean("success")) {
+                        editor.clear();
+                        editor.commit();
+                        context.deleteDatabase(DatabaseHandler.DATABASE_NAME);
+                        Constants.showSnack(v, "You have been logged out!", "OK");
+                        Intent i = new Intent(getActivity(), Login.class);
+                        startActivity(i);
+                    } else {
+                        Toast.makeText(getActivity(), "Oops! Something went wrong. Please wait a moment!", Toast.LENGTH_LONG).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                pDialogLogout.dismiss();
+
+            } else {
+                pDialogLogout.dismiss();
+                Toast.makeText(getActivity(), "Oops! Something went wrong. Please wait a moment!", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         ((HomeActivity) context).setHomeAsEnabled(false);
         ((HomeActivity) context).changeToolbarTitle(R.string.home);
+        if (editor != null) {
+            editor.remove("activityName");
+            editor.apply();
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

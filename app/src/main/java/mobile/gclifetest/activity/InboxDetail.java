@@ -9,9 +9,11 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import mobile.gclifetest.pojoGson.InboxPojo;
+import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.db.DatabaseHandler;
 
@@ -50,8 +52,12 @@ public class InboxDetail extends BaseActivity {
                 }.getType());
                 InboxPojo pojo = inboxPojo.get(pos);
                 unameTxt.setText(pojo.getSender_name());
-                subjectTxt.setText(pojo.getSubject());
-                tounameTxt.setText(pojo.getReceiver_name());
+                try {
+                    subjectTxt.setText(Constants.decodeString(pojo.getSubject()));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                tounameTxt.setText(pojo.getTo_users());
                 String createdAt = pojo.getCreated_at();
                 MyApplication app = new MyApplication();
                 createdAt = app.convertDateEmail(createdAt);
@@ -60,7 +66,11 @@ public class InboxDetail extends BaseActivity {
                 time = app.convertTimeEmail(time);
 
                 recvdDateTxt.setText((createdAt + "," + time));
-                messageTxt.setText(pojo.getMessage());
+                try {
+                    messageTxt.setText(Constants.decodeString(pojo.getMessage()));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             } else {
                 Log.d("DB  NULL: " + dbNameRcv, db.getEventNews(dbNameRcv));
             }
@@ -71,8 +81,12 @@ public class InboxDetail extends BaseActivity {
             }.getType());
             InboxPojo pojo = inboxPojo.get(pos);
             unameTxt.setText(pojo.getSender_name());
-            subjectTxt.setText(pojo.getSubject());
-            tounameTxt.setText(pojo.getReceiver_name());
+            try {
+                subjectTxt.setText(Constants.decodeString(pojo.getSubject()));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            tounameTxt.setText(pojo.getTo_users());
             String createdAt = pojo.getCreated_at();
             MyApplication app = new MyApplication();
             createdAt = app.convertDateEmail(createdAt);
@@ -81,7 +95,11 @@ public class InboxDetail extends BaseActivity {
             time = app.convertTimeEmail(time);
 
             recvdDateTxt.setText((createdAt + "," + time));
-            messageTxt.setText(pojo.getMessage());
+            try {
+                messageTxt.setText(Constants.decodeString(pojo.getMessage()));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
 
     }

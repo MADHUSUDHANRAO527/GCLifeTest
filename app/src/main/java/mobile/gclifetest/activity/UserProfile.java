@@ -131,9 +131,9 @@ public class UserProfile extends BaseActivity {
             imageLoader = ImageLoader.getInstance();
             options = new DisplayImageOptions.Builder().cacheInMemory(true)
                     .cacheOnDisc(true).resetViewBeforeLoading(true)
-                    .showImageForEmptyUri(R.drawable.no_media)
-                    .showImageOnFail(R.drawable.no_media)
-                    .showImageOnLoading(R.drawable.no_media).build();
+                    .showImageForEmptyUri(R.drawable.noimage)
+                    .showImageOnFail(R.drawable.noimage)
+                    .showImageOnLoading(R.drawable.noimage).build();
         }
 
         @Override

@@ -31,6 +31,7 @@ import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.cloudinary.utils.ObjectUtils;
+import com.flurry.android.FlurryAgent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -42,6 +43,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -398,9 +400,9 @@ public class IdeasCreateFragment extends Fragment {
             JSONObject jsonIdeas = new JSONObject();
             try {
                 jsonIdeas.put("event_type", eventName);
-                jsonIdeas.put("title", ideaTitle);
-                jsonIdeas.put("sdesc", ideaSDisc);
-                jsonIdeas.put("bdesc", ideaBdisc);
+                jsonIdeas.put("title", Constants.encodeString(ideaTitle));
+                jsonIdeas.put("sdesc", Constants.encodeString(ideaSDisc));
+                jsonIdeas.put("bdesc", Constants.encodeString(ideaBdisc));
                 jsonIdeas.put("user_id", userPref.getString("USERID", "NV"));
                 jsonIdeas.put("association_list", selectedAven);
                 jsonIdeas.put("society_list", selectedSoci);
@@ -423,6 +425,8 @@ public class IdeasCreateFragment extends Fragment {
                 }
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
 
@@ -796,7 +800,7 @@ public class IdeasCreateFragment extends Fragment {
                             }
                             //    selectedAveNames.add("All");
 
-                            for (int j = 1; j <= 2; j++) {
+                            for (int j = 1; j <= list.size()-1; j++) {
                                 societylist = societyMap
                                         .get(list.get(j));
                                 selectedAveNames.add(list.get(j).toString());
@@ -1164,9 +1168,12 @@ public class IdeasCreateFragment extends Fragment {
     }
 
     public class LoadImages extends AsyncTask<Void, Void, Void> {
-        public LoadImages(String[] all_path, File filee) {
-            allPhotopaths = all_path;
-            filePhoto = filee;
+        String[] allPhotopaths;
+        File filePhoto;
+
+        LoadImages(String[] all_path, File filee) {
+            this.allPhotopaths = all_path;
+            this.filePhoto = filee;
         }
 
         @Override
@@ -1178,9 +1185,17 @@ public class IdeasCreateFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             try {
                 Map response = MyApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
-                System.out.println(response + "    RESULT ");
-                eventImages.put(response.get("url"));
-            } catch (IOException e) {
+                System.out.println(response + "  IMAGE  RESULT ");
+
+                JSONObject jsonMedia = new JSONObject();
+                jsonMedia.put("image_type", "image");
+                jsonMedia.put("image_url", response.get("url").toString().trim());
+                System.out.println(jsonMedia
+                        + " +++++++++++++++++++++++ ");
+                eventImages.put(jsonMedia);
+                System.out.println(eventImages
+                        + " ******************* ");
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
             return null;
@@ -1201,6 +1216,17 @@ public class IdeasCreateFragment extends Fragment {
 
             }
         }
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }
 

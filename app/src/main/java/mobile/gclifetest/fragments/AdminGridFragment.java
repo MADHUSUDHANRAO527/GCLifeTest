@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
@@ -97,5 +98,16 @@ public class AdminGridFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.admin);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

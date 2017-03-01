@@ -11,6 +11,7 @@ import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.cloudinary.Cloudinary;
+import com.flurry.android.FlurryAgent;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
@@ -47,6 +48,7 @@ public class MyApplication extends Application {
     public static String gcmTokenid;
     public static RequestQueue queue;
     public static Cloudinary cloudinary;
+    boolean isUploading;
     //HTTP Constants
     public static String HOSTNAME="http://54.169.40.151:3000/";
     public void onCreate() {
@@ -80,6 +82,10 @@ public class MyApplication extends Application {
         getRegId();
         //cloudinary setup
         cloudinarySetup();
+        setUpFlurry();
+    }
+    public static synchronized MyApplication getInstance() {
+        return instance;
     }
 
     private void getRegId() {
@@ -193,5 +199,16 @@ public class MyApplication extends Application {
         config.put("api_key", "554359813976545");
         config.put("api_secret", "QWqoKmbLPvHTH57uMdlbOkZF51Q");
         cloudinary = new Cloudinary(config);
+    }
+    public void setUploadingMedia(boolean isUploading){
+        this.isUploading=isUploading;
+    }
+    public boolean isUploading(){
+        return isUploading;
+    }
+    public void setUpFlurry(){
+        new FlurryAgent.Builder()
+                .withLogEnabled(false)
+                .build(this, Constants.flurryApiKey);
     }
 }

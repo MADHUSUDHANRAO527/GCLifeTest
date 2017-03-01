@@ -115,4 +115,6 @@
     <string name="appAuthorized">The app has been authorized. You can now upload your video now.</string>
     //search
     <string name="search_frds">Search your friends</string>
+    <string name="cancel_upload">Cancel file upload</string>
+    <string name="cancel_upload_desc">This action will cancel the file upload</string>
 </resources>

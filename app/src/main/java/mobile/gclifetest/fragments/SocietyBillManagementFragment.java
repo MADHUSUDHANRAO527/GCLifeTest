@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
@@ -107,7 +108,7 @@ public class SocietyBillManagementFragment extends Fragment {
         System.out
                 .println(flatsList.size() + " ******************************");
 
-        List<String> sociList = new ArrayList<String>();
+        final List<String> sociList = new ArrayList<String>();
         for (int i = 0; i < flatsList.size(); i++) {
             FlatDetailsPojo flatsListt = user
                     .getGclife_registration_flatdetails().get(i);
@@ -115,7 +116,9 @@ public class SocietyBillManagementFragment extends Fragment {
             System.out.println(societyName + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             if (!flatsListt.getMember_type().equals("Non_members") &&
                     !flatsListt.getMember_type().equals("Member")) {
-                sociList.add(societyName);
+                if (flatsListt.getStatus().equals("Approve"))
+                    if (!sociList.contains(societyName))
+                        sociList.add(societyName);
             }
         }
 
@@ -244,7 +247,7 @@ public class SocietyBillManagementFragment extends Fragment {
                 // TODO Auto-generated method stub
                 System.out.println(societyName + "!!!!!!!!!!!!!!!!!!!!!!");
                 if (societyName == "" || societyName.equals("")
-                        || societyName == "null" || societyName == null) {
+                        || societyName == "null" || societyName == null || sociList.isEmpty() || sociList.size() == 0) {
                     Constants.showSnack(v,
                             "Select society!",
                             "OK");
@@ -502,23 +505,6 @@ public class SocietyBillManagementFragment extends Fragment {
 
         }
     }
-
-    /*@Override
-    public void onStart() {
-        // TODO Auto-generated method stub
-        super.onStart();
-        System.out.println(action + " ACTION ^^^^^^^^^^^^^^^^6");
-        if (action) {
-
-        } else {
-            if (financialYr.equals("")) {
-                Log.d("FYR", "");
-            } else {
-                new ViewBill().execute();
-            }
-        }
-    }*/
-
     @Override
     public void onResume() {
         super.onResume();
@@ -530,6 +516,7 @@ public class SocietyBillManagementFragment extends Fragment {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -542,6 +529,7 @@ public class SocietyBillManagementFragment extends Fragment {
     @Override
     public void onStop() {
         EventBus.getDefault().unregister(this);
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
         super.onPause();
     }
 }

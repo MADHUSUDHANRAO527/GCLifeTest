@@ -6,11 +6,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,23 +27,28 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import mobile.gclifetest.activity.GalleryImageViewer;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
+import mobile.gclifetest.activity.VideoPlay;
 import mobile.gclifetest.adapters.EventsCommentsAdapter;
 import mobile.gclifetest.adapters.EventsImagesAdapter;
 import mobile.gclifetest.db.DatabaseHandler;
+import mobile.gclifetest.event.AddIdeasEvent;
 import mobile.gclifetest.http.EvenstPost;
 import mobile.gclifetest.http.MemsPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
@@ -55,6 +60,8 @@ import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 import mobile.gclifetest.utils.ListViewUtils;
 import mobile.gclifetest.utils.MyApplication;
+
+import static mobile.gclifetest.activity.R.id.titleNameTxt;
 
 /**
  * Created by MRaoKorni on 8/2/2016.
@@ -110,7 +117,7 @@ public class IdeasDetailFragment extends Fragment {
         pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
         progrLay = (LinearLayout) v.findViewById(R.id.progrLay);
         photosCountLay = (LinearLayout) v.findViewById(R.id.photos_lay);
-        titleTxt = (TextView) v.findViewById(R.id.titleNameTxt);
+        titleTxt = (TextView) v.findViewById(titleNameTxt);
         sDiscTxt = (TextView) v.findViewById(R.id.sdescTxt);
         bDiscTxt = (TextView) v.findViewById(R.id.bdescNumTxt);
         postedByTxt = (TextView) v.findViewById(R.id.posted_by);
@@ -143,9 +150,24 @@ public class IdeasDetailFragment extends Fragment {
 
             for (int i = 0; i < eventsPojo.size(); i++) {
                 if (eid.equals(String.valueOf(eventsPojo.get(i).getId()))) {
-                    titleTxt.setText(eventsPojo.get(i).getTitle());
-                    sDiscTxt.setText(eventsPojo.get(i).getSdesc());
-                    bDiscTxt.setText(eventsPojo.get(i).getBdesc());
+                    try {
+                        titleTxt.setText(Constants.decodeString(eventsPojo.get(i).getTitle()));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        if (eventName.equals("Photos") || eventName.equals("Videos")) {
+
+
+                        } else {
+                            sDiscTxt.setText(Constants.decodeString(eventsPojo.get(i).getSdesc()));
+                            bDiscTxt.setText(Constants.decodeString(eventsPojo.get(i).getBdesc()));
+                        }
+
+
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                     EventsImagesAdapter adapterImages = new EventsImagesAdapter(
                             context, eventsPojo.get(i).getEvent_images(),eventName,thumbPbar);//
                     jsonImages = gson.toJson(eventsPojo.get(i).getEvent_images());
@@ -155,8 +177,6 @@ public class IdeasDetailFragment extends Fragment {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
                     galleryArti.setAdapter(adapterImages);
                     if (eventsPojo.get(i).getEvent_images().size() > 1) {
                         galleryArti.setSelection(1);
@@ -186,13 +206,22 @@ public class IdeasDetailFragment extends Fragment {
                     i.putExtra("Images", mediaArr.toString());
                     startActivity(i);
                 } else if (eventName == "Videos" || eventName.equals("Videos")) {
+
+                    Intent i = new Intent(getActivity(), VideoPlay.class);
                     try {
+                        i.putExtra("Video", String.valueOf(mediaArr.getJSONObject(position)));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    startActivity(i);
+
+                  /*  try {
                         JSONObject json = mediaArr.getJSONObject(position);
                         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(json.getString("image_url"))));
                     } catch (JSONException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
-                    }
+                    }*/
                 }
 
             }
@@ -248,7 +277,7 @@ public class IdeasDetailFragment extends Fragment {
         protected void onPostExecute(Void unused) {
             if (jsonDetails != null) {
                 try {
-                    titleTxt.setText(jsonDetails.getString("title"));
+                    titleTxt.setText(Constants.decodeString(jsonDetails.getString("title").trim()));
 
                     if (jsonDetails.getString("sdesc") == null
                             || jsonDetails.getString("sdesc") == "null"
@@ -257,8 +286,14 @@ public class IdeasDetailFragment extends Fragment {
                         sdescLay.setVisibility(View.GONE);
                         bdescLay.setVisibility(View.GONE);
                     } else {
-                        sDiscTxt.setText(jsonDetails.getString("sdesc"));
-                        bDiscTxt.setText(jsonDetails.getString("bdesc"));
+                        if (eventName.equals("Photos") || eventName.equals("Videos")) {
+
+
+                        } else {
+                            sDiscTxt.setText(Constants.decodeString(jsonDetails.getString("sdesc")));
+                            bDiscTxt.setText(Constants.decodeString(jsonDetails.getString("bdesc")));
+                        }
+
                     }
                     String createdAt = MyApplication.convertDateEmail(jsonDetails.getString("created_at"));
                     String time = jsonDetails.getString("created_at").substring(11, 19);
@@ -277,12 +312,8 @@ public class IdeasDetailFragment extends Fragment {
                         imagesLay.setVisibility(View.GONE);
                         photosCountLay.setVisibility(View.GONE);
                     } else {
-
-
                         eventImagesPojo = gson.fromJson(mediaArr.toString(), new TypeToken<List<EventImages>>() {
                         }.getType());
-
-
                         if (eventName == "Videos" || eventName.equals("Videos")) {
                             photosCountTxt.setText(String.valueOf(eventImagesPojo.size())
                                     + " " + "Videos");
@@ -290,7 +321,6 @@ public class IdeasDetailFragment extends Fragment {
                             photosCountTxt.setText(String.valueOf(eventImagesPojo.size())
                                     + " " + "Photos");
                         }
-
                         EventsImagesAdapter adapterImages = new EventsImagesAdapter(
                                 context, eventImagesPojo,eventName,thumbPbar);
                         galleryArti.setAdapter(adapterImages);
@@ -309,6 +339,8 @@ public class IdeasDetailFragment extends Fragment {
                     ListViewUtils.setDynamicHeight(commentsListview);
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
                 progrLay.setVisibility(View.GONE);
@@ -377,6 +409,7 @@ public class IdeasDetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                EventBus.getDefault().post(new AddIdeasEvent(true));
                 ((HomeActivity) context).onBackpressed();
                 return true;
             default:
@@ -404,5 +437,34 @@ public class IdeasDetailFragment extends Fragment {
             ((HomeActivity) context).changeToolbarTitle(R.string.nb_detail);
         }
         ((HomeActivity) context).setHomeAsEnabled(true);
+        if(getView() == null){
+            return;
+        }
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
+                    // handle back button's click listener
+                    EventBus.getDefault().post(new AddIdeasEvent(true));
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

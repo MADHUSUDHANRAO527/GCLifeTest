@@ -44,6 +44,7 @@ public class EvenstPost {
 		String hostnamee = hostname + "events.json";
 		HttpPost httpost = new HttpPost(hostnamee);
 		System.out.println(hostnamee);
+		//httpost.setEntity(new UrlEncodedFormEntity(jsonIdeas));
 		StringEntity se = new StringEntity(jsonIdeas.toString());
 
 		HttpResponse response = null;

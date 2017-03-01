@@ -30,12 +30,12 @@ import mobile.gclifetest.utils.MyApplication;
 
 public class FlatDetail extends BaseActivity {
     TextView avenueNameTxt, societyNameTxt, buidlingNameTxt, flatNumtxt,
-            loginDetailsTxt, flatDteailTxt, flatTypetxt, ownwerTypetxt,
-            memTypeTxt, dateFrmTypetxt, avenueHeadTxt,
+            flatTypetxt, ownwerTypetxt,
+            memTypeTxt, relationShipWithOwner, avenueHeadTxt,
             socityHeader, buildingHeader, flatNumHeader, flatTypeHeader,
-            ownerTypeHeader, memTypeHeader, relationSDateHeader, flatStatusTxt, flat_status_header, reset_txt, licenceEndDateHeader, licenceEndDateTxt;
+            ownerTypeHeader, memTypeHeader, relationShipWithOwnerHeader, flatStatusTxt, flat_status_header, reset_txt, licenceEndDateHeader, licenceEndDateTxt;
     Typeface typefaceLight, typeMeduim;
-    LinearLayout relationStartLay, switchLay, licenceEndDateLay;
+    LinearLayout relationLay, switchLay, licenceEndDateLay;
     Switch pSwitch;
     UserDetailsPojo user;
     String swicthState;
@@ -58,9 +58,9 @@ public class FlatDetail extends BaseActivity {
         flatTypetxt = (TextView) findViewById(R.id.flatTypeTxt);
         memTypeTxt = (TextView) findViewById(R.id.memTypeTxt);
         ownwerTypetxt = (TextView) findViewById(R.id.ownerTypeTxt);
-        dateFrmTypetxt = (TextView) findViewById(R.id.relationSDateTxt);
+        relationShipWithOwner = (TextView) findViewById(R.id.relation_ship_with_owner);
         reset_txt = (TextView) findViewById(R.id.reset_txt);
-        relationStartLay = (LinearLayout) findViewById(R.id.relationStartLay);
+        relationLay = (LinearLayout) findViewById(R.id.relationLay);
         licenceEndDateLay = (LinearLayout) findViewById(R.id.licence_end_date_lay);
         switchLay = (LinearLayout) findViewById(R.id.switchLay);
         avenueHeadTxt = (TextView) findViewById(R.id.avenueHeadTxt);
@@ -72,7 +72,7 @@ public class FlatDetail extends BaseActivity {
         flatTypeHeader = (TextView) findViewById(R.id.flatTypeHeader);
         memTypeHeader = (TextView) findViewById(R.id.memTypeHeader);
         ownerTypeHeader = (TextView) findViewById(R.id.ownerTypeHeader);
-        relationSDateHeader = (TextView) findViewById(R.id.relationSDateHeader);
+        relationShipWithOwnerHeader = (TextView) findViewById(R.id.relation_ship_with_ownerheader);
         licenceEndDateHeader = (TextView) findViewById(R.id.licence_end_date);
         licenceEndDateTxt = (TextView) findViewById(R.id.licence_end_date_txt);
         pSwitch = (Switch) findViewById(R.id.privacySwitch);
@@ -84,7 +84,7 @@ public class FlatDetail extends BaseActivity {
         ownwerTypetxt.setTypeface(typefaceLight);
         flatTypetxt.setTypeface(typefaceLight);
         memTypeTxt.setTypeface(typefaceLight);
-        dateFrmTypetxt.setTypeface(typefaceLight);
+        relationShipWithOwner.setTypeface(typefaceLight);
         flatStatusTxt.setTypeface(typefaceLight);
         licenceEndDateTxt.setTypeface(typefaceLight);
 
@@ -97,7 +97,7 @@ public class FlatDetail extends BaseActivity {
         ownerTypeHeader.setTypeface(typeMeduim);
         flatTypeHeader.setTypeface(typeMeduim);
         memTypeHeader.setTypeface(typeMeduim);
-        relationSDateHeader.setTypeface(typeMeduim);
+        relationShipWithOwnerHeader.setTypeface(typeMeduim);
         flat_status_header.setTypeface(typeMeduim);
 
         Intent intent = getIntent();
@@ -115,14 +115,14 @@ public class FlatDetail extends BaseActivity {
         societyNameTxt.setText(flats.getSocietyid());
         buidlingNameTxt.setText(flats.getBuildingid());
         flatNumtxt.setText(flats.getFlat_number());
-        if (flats.getOwnertypeid() == "Licensee Owner" || flats.getOwnertypeid().equals("Licensee Owner")) {
-            relationStartLay.setVisibility(View.VISIBLE);
-            dateFrmTypetxt.setText(flats.getTenurestart());
+        if (flats.getRelationshipid() == null || flats.getRelationshipid().equals("") || flats.getRelationshipid().equals("null")) {
+            relationLay.setVisibility(View.GONE);
         } else {
-            relationStartLay.setVisibility(View.GONE);
+            relationLay.setVisibility(View.VISIBLE);
+            relationShipWithOwner.setText(flats.getRelationshipid());
         }
      //   Log.d("END DATE", flats.getTenurestart());
-        if (flats.getTenurestart() == null) {
+        if (flats.getTenurestart() == null || flats.getTenurestart().equals("")) {
             licenceEndDateLay.setVisibility(View.GONE);
         } else {
             licenceEndDateLay.setVisibility(View.VISIBLE);

@@ -20,6 +20,7 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,8 +117,12 @@ public class ListIdeasAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.titleTxt.setText(eventPojo.getTitle());
-        holder.sDiscTxt.setText(eventPojo.getSdesc());
+        try {
+            holder.titleTxt.setText(Constants.decodeString(eventPojo.getTitle()));
+            holder.sDiscTxt.setText(Constants.decodeString(eventPojo.getSdesc()));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         holder.attchCountTxt.setText(String.valueOf(eventPojo.getEvent_images().size()));
         // }
         // if (eventsPojos.get(position).getEvent_comments().size() > 0) {
@@ -200,15 +205,20 @@ public class ListIdeasAdapter extends BaseAdapter {
                 Intent sharingIntent = new Intent(
                         Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
-                sharingIntent.putExtra(
-                        Intent.EXTRA_SUBJECT,
-                        eventsPojos.get(position).getTitle());
+                try {
+                    sharingIntent.putExtra(
+                            Intent.EXTRA_SUBJECT,
+                            Constants.decodeString(eventsPojos.get(position).getTitle()));
+
                 sharingIntent.putExtra(
                         Intent.EXTRA_TEXT,
-                        eventsPojos.get(position).getTitle() + "\n" + eventsPojos.get(position).getSdesc() + "\n"
-                                + eventsPojos.get(position).getBdesc());
+                        Constants.decodeString(eventsPojos.get(position).getTitle()) + "\n" + Constants.decodeString(eventsPojos.get(position).getSdesc()) + "\n"
+                                + Constants.decodeString(eventsPojos.get(position).getBdesc()));
                 context.startActivity(Intent.createChooser(sharingIntent,
                         "Share via"));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             }
         });
         System.out.println(eventsPojos.get(position).getEvent_likes() + " !!!!!!!!!SIZE!!!!!!!!!!" + likeCheckArr.toString());

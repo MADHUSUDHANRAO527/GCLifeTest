@@ -11,9 +11,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.flurry.android.FlurryAgent;
+
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.adapters.MySocietyAdapter;
+import mobile.gclifetest.utils.Constants;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -65,5 +68,16 @@ public class AdminBillManagementFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.sbmanagement);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

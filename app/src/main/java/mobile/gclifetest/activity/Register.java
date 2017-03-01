@@ -985,7 +985,7 @@ public class Register extends BaseActivity {
 				jsonFlat.put("member_type", memberType);
 				jsonFlat.put("tenurestart", liscenseDateStr);
 				jsonFlat.put("tenureend", liscenseDateStr);
-
+				jsonFlat.put("relationshipid", realtionShipWithOwner);
 				jsonSignUp.put("gclife_registration_flatdetails", jsonFlat);
 
 				JSONObject userJson = new JSONObject();

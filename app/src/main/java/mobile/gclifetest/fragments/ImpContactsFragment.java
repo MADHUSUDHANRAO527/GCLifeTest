@@ -43,6 +43,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -222,29 +223,31 @@ public class ImpContactsFragment extends Fragment {
         m_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
         ListView listviewConts = (ListView) m_dialog
                 .findViewById(R.id.listview);
-        phNo = impContsPojo.get(position).getPhno();
+        if(impContsPojo.size()>0){
+            phNo = impContsPojo.get(position).getPhno();
 
-        String[] phNoArray = phNo.split(",");
-        // String[]
-        // emailArr=list.get(position).get("email").split(",");
+            String[] phNoArray = phNo.split(",");
+            // String[]
+            // emailArr=list.get(position).get("email").split(",");
 
-        System.out.println(phNoArray
-                + "!!!!!!!!!!!!!!!!!!!!!! PH NO's");
-        List<String> phList = Arrays.asList(phNoArray);
-        // List<String> emailList = Arrays.asList(emailArr);
-        ArrayList<HashMap<String, String>> listConts = new ArrayList<HashMap<String, String>>();
-        for (int i = 0; i < phNoArray.length; i++) {
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put("PHNO", phList.get(i));
-            map.put("NAME", impContsPojo.get(position).getName());
-            map.put("EMAIL", impContsPojo.get(position).getEmail());
-            listConts.add(map);
+            System.out.println(phNoArray
+                    + "!!!!!!!!!!!!!!!!!!!!!! PH NO's");
+            List<String> phList = Arrays.asList(phNoArray);
+            // List<String> emailList = Arrays.asList(emailArr);
+            ArrayList<HashMap<String, String>> listConts = new ArrayList<HashMap<String, String>>();
+            for (int i = 0; i < phNoArray.length; i++) {
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("PHNO", phList.get(i));
+                map.put("NAME", impContsPojo.get(position).getName());
+                map.put("EMAIL", impContsPojo.get(position).getEmail());
+                listConts.add(map);
+            }
+            ListImpPopupBaseAdapter adapter = new ListImpPopupBaseAdapter(
+                    getActivity(), listConts);
+            listviewConts.setAdapter(adapter);
+
+            m_dialog.show();
         }
-        ListImpPopupBaseAdapter adapter = new ListImpPopupBaseAdapter(
-                getActivity(), listConts);
-        listviewConts.setAdapter(adapter);
-
-        m_dialog.show();
     }
 
     private void callImpContsList(final String searchStr) {
@@ -296,7 +299,7 @@ public class ImpContactsFragment extends Fragment {
                             Log.d("SIZE", globalImpContactPojo.size() + "");
                             currentPosition = listviewImp
                                     .getLastVisiblePosition();
-
+                            if (getActivity() != null) {
                             adapterConts = new ListImpContsBaseAdapter(
                                     getActivity(), globalImpContactPojo);
                             listviewImp.setAdapter(adapterConts);
@@ -307,76 +310,73 @@ public class ImpContactsFragment extends Fragment {
                             db.addEventNews(response, "ImpContacts");
                             //for updating new data
                             db.updateEventNews(response, "ImpContacts");
+                                DisplayMetrics displayMetrics =
+                                        getResources().getDisplayMetrics();
+                                int height = displayMetrics.heightPixels;
 
+                                listviewImp.setSelectionFromTop(
+                                        currentPosition + 1, height - 220);
 
-                            DisplayMetrics displayMetrics =
-                                    getResources().getDisplayMetrics();
-                            int height = displayMetrics.heightPixels;
+                                listviewImp
+                                        .setOnScrollListener(new AbsListView.OnScrollListener() {
 
-                            listviewImp.setSelectionFromTop(
-                                    currentPosition + 1, height - 220);
+                                            private int currentScrollState;
+                                            private int currentFirstVisibleItem;
+                                            private int currentVisibleItemCount;
+                                            private int totalItemCount;
+                                            private int mLastFirstVisibleItem;
+                                            private boolean mIsScrollingUp;
 
-                            listviewImp
-                                    .setOnScrollListener(new AbsListView.OnScrollListener() {
+                                            @Override
+                                            public void onScrollStateChanged(
+                                                    AbsListView view, int scrollState) {
+                                                // TODO Auto-generated method stub
+                                                this.currentScrollState = scrollState;
+                                                pDialogBtm.setVisibility(View.INVISIBLE);
+                                                if (view.getId() == listviewImp
+                                                        .getId()) {
+                                                    final int currentFirstVisibleItem = listviewImp
+                                                            .getFirstVisiblePosition();
 
-                                        private int currentScrollState;
-                                        private int currentFirstVisibleItem;
-                                        private int currentVisibleItemCount;
-                                        private int totalItemCount;
-                                        private int mLastFirstVisibleItem;
-                                        private boolean mIsScrollingUp;
+                                                    if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                                                        mIsScrollingUp = false;
 
-                                        @Override
-                                        public void onScrollStateChanged(
-                                                AbsListView view, int scrollState) {
-                                            // TODO Auto-generated method stub
-                                            this.currentScrollState = scrollState;
-                                            pDialogBtm.setVisibility(View.INVISIBLE);
-                                            if (view.getId() == listviewImp
-                                                    .getId()) {
-                                                final int currentFirstVisibleItem = listviewImp
-                                                        .getFirstVisiblePosition();
+                                                    } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
 
-                                                if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-                                                    mIsScrollingUp = false;
+                                                        mIsScrollingUp = true;
+                                                    }
 
-                                                } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
-
-                                                    mIsScrollingUp = true;
+                                                    mLastFirstVisibleItem = currentFirstVisibleItem;
                                                 }
-
-                                                mLastFirstVisibleItem = currentFirstVisibleItem;
+                                                this.isScrollCompleted();
                                             }
-                                            this.isScrollCompleted();
-                                        }
 
-                                        @Override
-                                        public void onScroll(AbsListView view,
-                                                             int firstVisibleItem,
-                                                             int visibleItemCount,
-                                                             int totalItemCount) {
-                                            // TODO Auto-generated method stub
+                                            @Override
+                                            public void onScroll(AbsListView view,
+                                                                 int firstVisibleItem,
+                                                                 int visibleItemCount,
+                                                                 int totalItemCount) {
+                                                // TODO Auto-generated method stub
 
-                                            this.currentFirstVisibleItem = firstVisibleItem;
-                                            this.currentVisibleItemCount = visibleItemCount;
-                                            this.totalItemCount = totalItemCount;
+                                                this.currentFirstVisibleItem = firstVisibleItem;
+                                                this.currentVisibleItemCount = visibleItemCount;
+                                                this.totalItemCount = totalItemCount;
 
-                                        }
-
-                                        private void isScrollCompleted() {
-                                            if (this.currentVisibleItemCount > 0
-                                                    && this.currentScrollState == SCROLL_STATE_IDLE
-                                                    && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
-                                                offset = offset + 15;
-                                                Log.d("Offset :", offset + "");
-                                                pDialogBtm.setVisibility(View.VISIBLE);
-                                                progressShow=false;
-                                                callImpContsList(searchStr);
                                             }
-                                        }
-                                    });
 
-
+                                            private void isScrollCompleted() {
+                                                if (this.currentVisibleItemCount > 0
+                                                        && this.currentScrollState == SCROLL_STATE_IDLE
+                                                        && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
+                                                    offset = offset + 15;
+                                                    Log.d("Offset :", offset + "");
+                                                    pDialogBtm.setVisibility(View.VISIBLE);
+                                                    progressShow = false;
+                                                    callImpContsList(searchStr);
+                                                }
+                                            }
+                                        });
+                            }
                         }
                     }
 
@@ -388,10 +388,13 @@ public class ImpContactsFragment extends Fragment {
                     volleyError.printStackTrace();
 
                     Log.d("Error = ", volleyError.toString());
-                    pDialog.setVisibility(View.GONE);
-                    Constants.showSnack(snackLay,
-                            "Oops! Something went wrong. Please check internet connection!",
-                            "OK");
+
+                    if (getActivity() != null) {
+                        pDialog.setVisibility(View.GONE);
+                        Constants.showSnack(snackLay,
+                                "Oops! Something went wrong. Please check internet connection!",
+                                "OK");
+                    }
                     //   pDialog.hide();
                 }
             });
@@ -616,5 +619,17 @@ public class ImpContactsFragment extends Fragment {
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.imp_contacts);
         searchEdit.setHint("Search your contacts");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

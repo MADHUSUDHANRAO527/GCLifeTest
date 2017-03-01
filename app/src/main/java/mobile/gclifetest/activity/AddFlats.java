@@ -455,6 +455,9 @@ public class AddFlats extends BaseActivity {
 					public void onItemSelected(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
 						// TODO Auto-generated method stub
+						if (realtionShipWithOwner == null || realtionShipWithOwner.equals("")) {
+							realtionShipWithOwner = "";
+						}
 						realtionShipWithOwner = String
 								.valueOf(reltionwithOwnerSpinner
 										.getSelectedItem());
@@ -559,6 +562,7 @@ public class AddFlats extends BaseActivity {
 				jsonFlat.put("member_type", memberType);
 				jsonFlat.put("tenurestart", liscenseDateStr);
 				jsonFlat.put("tenureend", liscenseDateStr);
+				jsonFlat.put("relationshipid", realtionShipWithOwner);
 				jsonFlat.put("user_id", userPref.getString("USERID", "NV"));
 				jsonAddFlat.put("gclife_registration_flatdetail", jsonFlat);
 
@@ -821,13 +825,4 @@ public class AddFlats extends BaseActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	/*void showSnack(AddFlats flats, String stringMsg, String ok) {
-		new SnackBar(AddFlats.this, stringMsg, ok, new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-			}
-		}).show();
-	}*/
 }

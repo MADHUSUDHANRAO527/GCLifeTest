@@ -53,7 +53,7 @@ public class FrdsDetailTabs extends Fragment {
 			flatTypetxt = (TextView) v.findViewById(R.id.flatTypeTxt);
 			memTypeTxt = (TextView) v.findViewById(R.id.memTypeTxt);
 			ownwerTypetxt = (TextView) v.findViewById(R.id.ownerTypeTxt);
-			relationStartLay=(LinearLayout)v.findViewById(R.id.relationStartLay);
+			relationStartLay=(LinearLayout)v.findViewById(R.id.licence_end_date_lay);
 			relationStartLay.setVisibility(View.GONE);
 			avenueNameTxt.setText(b.getString("avenue_name"));
 			societyNameTxt.setText(b.getString("societyid"));

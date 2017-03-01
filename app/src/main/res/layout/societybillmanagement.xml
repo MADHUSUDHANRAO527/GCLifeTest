@@ -354,16 +354,14 @@
                         android:textColor="#000"
                         android:textSize="14sp" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:id="@+id/balnceAmountLay"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginBottom="55dp"
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
                     android:padding="5dp"
-                    android:visibility="visible"
                     android:weightSum="5"  >
 
                     <TextView

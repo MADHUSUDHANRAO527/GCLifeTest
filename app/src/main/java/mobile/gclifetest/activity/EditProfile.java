@@ -2,6 +2,7 @@ package mobile.gclifetest.activity;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,14 +28,11 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.cloudinary.utils.ObjectUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.SaveCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +43,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Map;
 
 import mobile.gclifetest.http.SignUpPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
@@ -55,10 +55,10 @@ public class EditProfile extends BaseActivity {
 	RelativeLayout dateToLay;
 	static final int DATE_DIALOG_FROMID = 0;
 	String userName, email, mobileNum, genderName = "Male", emeNum,
-			occupation, dob, privacy, ext, fileName, mediaUrl="";
-	TextView submitTxt,uploadingTxt;
-	SharedPreferences userPref;
-	ProgressBarCircularIndeterminate pDialog;
+            occupation, dob, privacy, ext, fileName, mediaUrl;
+    TextView submitTxt, uploadingTxt;
+    SharedPreferences userPref;
+    ProgressBarCircularIndeterminate pDialog;
 	EditText userNameEdit, emailEdit, mobileNumEdit, emeContaNum,
 			occupatioEdit, dobEdit;
 	JSONObject jsonSignupResult;
@@ -73,7 +73,8 @@ public class EditProfile extends BaseActivity {
 	DisplayImageOptions options;
 	RelativeLayout snackLay;
 	RadioGroup genderRadio;
-	@Override
+    Map response;
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.edit_profile);
@@ -96,9 +97,9 @@ public class EditProfile extends BaseActivity {
 		imageLoader = ImageLoader.getInstance();
 		options = new DisplayImageOptions.Builder().cacheInMemory(true)
 				.cacheOnDisc(true).resetViewBeforeLoading(true)
-				.showImageForEmptyUri(R.drawable.no_media)
-				.showImageOnFail(R.drawable.no_media)
-				.showImageOnLoading(R.drawable.no_media).build();
+                .showImageForEmptyUri(R.drawable.noimage)
+                .showImageOnFail(R.drawable.noimage)
+                .showImageOnLoading(R.drawable.no_media).build();
 
 
 		userPref = getSharedPreferences("USER", MODE_PRIVATE);
@@ -130,13 +131,10 @@ public class EditProfile extends BaseActivity {
 		profileImg.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent i = new Intent(Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-				final int ACTIVITY_SELECT_IMAGE = 1234;
-				startActivityForResult(i, ACTIVITY_SELECT_IMAGE);
-			}
-		});
-		submitTxt.setOnClickListener(new OnClickListener() {
+                selectImage();
+            }
+        });
+        submitTxt.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -200,8 +198,46 @@ public class EditProfile extends BaseActivity {
 				genderName = (String) rb.getText();
 			}
 		});
+        if (user.getGender() != null)
+            if (user.getGender().equals("Female")) {
+                genderRadio.check(R.id.radioF);
+            }
 
 	}
+
+    private void selectImage() {
+        final CharSequence[] items = {"Choose from Library", "Delete Photo",
+                "Cancel"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        builder.setTitle("Add Photo!");
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int item) {
+                boolean result = Constants.checkPermission(mContext);
+                if (items[item].equals("Choose from Library")) {
+                    openGallery();
+                } else if (items[item].equals("Delete Photo")) {
+                    options = new DisplayImageOptions.Builder().cacheInMemory(true)
+                            .cacheOnDisc(true).resetViewBeforeLoading(true)
+                            .showImageForEmptyUri(R.drawable.noimage)
+                            .showImageOnFail(R.drawable.noimage)
+                            .showImageOnLoading(R.drawable.noimage).build();
+                    imageLoader.displayImage("", profileImg, options);
+                    mediaUrl = "";
+                } else if (items[item].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void openGallery() {
+        Intent i = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        final int ACTIVITY_SELECT_IMAGE = 1234;
+        startActivityForResult(i, ACTIVITY_SELECT_IMAGE);
+    }
 
 	private DatePickerDialog.OnDateSetListener dobListnder = new DatePickerDialog.OnDateSetListener() {
 		// onDateSet method
@@ -256,10 +292,10 @@ public class EditProfile extends BaseActivity {
 				jsonSignUp.put("gender", genderName);
 				jsonSignUp.put("dob", dob);
 				jsonSignUp.put("privacy", privacy);
-				if (mediaUrl.equals("") || mediaUrl == null) {
-					jsonSignUp.put("profile_url", user.getProfile_url());
-				} else {
-					jsonSignUp.put("profile_url", mediaUrl);
+                if (mediaUrl == null) {
+                    jsonSignUp.put("profile_url", user.getProfile_url());
+                } else {
+                    jsonSignUp.put("profile_url", mediaUrl);
 				}
 
 				try {
@@ -395,28 +431,64 @@ public class EditProfile extends BaseActivity {
                     ext = ext.toLowerCase();
                     System.out.println("File name : " + fileName + "   "
                             + "Image extension : " + ext);
-                    final ParseFile file = new ParseFile(fileName + "." + ext,
-                            bytes);
-                    file.saveInBackground(new SaveCallback() {
+                    final File file = new File(fileName + "." + ext);
+                    /*file.saveInBackground(new SaveCallback() {
 
                         @Override
-                        public void done(ParseException arg0) {
+                        public void done(ParseException arg0) {*/
                             // TODO Auto-generated method stub
-                            final ParseObject jobApplication = new ParseObject(
+                            /*final ParseObject jobApplication = new ParseObject(
                                     "Files");
                             jobApplication.put("mediatype", "image");
                             jobApplication.put("file", file);
-                            jobApplication.saveInBackground();
-                            // file = jobApplication.getParseFile(file);
-                            mediaUrl = file.getUrl();// live url
-                            System.err.println(mediaUrl
-                                    + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-							uploadingTxt.setVisibility(View.GONE);
-                        }
-                        });
+                            jobApplication.saveInBackground();*/
+
+
+                    new ProrfileLoadImage(filee).execute();
 
                 }
         }
 
     };
+
+    public class ProrfileLoadImage extends AsyncTask<Void, Void, Void> {
+        File filePhoto;
+
+        ProrfileLoadImage(File filee) {
+            this.filePhoto = filee;
+        }
+
+        @Override
+        protected void onPreExecute() {
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                 response = MyApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
+                System.out.println(response + "  IMAGE  RESULT ");
+
+                JSONObject jsonMedia = new JSONObject();
+
+                jsonMedia.put("image_type", "image");
+                jsonMedia.put("image_url", response.get("url").toString().trim());
+                System.out.println(jsonMedia
+                        + " +++++++++++++++++++++++ ");
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void unused) {
+            mediaUrl = response.get("url").toString().trim();// live url
+            System.err.println(mediaUrl
+                    + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            uploadingTxt.setVisibility(View.GONE);
+        }
+    }
 }

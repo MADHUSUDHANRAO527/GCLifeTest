@@ -1,6 +1,7 @@
 package mobile.gclifetest.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +22,7 @@ import java.util.Stack;
 import mobile.gclifetest.fragments.HomeFragment;
 import mobile.gclifetest.fragments.IdeasDetailFragment;
 import mobile.gclifetest.fragments.InboxActivity;
+import mobile.gclifetest.utils.MyApplication;
 
 /**
  * Created by MRaoKorni on 8/1/2016.
@@ -126,7 +129,9 @@ public class HomeActivity extends BaseActivity {
     private long mBackPressed;
 
     public void onBackpressed() {
-        if (mFragmentStack.size() >= 2) {
+        if (MyApplication.getInstance().isUploading()) {
+            showUploadAlertOnBackPress();
+        } else if (mFragmentStack.size() >= 2) {
             FragmentTransaction ft = mFragmentManager.beginTransaction();
             mFragmentStack.lastElement().onPause();
             ft.remove(mFragmentStack.pop());
@@ -150,6 +155,7 @@ public class HomeActivity extends BaseActivity {
                 }
             }, 2000);
         }
+
     }
 
     @Override
@@ -177,5 +183,34 @@ public class HomeActivity extends BaseActivity {
     }
     public interface BackKeyListener {
         boolean handleBackKeyPress();
+    }
+
+    public void showUploadAlertOnBackPress() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(R.string.cancel_upload);
+        alertDialogBuilder.setMessage(R.string.cancel_upload_desc);
+        alertDialogBuilder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                if (mFragmentStack.size() >= 2) {
+                    FragmentTransaction ft = mFragmentManager.beginTransaction();
+                    mFragmentStack.lastElement().onPause();
+                    ft.remove(mFragmentStack.pop());
+                    mFragmentStack.lastElement().onResume();
+                    ft.show(mFragmentStack.lastElement());
+                    ft.commitAllowingStateLoss();
+                }
+                MyApplication.getInstance().setUploadingMedia(false);
+            }
+        });
+        alertDialogBuilder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 }

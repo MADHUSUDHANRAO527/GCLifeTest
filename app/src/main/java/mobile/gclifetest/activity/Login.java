@@ -39,8 +39,10 @@ public class Login extends BaseActivity {
 	InternetConnectionDetector netConn;
 	Boolean isInternetPresent = false;
 	RelativeLayout snackLay;
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+    public static boolean clearLogs = true;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
@@ -65,9 +67,8 @@ public class Login extends BaseActivity {
 
 		//emailEdit.setText("m@mail.com");
 		//passwordEdit.setText("123456");
-
-		netConn = new InternetConnectionDetector(this);
-		isInternetPresent = netConn.isConnectingToInternet();
+        netConn = new InternetConnectionDetector(this);
+        isInternetPresent = netConn.isConnectingToInternet();
 
 		if (isInternetPresent) {
 
@@ -233,4 +234,5 @@ public class Login extends BaseActivity {
         super.onResume();
         getSupportActionBar().hide();
     }
+
 }

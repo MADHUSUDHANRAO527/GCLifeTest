@@ -2,13 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="5dp">
 
     <RelativeLayout
         android:id="@+id/profileLay"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp" >
+        android:background="@drawable/articles_list_selector"
+        android:padding="15dp">
 
         <ImageView
             android:id="@+id/profileImg"
@@ -29,14 +31,8 @@
             android:padding="5dp"
             android:textSize="16sp"
             android:text="Madhu" />
-    </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/adresLay"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/profileLay"
-        android:padding="5dp" >
+
 
         <ImageView
             android:id="@+id/settingImg"
@@ -44,6 +40,7 @@
             android:layout_height="30dp"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
+            android:layout_below="@+id/profileImg"
             android:padding="5dp"
             android:src="@drawable/setting" />
 
@@ -53,6 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="30dp"
+            android:layout_below="@+id/usernameTxt"
             android:padding="5dp"
             android:textSize="16sp"
             android:text="adress" />

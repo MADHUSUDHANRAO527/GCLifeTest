@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/detailClick"
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/articles_list_selector"
         android:gravity="left|center"
         android:orientation="vertical"

@@ -1,11 +1,7 @@
 package mobile.gclifetest.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.MediaMetadataRetriever;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +15,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.json.JSONArray;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import mobile.gclifetest.activity.GalleryImageViewer;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.EventImages;
@@ -37,7 +29,6 @@ public class EventsImagesAdapter extends BaseAdapter {
     List<EventImages> eventImagesPojo;
     private Context context;
     ViewHolder holder = null;
-    ImageView thumbnailImg;
     String eventName,videoPath;
     ProgressBar thumbPbar;
     Bitmap bitmap = null;
@@ -91,9 +82,9 @@ public class EventsImagesAdapter extends BaseAdapter {
             convertView = inflator.inflate(R.layout.thumnail, parent,
                     false);
             holder = new ViewHolder();
-            thumbnailImg = (ImageView) convertView
+            holder.thumbnailImg = (ImageView) convertView
                     .findViewById(R.id.thumbnail);
-
+            convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
@@ -105,106 +96,19 @@ public class EventsImagesAdapter extends BaseAdapter {
             // new BitmapCall(imgUrl).execute();
             thumbPbar.setVisibility(View.GONE);
             //getVideoId(imgUrl);
-            imageLoader.displayImage("http://img.youtube.com/vi/" + imgUrl.substring(imgUrl.length() - 11) + "/default.jpg", thumbnailImg, options);
-            thumbnailImg.setScaleType(ImageView.ScaleType.FIT_XY);
+            imageLoader.displayImage("http://img.youtube.com/vi/" + imgUrl.substring(imgUrl.length() - 11) + "/default.jpg",  holder.thumbnailImg, options);
+            holder.thumbnailImg.setScaleType(ImageView.ScaleType.FIT_XY);
 
         } else if(imgUrl!=null){
             thumbPbar.setVisibility(View.GONE);
-            imageLoader.displayImage(imgUrl, thumbnailImg, options);
-            thumbnailImg.setScaleType(ImageView.ScaleType.FIT_XY);
+            imageLoader.displayImage(imgUrl, holder.thumbnailImg, options);
+            Log.d("Image url",  imgUrl);
+            holder.thumbnailImg.setScaleType(ImageView.ScaleType.FIT_XY);
         }
-      /*  if (imgUrl == "[]" || imgUrl.equals("[]") || imgUrl == ""
-                || imgUrl.equals("")) {
-
-
-        } else if (eventName == "Videos" || eventName.equals("Videos")) {
-            new BitmapCall(imgUrl).execute();
-        } else {
-            thumbPbar.setVisibility(View.GONE);
-            imageLoader.displayImage(imgUrl, thumbnailImg, options);
-            thumbnailImg.setScaleType(ImageView.ScaleType.FIT_XY);
-        }*/
         return convertView;
     }
 
-    private String getVideoId(String imgUrl) {
-        String videoId = null;
-        Pattern pattern = Pattern.compile(
-                "^https?://.*(?:youtu.be/|v/|u/\\w/|embed/|watch?v=)([^#&?]*).*$",
-                Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(imgUrl);
-        if (matcher.matches()){
-            videoId = matcher.group(1);
-        }
-        return videoId;
-    }
-
     public class ViewHolder {
-    }
-
-    class OnImageClickListener implements View.OnClickListener {
-
-        int _postion;
-
-        // constructor
-        public OnImageClickListener(int position) {
-            this._postion = position;
-        }
-
-        @Override
-        public void onClick(View v) {
-            // on selecting grid view image
-            // launch full screen activity
-            Intent i = new Intent(context, GalleryImageViewer.class);
-            System.out.println(_postion + "CLICKED");
-            i.putExtra("position", _postion);
-            i.putExtra("Images", mediaArr.toString());
-            context.startActivity(i);
-        }
-
-    }
-    public class BitmapCall extends AsyncTask<Void, Void, Void> {
-
-        public BitmapCall(String url) {
-            videoPath=url;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            MediaMetadataRetriever mediaMetadataRetriever = null;
-            try {
-                mediaMetadataRetriever = new MediaMetadataRetriever();
-                if (Build.VERSION.SDK_INT >= 14)
-                    mediaMetadataRetriever.setDataSource(videoPath, new HashMap<String, String>());
-                else
-                    mediaMetadataRetriever.setDataSource(videoPath);
-                //   mediaMetadataRetriever.setDataSource(videoPath);
-                bitmap = mediaMetadataRetriever.getFrameAtTime();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                try {
-                    throw new Throwable(
-                            "Exception in retriveVideoFrameFromVideo(String videoPath)"
-                                    + e.getMessage());
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            } finally {
-                if (mediaMetadataRetriever != null) {
-                    mediaMetadataRetriever.release();
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            pDialog.setVisibility(View.GONE);
-            thumbnailImg.setImageBitmap(bitmap);
-            thumbPbar.setVisibility(View.GONE);
-        }
+        ImageView thumbnailImg;
     }
 }

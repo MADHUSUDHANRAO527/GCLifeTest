@@ -6,12 +6,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -27,12 +24,14 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.cloudinary.utils.ObjectUtils;
+import com.flurry.android.FlurryAgent;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
@@ -63,6 +62,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,6 +85,7 @@ import mobile.gclifetest.pojoGson.AvenuesFilter;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.MyApplication;
 
+import static mobile.gclifetest.utils.Constants.isFileSizeAcceptable;
 import static mobile.gclifetest.youtube.IntentRequestCode.REQUEST_AUTHORIZATION;
 import static mobile.gclifetest.youtube.util.SharedPreferenceUtil.selectedGoogleAccount;
 
@@ -127,10 +128,12 @@ public class PhotosCreateFragment extends Fragment {
     public static final String scope = "oauth2:https://www.googleapis.com/auth/youtube";
     private Video youtubeVideo = null;
     View v;
-    String[] videoPathsArr;
+    String[] videoPathsArr = new String[0];
     String[] allPhotopaths;
     File filePhoto;
     SharedPreferences.Editor editor;
+    ProgressBar mProgressBar;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -139,10 +142,10 @@ public class PhotosCreateFragment extends Fragment {
         context = getActivity();
 
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
+        Log.d("EMAIL YOUTUBE ", userPref.getString("youtube_name", "NV"));
         editor = userPref.edit();
         addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
         titleEdit = (EditText) v.findViewById(R.id.titleEdit);
-        finishTxt = (TextView) v.findViewById(R.id.finishTxt);
         selectedMediaTxt = (TextView) v.findViewById(R.id.selectedMedia);
         avenueLay = (RelativeLayout) v.findViewById(R.id.avenueLay);
         sociLay = (RelativeLayout) v.findViewById(R.id.societyLay);
@@ -151,15 +154,10 @@ public class PhotosCreateFragment extends Fragment {
         pDialogImg = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialogImg);
         finishTxt = (TextView) v.findViewById(R.id.finishTxt);
         attachImg = (ImageView) v.findViewById(R.id.attachImg);
-
+        mProgressBar = (ProgressBar) v.findViewById(R.id.upload_progress);
         Bundle bundle = getArguments();
         eventName = bundle.getString("EventName");
-       /* if (eventName == "Photos" || eventName.equals("Photos")) {
-            setUpActionBar("Create Photos");
-        }
-        if (eventName == "Videos" || eventName.equals("Videos")) {
-            setUpActionBar("Create Videos");
-        }*/
+
         dialogAvenue = new Dialog(getActivity());
         dialogAvenue.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialogAvenue.setContentView(R.layout.avenues_listview_check);
@@ -173,47 +171,28 @@ public class PhotosCreateFragment extends Fragment {
         dialogSoci.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
         listviewSoci = (ListView) dialogSoci.findViewById(R.id.listviewSoci);
 
-    /*
-             * mListView >> (ListView) //DO NOT ADD `NULL` here.
-             */
-
         final View headerView = getActivity().getLayoutInflater().inflate(R.layout.custom_list_view_header,
                 listviewSoci, false);
 
         checkBox_header = (CheckBox) headerView.findViewById(
                 R.id.checkBox_header);
 
-            /*
-             * Select All / None DO NOT USE "setOnCheckedChangeListener" here.
-             */
         checkBox_header.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
-                    /*
-                     * Set all the checkbox to True/False
-                     */
                 if (checkBox_header.isChecked()) {
                     for (int i = 0; i < societiesPojo.size(); i++) {
                         mChecked.put(i, checkBox_header.isChecked());
                         selectedSociNames.add(societiesPojo.get(i).getSocityName());
-
                     }
                 } else {
                     for (int i = 0; i < societiesPojo.size(); i++) {
                         mChecked.delete(i);
-                        //  selectedSociNames.remove(societiesPojo.get(i).getSocityName());
-
                     }
-                    //   societiesPojo=new ArrayList<AvenuesFilter>();
                     selectedSociNames = new ArrayList<String>();
                 }
-                    /*
-                     * Update View
-                     */
                 sociAdapter.notifyDataSetChanged();
-
             }
         });
 
@@ -290,7 +269,6 @@ public class PhotosCreateFragment extends Fragment {
                 selectedSociNames.clear();
                 selectedSociNames.addAll(hs);
                 selectedSoci = TextUtils.join(",", selectedSociNames);
-                //    selectedSoci = selectedSoci.replaceAll("\\s", "");
                 System.out.println(selectedSociNames.size());
 
             }
@@ -320,9 +298,6 @@ public class PhotosCreateFragment extends Fragment {
                 }
 
                 selectedMem = TextUtils.join(",", selectedMemsNames);
-                // selectedMem=selectedMem.trim();
-                //         selectedMem = selectedMem.replaceAll("\\s", "");
-                System.out.println(selectedMem);
             }
         });
         avenueLay.setOnClickListener(new View.OnClickListener() {
@@ -330,12 +305,6 @@ public class PhotosCreateFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-
-				/*
-                 * adapterUnames = new ListUnamesBaseAdapter( getActivity(),
-				 * listUnames);
-				 */
-                // listviewUsernames.setAdapter(adapterUnames);
                 dialogAvenue.show();
             }
         });
@@ -365,24 +334,20 @@ public class PhotosCreateFragment extends Fragment {
                 // TODO Auto-generated method stub
 
                 ideaTitle = titleEdit.getText().toString();
-
                 if (ideaTitle == null || ideaTitle == "null" || ideaTitle == ""
                         || ideaTitle.length() == 0) {
                     Constants.showSnack(v,
                             "Please enter title!",
                             "OK");
-                } else if (eventImages == null || eventImages.toString() == "null"
-                        || eventImages.toString() == "" || eventImages.length() == 0) {
-                    if (eventName == "Photos" || eventName.equals("Photos")) {
+                } else if (eventName.equals("Videos") &&(videoPathsArr == null && videoPathsArr.length == 0)) {
+                    Constants.showSnack(v,
+                            "Please select atleast one video!",
+                            "OK");
+                } else if (eventName.equals("Photos") && (eventImages == null ||
+                        eventImages.length() == 0)) {
                         Constants.showSnack(v,
                                 "Please select atleast one image!",
                                 "OK");
-                    } else {
-                        Constants.showSnack(v,
-                                "Please select atleast one video!",
-                                "OK");
-                    }
-
                 } else if (selectedAven == null || selectedAven == "null"
                         || selectedAven == "" || selectedAven.length() == 0) {
                     Constants.showSnack(v,
@@ -395,6 +360,8 @@ public class PhotosCreateFragment extends Fragment {
                         || selectedMem == "" || selectedMem.length() == 0) {
                     Constants.showSnack(v,
                             "Please select member type!", "OK");
+                } else if (eventName.equals("Videos")) {
+                    uploaddToServer();
                 } else {
                     new CreatePhotosVideos().execute();
                 }
@@ -414,7 +381,6 @@ public class PhotosCreateFragment extends Fragment {
                     Intent i = new Intent(getActivity(), CustomVideoGalleryActivity.class);
                     startActivityForResult(i, 200);
                 }
-
             }
         });
         return v;
@@ -433,7 +399,7 @@ public class PhotosCreateFragment extends Fragment {
             JSONObject jsonIdeas = new JSONObject();
             try {
                 jsonIdeas.put("event_type", eventName);
-                jsonIdeas.put("title", ideaTitle);
+                jsonIdeas.put("title", Constants.encodeString(ideaTitle));
                 jsonIdeas.put("user_id", userPref.getString("USERID", "NV"));
                 jsonIdeas.put("association_list", selectedAven);
                 jsonIdeas.put("society_list", selectedSoci);
@@ -444,7 +410,7 @@ public class PhotosCreateFragment extends Fragment {
                 if (eventImages.toString() == "[]"
                         || eventImages.toString().equals("[]")
                         || eventImages.length() == 0) {
-                    // jsonIdeas.put("EventImages", "[]");
+                    Toast.makeText(getActivity(), "Media is empty!", Toast.LENGTH_SHORT).show();
                 } else {
                     jsonIdeas.put("EventImages", eventImages);
                 }
@@ -461,6 +427,8 @@ public class PhotosCreateFragment extends Fragment {
                 }
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
 
@@ -570,17 +538,20 @@ public class PhotosCreateFragment extends Fragment {
                         System.out.println(societyMap);
 
                     }
-                    aveAdapter = new ListAvenBaseAdapter(getActivity(),
-                            listAssociation, listviewAvenue);
-                    listviewAvenue.setAdapter(aveAdapter);
+                    if (getActivity() != null) {
+                        aveAdapter = new ListAvenBaseAdapter(getActivity(),
+                                listAssociation, listviewAvenue);
+                        listviewAvenue.setAdapter(aveAdapter);
 
 
-                    ArrayList<String> societylist = societyMap
-                            .get(listAssociation.get(1));
-                    aveAdapter = new ListAvenBaseAdapter(getActivity(),
-                            listAssociation, listviewAvenue);
-                    listviewAvenue.setAdapter(aveAdapter);
-                    Log.d("AVENUES : ", listAssociation.toString());
+                        ArrayList<String> societylist = societyMap
+                                .get(listAssociation.get(1));
+                        aveAdapter = new ListAvenBaseAdapter(getActivity(),
+                                listAssociation, listviewAvenue);
+                        listviewAvenue.setAdapter(aveAdapter);
+                        Log.d("AVENUES : ", listAssociation.toString());
+                    }
+
 
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
@@ -615,32 +586,26 @@ public class PhotosCreateFragment extends Fragment {
             final String[] all_path = data.getStringArrayExtra("all_path");
             videoPathsArr = data.getStringArrayExtra("all_path");
             if (all_path.length > 0) {
-                pDialogImg.setVisibility(View.VISIBLE);
+
                 if (eventName == "Photos" || eventName.equals("Photos")) {
+                    pDialogImg.setVisibility(View.VISIBLE);
                     selectedMediaTxt.setText("Attaching images....");
                 } else {
-                    selectedMediaTxt.setText("Attaching videos....");
+                    //  selectedMediaTxt.setText("Attaching videos....");
                 }
-                finishTxt.setEnabled(false);
+                //    finishTxt.setEnabled(false);
             }
             System.out.println(all_path);
             if (eventName == "Photos" || eventName.equals("Photos")) {
                 Constants.showSnack(v,
                         "You have Selected " + all_path.length + " images",
                         "OK");
-                //   ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
                 for (String selectedPath1 : all_path) {
                     CustomGallery item = new CustomGallery();
                     item.sdcardPath = selectedPath1;
-
-                    //     dataT.add(item);
-
-                    // parsing
                     ext = selectedPath1
                             .substring(selectedPath1.lastIndexOf(".") + 1);
                     fileName = selectedPath1.replaceFirst(".*/(\\w+).*", "$1");
-
-                    // selectedMediaTxt.setText(fileName+"."+ext);
 
                     File filee = new File(selectedPath1);
                     int size = (int) filee.length();
@@ -665,98 +630,12 @@ public class PhotosCreateFragment extends Fragment {
 
                     new LoadImages(all_path, filee).execute();
                 }
-                   /*  final ParseFile file = new ParseFile(fileName + "." + ext,
-                            bytes);
-                   file.saveInBackground(new SaveCallback() {
-
-                        @Override
-                        public void done(ParseException arg0) {
-                            // TODO Auto-generated method stub
-                            final ParseObject jobApplication = new ParseObject(
-                                    "Files");
-                            if (ext == "png" || ext.equals("png")
-                                    || ext.equals("ico") || ext == "ico"
-                                    || ext == "jpg" || ext.equals("jpg")
-                                    || ext.equals("jpeg") || ext == "jpeg"
-                                    || ext == "gif" || ext.equals("gif")
-                                    || ext.equals("thm") || ext == "thm"
-                                    || ext == "tif" || ext.equals("tif")
-                                    || ext.equals("yuv") || ext == "yuv"
-                                    || ext.equals("bmp") || ext == "bmp") {
-                                jobApplication.put("mediatype", "image");
-                            } else {
-                                jobApplication.put("mediatype", "video");
-                            }
-                            // jobApplication.put("ticklecreatedid","Mayura");
-                            jobApplication.put("file", file);
-                            jobApplication.saveInBackground();
-                            // file = jobApplication.getParseFile(file);
-                            mediaUrl = file.getUrl();// live url
-                            System.err.println(mediaUrl
-                                    + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
-                            try {
-                                JSONObject jsonMedia = new JSONObject();
-                                jsonMedia.put("image_type", "image");
-
-
-                                if (mediaUrl != null) {
-                                    jsonMedia.put("image_url", mediaUrl);
-                                    System.out.println(jsonMedia
-                                            + " +++++++++++++++++++++++ ");
-                                    eventImages.put(jsonMedia);
-                                    System.out.println(eventImages
-                                            + " ******************* ");
-
-                                    if (all_path.length == eventImages.length()) {
-                                        pDialogImg.setVisibility(View.GONE);
-
-                                        if (eventName == "Photos" || eventName.equals("Photos")) {
-                                            selectedMediaTxt.setText("Attached "
-                                                    + all_path.length + " images");
-                                        } else {
-                                            selectedMediaTxt.setText("Attached "
-                                                    + all_path.length + " videos");
-                                        }
-                                        finishTxt.setClickable(true);
-                                        finishTxt.setEnabled(true);
-                                    } else if (all_path.length > eventImages.length()) {
-                                        pDialogImg.setVisibility(View.VISIBLE);
-                                        if (eventName == "Photos" || eventName.equals("Photos")) {
-                                            selectedMediaTxt.setText("Attaching images...."
-                                                    + (String.valueOf(eventImages.length())));
-                                        } else {
-                                            selectedMediaTxt.setText("Attaching videos...."
-                                                    + (String.valueOf(eventImages.length())));
-                                        }
-                                        finishTxt.setClickable(false);
-                                    } else {
-                                        pDialogImg.setVisibility(View.GONE);
-                                        if (eventName == "Photos" || eventName.equals("Photos")) {
-                                            selectedMediaTxt.setText("Attached "
-                                                    + eventImages.length() + " images");
-                                        } else {
-                                            selectedMediaTxt.setText("Attached "
-                                                    + eventImages.length() + " videos");
-                                        }
-                                        finishTxt.setClickable(true);
-                                        finishTxt.setEnabled(true);
-                                    }
-                                }
-
-                            } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        }
-                    });*/
-
-
             } else {
-                Constants.showSnack(v,
+                selectedMediaTxt.setText("You have Selected " + all_path.length + " videos");
+              /*  Constants.showSnack(v,
                         "You have Selected " + all_path.length + " videos",
-                        "OK");
-                if (!userPref.getString("youtube_name", "NV").equalsIgnoreCase("NV")) {
+                        "OK");*/
+                if (!userPref.getString("youtube_name", "NV").equals("NV")) {
                     new FetchYouTubeTokenTask().execute();
                 } else {
                     pickUserAccount();
@@ -773,6 +652,7 @@ public class PhotosCreateFragment extends Fragment {
                         //     userNameTxt.setText("Email : " + selectedGoogleAccount);
                         editor.putString("youtube_name", accountName);
                         editor.commit();
+                        editor.apply();
                         new FetchYouTubeTokenTask().execute();
 
                     } else {
@@ -786,22 +666,6 @@ public class PhotosCreateFragment extends Fragment {
             }
         }
     }
-
-    public String getPath(Uri uri) {
-
-        String[] projection = {MediaStore.Images.Media.DATA};
-
-        Cursor cursor = getActivity().managedQuery(uri, projection, null, null, null);
-
-        int column_index = cursor
-                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
-        cursor.moveToFirst();
-
-        return cursor.getString(column_index);
-
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -822,7 +686,6 @@ public class PhotosCreateFragment extends Fragment {
         soc.putExtra("EventName", eventName);
         startActivity(soc);
     }
-
 
 
     public class ListAvenBaseAdapter extends BaseAdapter {
@@ -898,7 +761,7 @@ public class PhotosCreateFragment extends Fragment {
                             }
                             //    selectedAveNames.add("All");
 
-                            for (int j = 1; j <= 2; j++) {
+                            for (int j = 1; j <= list.size()-1; j++) {
                                 societylist = societyMap
                                         .get(list.get(j));
                                 selectedAveNames.add(list.get(j).toString());
@@ -1032,38 +895,16 @@ public class PhotosCreateFragment extends Fragment {
             View mView = convertView;
 
             if (mView == null) {
-
-                /*
-                 * LayoutInflater
-                 */
                 final LayoutInflater sInflater = (LayoutInflater) context.getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
 
-                /*
-                 * Inflate Custom List View
-                 */
                 mView = sInflater.inflate(R.layout.avenues_adapter_row, null, false);
-
             }
-
-            /* **************CUSTOM LISTVIEW OBJECTS**************** */
-
-            /*
-             * DO NOT MISS TO ADD "mView"
-             */
             final TextView titleTxt = (TextView) mView.findViewById(R.id.titleTxt);
             //      final ImageView sIMG = (ImageView) mView.findViewById(R.id.imageView);
             final CheckBox mCheckBox = (CheckBox) mView.findViewById(
                     R.id.checked);
-
-            /* **************CUSTOM LISTVIEW OBJECTS**************** */
-
-            /* **************ADDING CONTENTS**************** */
-            //   sTV1.setText(MainActivity.textviewContent[position]);
-            //    sIMG.setImageResource(R.drawable.ic_launcher);
             titleTxt.setText(societiesPojo.get(position).getSocityName());
-
-
             mCheckBox.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (mCheckBox.isChecked()) {
@@ -1074,15 +915,7 @@ public class PhotosCreateFragment extends Fragment {
                         }
                         selectedSociNames.add(societiesPojo.get(position).getSocityName());
                     } else {
-
-                                /*
-                                 * Removed UnChecked Position
-                                 */
                         mChecked.delete(position);
-
-                                /*
-                                 * Remove Checked in Header
-                                 */
                         checkBox_header.setChecked(mCheckBox.isChecked());
                         selectedSociNames.remove(societiesPojo.get(position).getSocityName());
                     }
@@ -1100,7 +933,6 @@ public class PhotosCreateFragment extends Fragment {
 
             for (int i = 0; i < societiesPojo.size(); i++) {
                 if (!mChecked.get(i)) {
-
                     return false;
                 }
             }
@@ -1183,8 +1015,6 @@ public class PhotosCreateFragment extends Fragment {
                                 cb.setChecked(true);
                                 selectedMemsNames.add(list.get(i).trim());
                             }
-                            //  selectedMemsNames.add("All");
-                            //  return;
                         } else {
                             selectedMemsNames.add(list.get(position).trim());
                         }
@@ -1221,6 +1051,7 @@ public class PhotosCreateFragment extends Fragment {
             CheckBox checkBox;
         }
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -1228,7 +1059,7 @@ public class PhotosCreateFragment extends Fragment {
         ((HomeActivity) context).setHomeAsEnabled(true);
         if (eventName == "Photos" || eventName.equals("Photos")) {
             ((HomeActivity) context).changeToolbarTitle(R.string.create_photos);
-        }else
+        } else
             ((HomeActivity) context).changeToolbarTitle(R.string.create_videos);
     }
 
@@ -1257,35 +1088,39 @@ public class PhotosCreateFragment extends Fragment {
         @Override
         protected void onPostExecute(Void result) {
             if (token != null) {
-                //  tokenTxt.setText("Token : " + token);
-                //Toast.makeText(getActivity(), token, Toast.LENGTH_LONG).show();
-
-                // selectedMediaTxt.setText("Attaching videos....");
-                //  String videoPathvideo;
-                uploaddToServer();
+                //  uploaddToServer();
+            } else {
+                Toast.makeText(getActivity(), "Couldn't able to fetch token from youtube!Try again!", Toast.LENGTH_LONG).show();
             }
         }
     }
 
     private void uploaddToServer() {
+        selectedMediaTxt.setText("Attaching videos....");
+
+        //finishTxt.setEnabled(false);
         for (int i = 0; i < videoPathsArr.length; i++) {
-            uploadVideo(videoPathsArr[i]);
-            selectedMediaTxt.setText("Attaching videos...." + i);
+            uploadVideo(videoPathsArr[i], i);
         }
-        selectedMediaTxt.setText("Attached "
-                + videoPathsArr.length + " videos");
-        pDialogImg.setVisibility(View.GONE);
-        finishTxt.setEnabled(true);
     }
 
-    private void uploadVideo(String videoPathvideo) {
-        new YouTubeUploadTask(videoPathvideo).execute();
+    private void uploadVideo(String videoPathvideo, int i) {
+        if (!isFileSizeAcceptable(videoPathvideo)) {
+            Constants.showSnack(v,
+                    "File size too large! Maximum 80Mb allowed!",
+                    "");
+        } else {
+            pDialog.setVisibility(View.VISIBLE);
+            finishTxt.setVisibility(View.INVISIBLE);
+            new YouTubeUploadTask(videoPathvideo, i).execute();
+        }
     }
 
-    public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
+
+    public class YouTubeUploadTask extends AsyncTask<Void, Integer, Void> {
         String videoPathvideo;
         private static final String VIDEO_FILE_FORMAT = "video/*";
-
+        int fileNumber;
         public static final String scope = "oauth2:https://www.googleapis.com/auth/youtube";
         private final List<String> scopes = Lists.newArrayList(YouTubeScopes.YOUTUBE);
 
@@ -1302,8 +1137,14 @@ public class PhotosCreateFragment extends Fragment {
 
         private String errorMessage = null;
 
-        public YouTubeUploadTask(String videoPathvide) {
+        public YouTubeUploadTask(String videoPathvide, int mFileNum) {
             videoPathvideo = videoPathvide;
+            fileNumber = mFileNum;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            MyApplication.getInstance().setUploadingMedia(true);
         }
 
         public YouTube.Videos.Insert prepareUpload() {
@@ -1335,8 +1176,38 @@ public class PhotosCreateFragment extends Fragment {
                 // Set completed snippet to the video object
                 videoObjectDefiningMetadata.setSnippet(snippet);
 
+                byte[] bytes = new byte[(int) videoFile.length()];
+                try {
+                    new FileInputStream(videoFile).read(bytes);
+                } catch (Exception e) {
+                }
+                byte[] payload = bytes;
+
+                int totalSize = payload.length;
+                Log.d("payload size : ", totalSize + "");
+                int bytesTransferred = 0;
+                int chunkSize = 2000;
+                System.out.println(fileNumber);
+                int n = fileNumber++;
+           /*     selectedMediaTxt.setText("Attaching videos.... "
+                        + String.valueOf(fileNumber));*/
+
+                while (bytesTransferred < totalSize) {
+                    int nextChunkSize = totalSize - bytesTransferred;
+                    if (nextChunkSize > chunkSize) {
+                        nextChunkSize = chunkSize;
+                    }
+                    //   outputStream.write(payload, bytesTransferred, nextChunkSize); // TODO check outcome!
+                    bytesTransferred += nextChunkSize;
+
+                    float progressPercentage = (bytesTransferred * 1.0f) / totalSize * 100;
+                    Log.d("Bytes transferred", bytesTransferred + " " + (int) progressPercentage);
+                    //   mProgressBar.setProgress((int) progressPercentage);
+                    publishProgress((int) progressPercentage);
+                }
                 InputStreamContent mediaContent = new InputStreamContent(VIDEO_FILE_FORMAT, new BufferedInputStream(new FileInputStream(videoFile)));
-                mediaContent.setLength(videoFile.length());
+                mediaContent.setLength(bytesTransferred);
+
 
                 GoogleAccountCredential credential = buildGoogleAccountCredential();
                 YouTube youtube = new YouTube.Builder(transport, jsonFactory, credential).setApplicationName(appName).build();
@@ -1424,7 +1295,7 @@ public class PhotosCreateFragment extends Fragment {
         private GoogleAccountCredential buildGoogleAccountCredential() throws Exception {
             GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getActivity(), scopes);
             credential.setBackOff(new ExponentialBackOff());
-            credential.setSelectedAccountName(selectedGoogleAccount);
+            credential.setSelectedAccountName(userPref.getString("youtube_name", "NV"));
             return credential;
         }
 
@@ -1436,7 +1307,6 @@ public class PhotosCreateFragment extends Fragment {
                 try {
                     youtubeVideo = videoInsert.execute();
                 } catch (IOException e) {
-                    //  MessageUtil.sendHandlerMessage(uploadProgressHandler, HandlerMessage.VIDEO_UPLOAD_FAILED);
                 }
             }
             return null;
@@ -1444,12 +1314,16 @@ public class PhotosCreateFragment extends Fragment {
         }
 
         @Override
+        protected void onProgressUpdate(Integer... values) {
+            mProgressBar.setIndeterminate(false);
+            mProgressBar.setProgress(values[0]);
+        }
+
+        @Override
         protected void onPostExecute(Void result) {
             if (errorMessage != null) {
                 //  DialogUtil.showExceptionAlertDialog(activity, "Exception", errorMessage);
             } else if (youtubeVideo != null) {
-                //  MessageUtil.sendHandlerMessage(uploadProgressHandler, HandlerMessage.VIDEO_UPLOAD_COMPLETED);
-                // Print data about the newly inserted video from the API response.
                 System.out.println("\n================== Returned Video ==================\n");
                 System.out.println("  - Id: " + youtubeVideo.getId());
                 System.out.println("  - Title: " + youtubeVideo.getSnippet().getTitle());
@@ -1469,11 +1343,21 @@ public class PhotosCreateFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
-                //   youtubeUrlTxt.setText("Youtube URL : https://www.youtube.com/watch?v=" + youtubeVideo.getId() + "  \n\n" + "Title: " + youtubeVideo.getSnippet().getTitle());
-                //  titleEdit.setText("");
-                //  uploadVideobtn.setText("Video has been uploaded!");
+                System.out.println("VIDEO LENGTH :" + videoPathsArr + "__" + eventImages.length());
+                if (videoPathsArr.length == eventImages.length()) {
+                    //     pDialogImg.setVisibility(View.GONE);
+                    selectedMediaTxt.setText("Attached "
+                            + videoPathsArr.length + " videos");
+                    pDialogImg.setVisibility(View.GONE);
+                    //     finishTxt.setEnabled(true);
+                    MyApplication.getInstance().setUploadingMedia(false);
+                    new CreatePhotosVideos().execute();
+                } else {
+                    pDialogImg.setVisibility(View.VISIBLE);
+                    selectedMediaTxt.setText("Attaching videos...."
+                            + (String.valueOf(eventImages.length())));
+                    //   finishTxt.setEnabled(false);
+                }
             }
         }
 
@@ -1487,14 +1371,17 @@ public class PhotosCreateFragment extends Fragment {
     }
 
     public class LoadImages extends AsyncTask<Void, Void, Void> {
-        public LoadImages(String[] all_path, File filee) {
-            allPhotopaths = all_path;
-            filePhoto = filee;
+        String[] allPhotopaths;
+        File filePhoto;
+
+        LoadImages(String[] all_path, File filee) {
+            this.allPhotopaths = all_path;
+            this.filePhoto = filee;
         }
 
         @Override
         protected void onPreExecute() {
-
+            MyApplication.getInstance().setUploadingMedia(true);
         }
 
         @Override
@@ -1512,7 +1399,7 @@ public class PhotosCreateFragment extends Fragment {
                 System.out.println(eventImages
                         + " ******************* ");
 
-                eventImages.put(jsonMedia);
+                //  eventImages.put(jsonMedia);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -1524,17 +1411,28 @@ public class PhotosCreateFragment extends Fragment {
         @Override
         protected void onPostExecute(Void unused) {
             if (allPhotopaths.length == eventImages.length()) {
-                //     pDialogImg.setVisibility(View.GONE);
                 selectedMediaTxt.setText("Attached "
                         + allPhotopaths.length + " images");
                 pDialogImg.setVisibility(View.GONE);
-                finishTxt.setEnabled(true);
+                //     finishTxt.setEnabled(true);
+                MyApplication.getInstance().setUploadingMedia(false);
             } else {
-                //   pDialogImg.setVisibility(View.VISIBLE);
                 selectedMediaTxt.setText("Attaching images...."
                         + (String.valueOf(eventImages.length())));
 
             }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

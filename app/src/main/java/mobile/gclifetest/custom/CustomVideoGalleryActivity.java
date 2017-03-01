@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import mobile.gclifetest.activity.R;
+import mobile.gclifetest.utils.Constants;
 
 public class CustomVideoGalleryActivity extends Activity {
 
@@ -39,9 +40,8 @@ public class CustomVideoGalleryActivity extends Activity {
     ImageView imgNoMedia;
     Button btnGalleryOk;
 
-    String action;
     private ImageLoader imageLoader;
-
+   public static boolean isSizeAccpetable;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +92,7 @@ public class CustomVideoGalleryActivity extends Activity {
         findViewById(R.id.llBottomContainer).setVisibility(View.VISIBLE);
         gridGallery.setOnItemClickListener(mItemMulClickListener);
         adapter.setMultiplePick(true);
+
 
 
         gridGallery.setAdapter(adapter);
@@ -149,10 +150,18 @@ public class CustomVideoGalleryActivity extends Activity {
                 long sizeInMb = sizeInBytes/(1024 * 1024);
                 totVideoSize=totVideoSize+sizeInMb;
                 allPath[i] = selected.get(i).sdcardPath;
+                if (!Constants.isFileSizeAcceptable(selected.get(i).sdcardPath)) {
+                    isSizeAccpetable = true;
+                }
             }
-            Intent data = new Intent().putExtra("all_path", allPath);
-            setResult(RESULT_OK, data);
-            finish();
+            if (isSizeAccpetable) {
+                Constants.showSnack(v, "File size too large! Maximum 80Mb allowed!",
+                        "");
+            } else {
+                Intent data = new Intent().putExtra("all_path", allPath);
+                setResult(RESULT_OK, data);
+                finish();
+            }
           /*  if(totVideoSize>15){
                 Toast.makeText(CustomVideoGalleryActivity.this, "Video size must be below 15 Mb", Toast.LENGTH_SHORT).show();
             }else{
@@ -168,7 +177,6 @@ public class CustomVideoGalleryActivity extends Activity {
         @Override
         public void onItemClick(AdapterView<?> l, View v, int position, long id) {
             adapter.changeSelection(v, position);
-
         }
     };
 

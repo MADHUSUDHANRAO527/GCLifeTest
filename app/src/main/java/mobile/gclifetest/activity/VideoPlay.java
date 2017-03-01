@@ -1,104 +1,65 @@
 package mobile.gclifetest.activity;
 
-import android.app.ProgressDialog;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
+import android.support.annotation.Nullable;
+import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerView;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 
-import mobile.gclifetest.utils.MyApplication;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-@SuppressWarnings("deprecation")
-public class VideoPlay extends AppCompatActivity implements
-		YouTubePlayer.OnInitializedListener {
-	ProgressDialog pDialog;
-	YouTubePlayerView videoview;
-	android.support.v7.app.ActionBar actionBar;
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.video_play_activity);
-		videoview = (YouTubePlayerView) findViewById(R.id.youtube_view);
+import mobile.gclifetest.utils.Constants;
 
-		actionBar = getSupportActionBar();
-		actionBar.setDisplayShowTitleEnabled(true);
-		actionBar.setDisplayHomeAsUpEnabled(true);
-		actionBar.setHomeButtonEnabled(true);
-		actionBar.setIcon(android.R.color.transparent);
-		actionBar.setTitle("Video");
-		actionBar.setBackgroundDrawable(new ColorDrawable(Color
-				.parseColor(MyApplication.actiobarColor)));
-		Intent ii = getIntent();
-		String videoUrl = ii.getStringExtra("Video");
+/**
+ * Created by npanigrahy on 04/07/2016.
+ */
+public class VideoPlay extends YouTubeBaseActivity {
+    public static final String API_KEY = "AIzaSyCaRC7Cfahy41WKzUHPWTeXwlhHBABypkc";
 
-		System.out.println(videoUrl + " *************  VIDEO URL ");
+    //https://www.youtube.com/watch?v=<VIDEO_ID>
+    public static String VIDEO_ID = "";
+    String jsonData;
 
-		// Initializing video player with developer key
-		//  videoview.initialize("AIzaSyBj4Z-0tjXgGthPks6OxyBvRaqRlMHVh2k", VideoPlay.this);
-		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl)));
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_youtube_player_fragment);
 
+        //initializing and adding YouTubePlayerFragment
+        FragmentManager fm = getFragmentManager();
+        String tag = YouTubePlayerFragment.class.getSimpleName();
+        YouTubePlayerFragment playerFragment = (YouTubePlayerFragment) fm.findFragmentByTag(tag);
+        if (playerFragment == null) {
+            FragmentTransaction ft = fm.beginTransaction();
+            playerFragment = YouTubePlayerFragment.newInstance();
+            ft.add(android.R.id.content, playerFragment, tag);
+            ft.commit();
+        }
+        Intent ii = getIntent();
+        jsonData = ii.getStringExtra("Video");
+        try {
+            JSONObject json = new JSONObject(jsonData);
+            VIDEO_ID = Constants.getYoutubeVideoId(json.getString("image_url"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        playerFragment.initialize(API_KEY, new YouTubePlayer.OnInitializedListener() {
+            @Override
+            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                youTubePlayer.cueVideo(VIDEO_ID);
+            }
 
-		// Execute StreamVideo AsyncTask
-
-		// Create a progressbar
-		/*pDialog = new ProgressDialog(VideoPlay.this);
-		pDialog.setMessage("Buffering...");
-		pDialog.setIndeterminate(false);
-		pDialog.setCancelable(false);
-		// Show progressbar
-		pDialog.show();
-
-		try {
-			// Start the MediaController
-			MediaController mediacontroller = new MediaController(
-					VideoPlay.this);
-			mediacontroller.setAnchorView(videoview);
-			// Get the URL from String VideoURL
-			Uri video = Uri.parse(videoUrl);
-			videoview.setMediaController(mediacontroller);
-			videoview.setVideoURI(video);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		videoview.requestFocus();
-		videoview.setOnPreparedListener(new OnPreparedListener() {
-			// Close the progress bar and play the video
-			public void onPrepared(MediaPlayer mp) {
-				pDialog.dismiss();
-				videoview.start();
-			}
-		});*/
-
-	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-
-		case android.R.id.home:
-			onBackPressed();
-			return true;
-		default:
-			break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-
-	}
-
-	@Override
-	public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-
-	}
+            @Override
+            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+                Toast.makeText(VideoPlay.this, "Error while initializing YouTubePlayer.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

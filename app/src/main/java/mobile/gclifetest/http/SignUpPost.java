@@ -1,7 +1,5 @@
 package mobile.gclifetest.http;
 
-import java.net.URI;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
@@ -21,6 +19,8 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+
+import java.net.URI;
 
 public class SignUpPost {
 	public static JSONObject makeRequestRegister(JSONObject jsonSignUp,
@@ -282,5 +282,43 @@ public class SignUpPost {
 		JSONObject jobj = new JSONObject(output);
 
 		return jobj;
+	}
+	public static JSONObject logOut(String hostname, String userId)
+			throws Exception {
+		SSLSocketFactory sslFactory = new SimpleSSLSocketFactory(null);
+		sslFactory
+				.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+		HttpParams params = new BasicHttpParams();
+		HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+		HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+		SchemeRegistry registry = new SchemeRegistry();
+		registry.register(new Scheme("http", PlainSocketFactory
+				.getSocketFactory(), 80));
+		registry.register(new Scheme("https", sslFactory, 443));
+		ClientConnectionManager ccm = new ThreadSafeClientConnManager(params,
+				registry);
+		HttpClient client = new DefaultHttpClient(ccm, params);
+
+		// HttpPost httpost = new HttpPost(hostname + "/verify_account.json ");
+		HttpGet request = new HttpGet();
+		String host = hostname + "log_out.json?user_id=" + userId;
+		request.setURI(new URI(host));
+		System.out.println(host + "   OTP HOSTNAME !!!!!!!!!!!");
+		// httpost.setEntity(new UrlEncodedFormEntity(name_push));
+		HttpResponse response = null;
+		try {
+			response = client.execute(request);
+
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		if (response == null) {
+			System.out.println("no data");
+		}
+
+		String output = EntityUtils.toString(response.getEntity());
+		JSONObject jobj = new JSONObject(output);
+		return jobj;
+
 	}
 }

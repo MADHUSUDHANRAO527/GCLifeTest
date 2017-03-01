@@ -157,6 +157,11 @@ public class FrdsDetail extends BaseActivity {
             mobileNumTxt.setTypeface(typefaceLight);
             unameTxt.setTypeface(typefaceLight);
 
+            emrNumTxt.setTypeface(typefaceLight);
+            genderTxt.setTypeface(typefaceLight);
+            occupationtxt.setTypeface(typefaceLight);
+            dobTxt.setTypeface(typefaceLight);
+
             Intent intent = getActivity().getIntent();
             Bundle bundle = intent.getExtras();
             memDet = bundle.getString("jsonDetails");

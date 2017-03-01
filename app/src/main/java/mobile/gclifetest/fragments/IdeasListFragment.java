@@ -37,6 +37,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -254,11 +255,13 @@ public class IdeasListFragment extends Fragment {
                 Log.d("Response", response.toString());
                 if (response.toString() == "[]" || response.length() == 0) {
                     if (searchStr.length() > 0) {
-                        Constants.showSnack(snackLay,
-                                "Search result not found, please try with another search criteria!", "");
+                        Toast.makeText(getActivity(), "Search result not found, please try with another search criteria!", Toast.LENGTH_SHORT).show();
+                      /*  Constants.showSnack(snackLay,
+                                "Search result not found, please try with another search criteria!", "");*/
                     } else {
-                        Constants.showSnack(snackLay,
-                                "No further " + eventName + " content is available!", "");
+                        Toast.makeText(getActivity(), "No further " + eventName + " content is available!", Toast.LENGTH_SHORT).show();
+                      /*  Constants.showSnack(snackLay,
+                                "No further " + eventName + " content is available!", "");*/
                     }
                     if (imPagination) {
                         listviewIdeas.setAdapter(null);
@@ -272,83 +275,85 @@ public class IdeasListFragment extends Fragment {
                     Log.d("SIZE", globalEventsPojo.size() + "");
                     currentPosition = listviewIdeas
                             .getLastVisiblePosition();
-                    adapter = new ListIdeasAdapter(
-                            context, globalEventsPojo, flats, eventName);
-                    listviewIdeas.setAdapter(adapter);
-                    pDialog.setVisibility(View.GONE);
-                    pDialogBtm.setVisibility(View.INVISIBLE);
-                    // Storing in DB
-                    db.addEventNews(response, eventName);
-                    //for updating new data
-                    db.updateEventNews(response, eventName);
+                    if (getActivity() != null) {
 
+                        adapter = new ListIdeasAdapter(
+                                context, globalEventsPojo, flats, eventName);
+                        listviewIdeas.setAdapter(adapter);
+                        pDialog.setVisibility(View.GONE);
+                        pDialogBtm.setVisibility(View.INVISIBLE);
+                        // Storing in DB
+                        db.addEventNews(response, eventName);
+                        //for updating new data
+                        db.updateEventNews(response, eventName);
+                        DisplayMetrics displayMetrics =
+                                getResources().getDisplayMetrics();
+                        int height = displayMetrics.heightPixels;
 
-                    DisplayMetrics displayMetrics =
-                            getResources().getDisplayMetrics();
-                    int height = displayMetrics.heightPixels;
+                        listviewIdeas.setSelectionFromTop(
+                                currentPosition, height - 220);
 
-                    listviewIdeas.setSelectionFromTop(
-                            currentPosition, height - 220);
+                        listviewIdeas
+                                .setOnScrollListener(new AbsListView.OnScrollListener() {
 
-                    listviewIdeas
-                            .setOnScrollListener(new AbsListView.OnScrollListener() {
+                                    private int currentScrollState;
+                                    private int currentFirstVisibleItem;
+                                    private int currentVisibleItemCount;
+                                    private int totalItemCount;
+                                    private int mLastFirstVisibleItem;
+                                    private boolean mIsScrollingUp;
 
-                                private int currentScrollState;
-                                private int currentFirstVisibleItem;
-                                private int currentVisibleItemCount;
-                                private int totalItemCount;
-                                private int mLastFirstVisibleItem;
-                                private boolean mIsScrollingUp;
+                                    @Override
+                                    public void onScrollStateChanged(
+                                            AbsListView view, int scrollState) {
+                                        // TODO Auto-generated method stub
+                                        this.currentScrollState = scrollState;
+                                        pDialogBtm.setVisibility(View.INVISIBLE);
+                                        pDialog.setVisibility(View.GONE);
+                                        if (view.getId() == listviewIdeas
+                                                .getId()) {
+                                            final int currentFirstVisibleItem = listviewIdeas
+                                                    .getFirstVisiblePosition();
 
-                                @Override
-                                public void onScrollStateChanged(
-                                        AbsListView view, int scrollState) {
-                                    // TODO Auto-generated method stub
-                                    this.currentScrollState = scrollState;
-                                    pDialogBtm.setVisibility(View.INVISIBLE);
-                                    pDialog.setVisibility(View.GONE);
-                                    if (view.getId() == listviewIdeas
-                                            .getId()) {
-                                        final int currentFirstVisibleItem = listviewIdeas
-                                                .getFirstVisiblePosition();
+                                            if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                                                mIsScrollingUp = false;
 
-                                        if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-                                            mIsScrollingUp = false;
+                                            } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
 
-                                        } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+                                                mIsScrollingUp = true;
+                                            }
 
-                                            mIsScrollingUp = true;
+                                            mLastFirstVisibleItem = currentFirstVisibleItem;
                                         }
-
-                                        mLastFirstVisibleItem = currentFirstVisibleItem;
+                                        this.isScrollCompleted();
                                     }
-                                    this.isScrollCompleted();
-                                }
 
-                                @Override
-                                public void onScroll(AbsListView view,
-                                                     int firstVisibleItem,
-                                                     int visibleItemCount,
-                                                     int totalItemCount) {
-                                    // TODO Auto-generated method stub
-                                    this.currentFirstVisibleItem = firstVisibleItem;
-                                    this.currentVisibleItemCount = visibleItemCount;
-                                    this.totalItemCount = totalItemCount;
-                                }
-
-                                private void isScrollCompleted() {
-                                    if (this.currentVisibleItemCount > 0
-                                            && this.currentScrollState == SCROLL_STATE_IDLE
-                                            && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
-                                        offset = offset + 10;
-                                        Log.d("Offset :", offset + "");
-                                        pDialogBtm.setVisibility(View.VISIBLE);
-                                        progressShow=false;
-                                        imPagination = false;
-                                        callEventsList(searchStr);
+                                    @Override
+                                    public void onScroll(AbsListView view,
+                                                         int firstVisibleItem,
+                                                         int visibleItemCount,
+                                                         int totalItemCount) {
+                                        // TODO Auto-generated method stub
+                                        this.currentFirstVisibleItem = firstVisibleItem;
+                                        this.currentVisibleItemCount = visibleItemCount;
+                                        this.totalItemCount = totalItemCount;
                                     }
-                                }
-                            });
+
+                                    private void isScrollCompleted() {
+                                        if (this.currentVisibleItemCount > 0
+                                                && this.currentScrollState == SCROLL_STATE_IDLE
+                                                && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
+                                            offset = offset + 10;
+                                            Log.d("Offset :", offset + "");
+                                            pDialogBtm.setVisibility(View.VISIBLE);
+                                            progressShow = false;
+                                            imPagination = false;
+                                            callEventsList(searchStr);
+                                        }
+                                    }
+                                });
+                    }
+
                 }
             }
         }, new Response.ErrorListener() {
@@ -358,8 +363,9 @@ public class IdeasListFragment extends Fragment {
                 Log.d("Error = ", volleyError.toString());
                 pDialog.setVisibility(View.GONE);
                 Constants.showSnack(snackLay,
-                        "Oops! Something went wrong. Please check internet connection!",
+                        "Oops! Something went wrong.    Please check internet connection!",
                         "OK");
+                Toast.makeText(getActivity(), "Oops! Something went wrong.Please check internet connection!", Toast.LENGTH_SHORT).show();
             }
         });
         MyApplication.queue.add(request);
@@ -403,7 +409,9 @@ public class IdeasListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+        if (!EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().register(this);
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -415,8 +423,10 @@ public class IdeasListFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        EventBus.getDefault().unregister(this);
-        super.onPause();
+    public void onDetach() {
+        if (EventBus.getDefault().isRegistered(this))
+            EventBus.getDefault().unregister(this);
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
+        super.onDetach();
     }
 }

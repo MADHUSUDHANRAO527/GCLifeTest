@@ -153,7 +153,7 @@ public class SocietyBillPost {
 	}
 
 	public static JSONObject callSociMyBill(String userId, String societyName,
-			String buildingName, String date, String hostname) throws Exception {
+											String buildingName, String flatNum,String date, String hostname) throws Exception {
 		SSLSocketFactory sslFactory = new SimpleSSLSocketFactory(null);
 		sslFactory
 				.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
@@ -173,7 +173,7 @@ public class SocietyBillPost {
 		societyName = societyName.replaceAll(" ", "%20");
 		String host = hostname + "my_bill.json?user_id=" + userId
 				+ "&society_master_id=" + societyName + "&building_no="
-				+ buildingName + "&fyear=" + date;
+				+ buildingName + "&flat_no="+ flatNum +"&fyear=" + date;
 		System.out.println(host + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		httget.setURI(new URI(host));
 		httget.setHeader("Accept", "*/*");

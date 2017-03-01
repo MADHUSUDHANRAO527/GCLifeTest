@@ -10,7 +10,10 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:id="@+id/layUserDet"
@@ -230,7 +233,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/relationStartLay"
+                android:id="@+id/relationLay"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
@@ -240,18 +243,18 @@
                 android:weightSum="4" >
 
                 <TextView
-                    android:id="@+id/relationSDateHeader"
+                    android:id="@+id/relation_ship_with_ownerheader"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:gravity="center_vertical"
-                    android:text="Relatioship with 
+                    android:text="Relatioship with
         owner"
                     android:textColor="#606060"
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/relationSDateTxt"
+                    android:id="@+id/relation_ship_with_owner"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
@@ -268,7 +271,7 @@
                 android:orientation="horizontal"
                 android:padding="5dp"
                 android:weightSum="4"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/licence_end_date"

@@ -45,6 +45,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -290,26 +291,27 @@ public class FrdsListFragment extends Fragment {
                             .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     sociAdapter
                             .setDropDownViewResource(R.layout.multiline_spinner_dropdown_item);
+                    if (getActivity() != null) {
+                        societyNameSpinner
+                                .setAdapter(new NothingSelectedSpinnerAdapter1(
+                                        sociAdapter,
+                                        R.layout.society_spinner_nothing_selected,
+                                        getActivity()));
 
-                    societyNameSpinner
-                            .setAdapter(new NothingSelectedSpinnerAdapter1(
-                                    sociAdapter,
-                                    R.layout.society_spinner_nothing_selected,
-                                    getActivity()));
+                        buildingSpinner
+                                .setAdapter(new NothingSelectedSpinnerAdapter1(
+                                        buildingAdapter,
+                                        R.layout.building_spinner_nothing_selected,
+                                        getActivity()));
+                        // load data from server
 
-                    buildingSpinner
-                            .setAdapter(new NothingSelectedSpinnerAdapter1(
-                                    buildingAdapter,
-                                    R.layout.building_spinner_nothing_selected,
-                                    getActivity()));
-                    // load data from server
-
-                    avenueSpinner
-                            .setAdapter(new NothingSelectedSpinnerAdapter1(
-                                    associtationAdapter,
-                                    R.layout.avenue_spinner_nothing_selected,
-                                    getActivity()));
-                    societyNameSpinner.setEnabled(true);
+                        avenueSpinner
+                                .setAdapter(new NothingSelectedSpinnerAdapter1(
+                                        associtationAdapter,
+                                        R.layout.avenue_spinner_nothing_selected,
+                                        getActivity()));
+                        societyNameSpinner.setEnabled(true);
+                    }
 
                     avenueSpinner
                             .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -338,34 +340,35 @@ public class FrdsListFragment extends Fragment {
                                     } else {
                                         List<String> societylist = societyMap
                                                 .get(avenueName);
-                                        ArrayAdapter<String> sociAdapter = new ArrayAdapter<String>(
-                                                getActivity(),
-                                                android.R.layout.simple_list_item_1,
-                                                societylist);
+                                        if (getActivity() != null) {
+                                            ArrayAdapter<String> sociAdapter = new ArrayAdapter<String>(
+                                                    getActivity(),
+                                                    android.R.layout.simple_list_item_1,
+                                                    societylist);
 
-                                        sociAdapter
-                                                .setDropDownViewResource(R.layout.multiline_spinner_dropdown_item);
-                                        societyNameSpinner
-                                                .setAdapter(new NothingSelectedSpinnerAdapter1(
-                                                        sociAdapter,
-                                                        R.layout.society_spinner_nothing_selected,
-                                                        getActivity()));
+                                            sociAdapter
+                                                    .setDropDownViewResource(R.layout.multiline_spinner_dropdown_item);
+                                            societyNameSpinner
+                                                    .setAdapter(new NothingSelectedSpinnerAdapter1(
+                                                            sociAdapter,
+                                                            R.layout.society_spinner_nothing_selected,
+                                                            getActivity()));
 
-                                        ArrayAdapter<CharSequence> buildingAdapter = ArrayAdapter
-                                                .createFromResource(
-                                                        getActivity(),
-                                                        R.array.buildingNameArray,
-                                                        R.layout.spinr_txt);
+                                            ArrayAdapter<CharSequence> buildingAdapter = ArrayAdapter
+                                                    .createFromResource(
+                                                            getActivity(),
+                                                            R.array.buildingNameArray,
+                                                            R.layout.spinr_txt);
 
-                                        buildingSpinner
-                                                .setAdapter(new NothingSelectedSpinnerAdapter1(
-                                                        buildingAdapter,
-                                                        R.layout.building_spinner_nothing_selected,
-                                                        getActivity()));
+                                            buildingSpinner
+                                                    .setAdapter(new NothingSelectedSpinnerAdapter1(
+                                                            buildingAdapter,
+                                                            R.layout.building_spinner_nothing_selected,
+                                                            getActivity()));
 
-                                        societyNameSpinner.setEnabled(true);
+                                            societyNameSpinner.setEnabled(true);
+                                        }
                                     }
-
                                 }
 
                                 @Override
@@ -537,81 +540,84 @@ public class FrdsListFragment extends Fragment {
                         Log.d("SIZE", globalUserListPojo.size() + "");
                         currentPosition = listviewIdeas
                                 .getLastVisiblePosition();
+                        if (getActivity() != null) {
+                            adapterfrds = new ListFreindsBaseAdapter(
+                                    getActivity(), globalUserListPojo);
+                            listviewIdeas.setAdapter(adapterfrds);
+                            pDialog.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.GONE);
+                            db.addEventNews(jsonResultArry, eventName);
+                            //for updating new data
+                            db.updateEventNews(response, eventName);
+                            listviewIdeas.smoothScrollToPosition(0);
+                            DisplayMetrics displayMetrics =
+                                    getResources().getDisplayMetrics();
+                            int height = displayMetrics.heightPixels;
 
-                        adapterfrds = new ListFreindsBaseAdapter(
-                                getActivity(), globalUserListPojo);
-                        listviewIdeas.setAdapter(adapterfrds);
-                        pDialog.setVisibility(View.GONE);
-                        progressBar.setVisibility(View.GONE);
-                        db.addEventNews(jsonResultArry, eventName);
-                        //for updating new data
-                        db.updateEventNews(response, eventName);
-                        listviewIdeas.smoothScrollToPosition(0);
-                        DisplayMetrics displayMetrics =
-                                getResources().getDisplayMetrics();
-                        int height = displayMetrics.heightPixels;
+                            listviewIdeas.setSelectionFromTop(
+                                    currentPosition + 1, height - 220);
 
-                        listviewIdeas.setSelectionFromTop(
-                                currentPosition + 1, height - 220);
+                            listviewIdeas
+                                    .setOnScrollListener(new AbsListView.OnScrollListener() {
 
-                        listviewIdeas
-                                .setOnScrollListener(new AbsListView.OnScrollListener() {
+                                        private int currentScrollState;
+                                        private int currentFirstVisibleItem;
+                                        private int currentVisibleItemCount;
+                                        private int totalItemCount;
+                                        private int mLastFirstVisibleItem;
+                                        private boolean mIsScrollingUp;
 
-                                    private int currentScrollState;
-                                    private int currentFirstVisibleItem;
-                                    private int currentVisibleItemCount;
-                                    private int totalItemCount;
-                                    private int mLastFirstVisibleItem;
-                                    private boolean mIsScrollingUp;
+                                        @Override
+                                        public void onScrollStateChanged(
+                                                AbsListView view, int scrollState) {
+                                            // TODO Auto-generated method stub
+                                            this.currentScrollState = scrollState;
+                                            pDialogBtm.setVisibility(View.INVISIBLE);
+                                            if (view.getId() == listviewIdeas
+                                                    .getId()) {
+                                                final int currentFirstVisibleItem = listviewIdeas
+                                                        .getFirstVisiblePosition();
 
-                                    @Override
-                                    public void onScrollStateChanged(
-                                            AbsListView view, int scrollState) {
-                                        // TODO Auto-generated method stub
-                                        this.currentScrollState = scrollState;
-                                        pDialogBtm.setVisibility(View.INVISIBLE);
-                                        if (view.getId() == listviewIdeas
-                                                .getId()) {
-                                            final int currentFirstVisibleItem = listviewIdeas
-                                                    .getFirstVisiblePosition();
+                                                if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                                                    mIsScrollingUp = false;
 
-                                            if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-                                                mIsScrollingUp = false;
+                                                } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
 
-                                            } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+                                                    mIsScrollingUp = true;
+                                                }
 
-                                                mIsScrollingUp = true;
+                                                mLastFirstVisibleItem = currentFirstVisibleItem;
                                             }
-
-                                            mLastFirstVisibleItem = currentFirstVisibleItem;
+                                            this.isScrollCompleted();
                                         }
-                                        this.isScrollCompleted();
-                                    }
 
-                                    @Override
-                                    public void onScroll(AbsListView view,
-                                                         int firstVisibleItem,
-                                                         int visibleItemCount,
-                                                         int totalItemCount) {
-                                        // TODO Auto-generated method stub
+                                        @Override
+                                        public void onScroll(AbsListView view,
+                                                             int firstVisibleItem,
+                                                             int visibleItemCount,
+                                                             int totalItemCount) {
+                                            // TODO Auto-generated method stub
 
-                                        this.currentFirstVisibleItem = firstVisibleItem;
-                                        this.currentVisibleItemCount = visibleItemCount;
-                                        this.totalItemCount = totalItemCount;
-                                        pDialogBtm.setVisibility(View.INVISIBLE);
-                                    }
-                                    private void isScrollCompleted() {
-                                        if (this.currentVisibleItemCount > 0
-                                                && this.currentScrollState == SCROLL_STATE_IDLE
-                                                && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
-                                            offset = offset + 15;
-                                            progressShow=false;
-                                            pDialogBtm.setVisibility(View.VISIBLE);
-                                            callFrdsList();
+                                            this.currentFirstVisibleItem = firstVisibleItem;
+                                            this.currentVisibleItemCount = visibleItemCount;
+                                            this.totalItemCount = totalItemCount;
                                             pDialogBtm.setVisibility(View.INVISIBLE);
                                         }
-                                    }
-                                });
+
+                                        private void isScrollCompleted() {
+                                            if (this.currentVisibleItemCount > 0
+                                                    && this.currentScrollState == SCROLL_STATE_IDLE
+                                                    && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
+                                                offset = offset + 15;
+                                                progressShow = false;
+                                                pDialogBtm.setVisibility(View.VISIBLE);
+                                                callFrdsList();
+                                                pDialogBtm.setVisibility(View.INVISIBLE);
+                                            }
+                                        }
+                                    });
+                        }
+
                     }
                 }
 
@@ -689,10 +695,11 @@ public class FrdsListFragment extends Fragment {
             }
             holder.unameTxt.setText(userListPojo.get(position).getUsername());
             Log.d("POS :", position + "");
-            holder.avaneuNameTxt.setText(userListPojo.get(position).getGclife_registration_flatdetails().get(0).getAvenue_name()
-                    + "," + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getBuildingid() + ","
-                    + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getFlat_number());
-
+            if (userListPojo.size() > 0) {
+                holder.avaneuNameTxt.setText(userListPojo.get(position).getGclife_registration_flatdetails().get(0).getAvenue_name()
+                        + "," + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getBuildingid() + ","
+                        + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getFlat_number());
+            }
             return convertView;
         }
 
@@ -787,12 +794,14 @@ public class FrdsListFragment extends Fragment {
                         societyMap.put(associationName, associationList);
 
                     }
-                    associtationAdapter = new ArrayAdapter<String>(
-                            getActivity(), android.R.layout.simple_list_item_1,
-                            listAssociation);
+                    if (getActivity() != null) {
+                        associtationAdapter = new ArrayAdapter<String>(
+                                getActivity(), android.R.layout.simple_list_item_1,
+                                listAssociation);
 
-                    associtationAdapter
-                            .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        associtationAdapter
+                                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    }
 
                 } catch (JSONException e) {
                     // TODO Auto-generated catch block
@@ -838,5 +847,17 @@ public class FrdsListFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.frds);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

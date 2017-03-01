@@ -94,4 +94,16 @@ public class InboxPojo {
 
     private String receiver_name;
 
+    public String getTo_users() {
+        return to_users;
+    }
+
+    public void setTo_users(String to_users) {
+        this.to_users = to_users;
+    }
+
+    private String to_users;
+
+
+
 }

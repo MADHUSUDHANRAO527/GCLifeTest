@@ -21,6 +21,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.flurry.android.FlurryAgent;
+
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -375,7 +377,8 @@ public class ViewBillDetailFragment extends Fragment {
                     map.put("REF_NO", jsonConfrm.getString("ref_no"));
                     map.put("bill_amount_paid", jsonConfrm.getString("bill_amount_paid"));
                     totDataList.remove(pos);
-                    totDataList.add(pos-1,map);
+                    if (pos > 0)
+                        totDataList.add(pos - 1, map);
                     billAdapter.updateList(totDataList);
                     //to refresh prev frag
                     EventBus.getDefault().post(new AddIdeasEvent(true));
@@ -432,7 +435,6 @@ public class ViewBillDetailFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-
             case android.R.id.home:
                 ((HomeActivity) context).onBackpressed();
                 return true;
@@ -440,5 +442,17 @@ public class ViewBillDetailFragment extends Fragment {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

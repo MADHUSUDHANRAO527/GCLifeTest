@@ -40,6 +40,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -47,10 +48,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import mobile.gclifetest.activity.InboxDetail;
 import mobile.gclifetest.activity.R;
@@ -172,7 +176,17 @@ public class InboxFragment extends Fragment {
 
                             if (listUnames.contains(uname)) {
 
-                                System.out.println(selectedUnameList);
+
+                                //remove duplicates
+                                // add elements to al, including duplicates
+                                Set<String> hs = new HashSet<>();
+                                hs.addAll(selectedUnameList);
+                                selectedUnameList.clear();
+                                selectedUnameList.addAll(hs);
+
+
+                                System.out.println("AFTER REMOVING DUPLICATES : " + selectedUnameList);
+
                                 unamesList = selectedUnameList.toString()
                                         .replaceAll("[\\[\\](){}]", "");
                                 unamesList = unamesList.replaceAll("\\s",
@@ -666,8 +680,8 @@ public class InboxFragment extends Fragment {
                 jsonMsg.put("from_user_id",
                         userPref.getString("USERID", "NV"));
                 jsonMsg.put("to_user_id", "2");
-                jsonMsg.put("subject", subjectStr);
-                jsonMsg.put("message", discStr);
+                jsonMsg.put("subject", Constants.encodeString(subjectStr));
+                jsonMsg.put("message", Constants.encodeString(discStr));
                 jsonMsg.put("read", "NO");
 
                 jsonMsgs.put("message", jsonMsg);
@@ -687,12 +701,7 @@ public class InboxFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void unused) {
-            if (msgJObj.has("status")) {
-                Constants.showSnack(
-                        v,
-                        "Oops! Internal Server Error",
-                        "OK");
-            } else if (msgJObj != null) {
+            if (msgJObj != null) {
                 Constants.showSnack(
                         v, "Mail has sent!", "OK");
                 subEdit.setText("");
@@ -731,6 +740,12 @@ public class InboxFragment extends Fragment {
                             || sentMailsJArr.toString() == ""
                             || sentMailsJArr.toString().equals("")) {
                         pDialog.setVisibility(View.GONE);
+                        if (msgType == "receive") {
+                            listviewSent.setAdapter(null);
+                        } else {
+                            listviewSent.setAdapter(null);
+                        }
+
                     } else {
                         adapterSentRcv = new ListSendMailBaseAdapter(
                                 getActivity(), inboxPojo);
@@ -884,7 +899,11 @@ public class InboxFragment extends Fragment {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            holder.subjectTxt.setText(inboxPojos.get(position).getSubject());
+            try {
+                holder.subjectTxt.setText(Constants.decodeString(inboxPojos.get(position).getSubject()));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             if (msgType == "sent" || msgType.equals("sent")) {
                 holder.fromTxt.setText("To");
                 holder.unameTxt.setText(inboxPojos.get(position).getReceiver_name());
@@ -948,15 +967,6 @@ public class InboxFragment extends Fragment {
         }
     }
 
-   /* void showSnack(FragmentActivity flats, String stringMsg, String ok) {
-        new SnackBar(getActivity(), stringMsg, ok, new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-            }
-        }).show();
-    }*/
-
     public class DeleteEvent extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -985,5 +995,17 @@ public class InboxFragment extends Fragment {
             adapterSentRcv.notifyDataSetChanged();
             callSentListMail();
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

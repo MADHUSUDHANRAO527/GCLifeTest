@@ -150,8 +150,6 @@
         <activity
             android:name="mobile.gclifetest.activity.YoutubeUpload"
             android:screenOrientation="portrait">
-
-
         </activity>
     </application>
 

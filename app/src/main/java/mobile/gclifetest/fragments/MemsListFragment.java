@@ -29,6 +29,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -115,9 +116,11 @@ public class MemsListFragment extends Fragment {
             pDialog.setVisibility(View.GONE);
             userList = gson.fromJson(db.getEventNews(eventName), new TypeToken<List<UserDetailsPojo>>() {
             }.getType());
-            dataTaskGrpAdapter = new UserModelAdapter(getActivity(), R.layout.member_row, userList);
-            listviewMem.setAdapter(dataTaskGrpAdapter);
-            callListMems(filter);
+            if (getActivity() != null) {
+                dataTaskGrpAdapter = new UserModelAdapter(getActivity(), R.layout.member_row, userList);
+                listviewMem.setAdapter(dataTaskGrpAdapter);
+                callListMems(filter);
+            }
         } else {
             callListMems(filter);
             Log.d("DB NULL: " + eventName, "");
@@ -210,86 +213,87 @@ public class MemsListFragment extends Fragment {
                         Log.d("SIZE", globalUsersList.size() + "");
                         currentPosition = listviewMem
                                 .getLastVisiblePosition();
+                        if (getActivity() != null) {
+                            dataTaskGrpAdapter = new UserModelAdapter(getActivity(), R.layout.member_row, globalUsersList);
 
-                        dataTaskGrpAdapter = new UserModelAdapter(getActivity(), R.layout.member_row, globalUsersList);
+                            listviewMem.setAdapter(dataTaskGrpAdapter);
 
-                        listviewMem.setAdapter(dataTaskGrpAdapter);
+                            dataTaskGrpAdapter.notifyDataSetChanged();
 
-                        dataTaskGrpAdapter.notifyDataSetChanged();
-
-                        pDialog.setVisibility(View.GONE);
-                        pDialogBtm.setVisibility(View.INVISIBLE);
-                        // Storing in DB
-                        db.addEventNews(response, eventName);
-                        //        //for updating new data
-                        db.updateEventNews(response, eventName);
+                            pDialog.setVisibility(View.GONE);
+                            pDialogBtm.setVisibility(View.INVISIBLE);
+                            // Storing in DB
+                            db.addEventNews(response, eventName);
+                            //        //for updating new data
+                            db.updateEventNews(response, eventName);
 
 
-                        DisplayMetrics displayMetrics =
-                                getResources().getDisplayMetrics();
-                        int height = displayMetrics.heightPixels;
+                            DisplayMetrics displayMetrics =
+                                    getResources().getDisplayMetrics();
+                            int height = displayMetrics.heightPixels;
 
-                        listviewMem.setSelectionFromTop(
-                                currentPosition, height - 220);
+                            listviewMem.setSelectionFromTop(
+                                    currentPosition, height - 220);
 
-                        listviewMem
-                                .setOnScrollListener(new AbsListView.OnScrollListener() {
+                            listviewMem
+                                    .setOnScrollListener(new AbsListView.OnScrollListener() {
 
-                                    private int currentScrollState;
-                                    private int currentFirstVisibleItem;
-                                    private int currentVisibleItemCount;
-                                    private int totalItemCount;
-                                    private int mLastFirstVisibleItem;
-                                    private boolean mIsScrollingUp;
+                                        private int currentScrollState;
+                                        private int currentFirstVisibleItem;
+                                        private int currentVisibleItemCount;
+                                        private int totalItemCount;
+                                        private int mLastFirstVisibleItem;
+                                        private boolean mIsScrollingUp;
 
-                                    @Override
-                                    public void onScrollStateChanged(
-                                            AbsListView view, int scrollState) {
-                                        // TODO Auto-generated method stub
-                                        this.currentScrollState = scrollState;
-                                        pDialogBtm.setVisibility(View.INVISIBLE);
-                                        if (view.getId() == listviewMem
-                                                .getId()) {
-                                            final int currentFirstVisibleItem = listviewMem
-                                                    .getFirstVisiblePosition();
+                                        @Override
+                                        public void onScrollStateChanged(
+                                                AbsListView view, int scrollState) {
+                                            // TODO Auto-generated method stub
+                                            this.currentScrollState = scrollState;
+                                            pDialogBtm.setVisibility(View.INVISIBLE);
+                                            if (view.getId() == listviewMem
+                                                    .getId()) {
+                                                final int currentFirstVisibleItem = listviewMem
+                                                        .getFirstVisiblePosition();
 
-                                            if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-                                                mIsScrollingUp = false;
+                                                if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                                                    mIsScrollingUp = false;
 
-                                            } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+                                                } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
 
-                                                mIsScrollingUp = true;
+                                                    mIsScrollingUp = true;
+                                                }
+
+                                                mLastFirstVisibleItem = currentFirstVisibleItem;
                                             }
-
-                                            mLastFirstVisibleItem = currentFirstVisibleItem;
+                                            this.isScrollCompleted();
                                         }
-                                        this.isScrollCompleted();
-                                    }
 
-                                    @Override
-                                    public void onScroll(AbsListView view,
-                                                         int firstVisibleItem,
-                                                         int visibleItemCount,
-                                                         int totalItemCount) {
-                                        // TODO Auto-generated method stub
+                                        @Override
+                                        public void onScroll(AbsListView view,
+                                                             int firstVisibleItem,
+                                                             int visibleItemCount,
+                                                             int totalItemCount) {
+                                            // TODO Auto-generated method stub
 
-                                        this.currentFirstVisibleItem = firstVisibleItem;
-                                        this.currentVisibleItemCount = visibleItemCount;
-                                        this.totalItemCount = totalItemCount;
+                                            this.currentFirstVisibleItem = firstVisibleItem;
+                                            this.currentVisibleItemCount = visibleItemCount;
+                                            this.totalItemCount = totalItemCount;
 
-                                    }
-
-                                    private void isScrollCompleted() {
-                                        if (this.currentVisibleItemCount > 0
-                                                && this.currentScrollState == SCROLL_STATE_IDLE
-                                                && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
-                                            offset = offset + 10;
-                                            pDialogBtm.setVisibility(View.VISIBLE);
-                                            callListMems(filter);
-                                          //  pDialogBtm.setVisibility(View.GONE);
                                         }
-                                    }
-                                });
+
+                                        private void isScrollCompleted() {
+                                            if (this.currentVisibleItemCount > 0
+                                                    && this.currentScrollState == SCROLL_STATE_IDLE
+                                                    && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
+                                                offset = offset + 10;
+                                                pDialogBtm.setVisibility(View.VISIBLE);
+                                                callListMems(filter);
+                                                //  pDialogBtm.setVisibility(View.GONE);
+                                            }
+                                        }
+                                    });
+                        }
                     }
                 }
             }
@@ -591,5 +595,17 @@ public class MemsListFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.mem_ver);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
     }
 }

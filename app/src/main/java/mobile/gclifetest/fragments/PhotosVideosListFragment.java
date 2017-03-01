@@ -49,6 +49,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonRequest;
+import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -64,6 +65,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -188,11 +190,13 @@ public class PhotosVideosListFragment extends Fragment {
             pDialog.setVisibility(View.GONE);
             eventsPojo = gson.fromJson(db.getEventNews(eventName), new TypeToken<List<EventsPojo>>() {
             }.getType());
-            adapter = new ListIdeasBaseAdapter(
-                    getActivity(), eventsPojo);
-            listviewIdeas.setAdapter(adapter);
-            progressShow = false;
-            callEventsList(searchStr);
+            if (getActivity() != null) {
+                adapter = new ListIdeasBaseAdapter(
+                        getActivity(), eventsPojo);
+                listviewIdeas.setAdapter(adapter);
+                progressShow = false;
+                callEventsList(searchStr);
+            }
         } else {
             callEventsList(searchStr);
             Log.d("DB NULL: " + eventName, "");
@@ -294,11 +298,14 @@ public class PhotosVideosListFragment extends Fragment {
                 Log.d("Response", response.toString());
                 if (response.toString() == "[]" || response.length() == 0) {
                     if (searchStr.length() > 0) {
-                        Constants.showSnack(v,
-                                "Search result not found, please try with another search criteria!", "");
+                        Toast.makeText(getActivity(), "Search result not found, please try with another search criteria!", Toast.LENGTH_SHORT).show();
+                      /*  Constants.showSnack(v,
+                                "Search result not found, please try with another search criteria!", "");*/
                     } else {
-                        Constants.showSnack(v,
-                                "No further " + eventName + " content is available!", "");
+                       /* Constants.showSnack(v,
+                                "No further " + eventName + " content is available!", "");*/
+                        Toast.makeText(getActivity(), "No further " + eventName + " content is available!", Toast.LENGTH_SHORT).show();
+
                     }
 
                     if (imPagination) {
@@ -313,6 +320,7 @@ public class PhotosVideosListFragment extends Fragment {
                     Log.d("SIZE", globalEventsPojo.size() + "");
                     currentPosition = listviewIdeas
                             .getLastVisiblePosition();
+                    if (getActivity() != null) {
                     adapter = new ListIdeasBaseAdapter(
                             getActivity(), globalEventsPojo);
                     listviewIdeas.setAdapter(adapter);
@@ -324,73 +332,74 @@ public class PhotosVideosListFragment extends Fragment {
                     db.updateEventNews(response, eventName);
 
 
-                    DisplayMetrics displayMetrics =
-                            getResources().getDisplayMetrics();
-                    int height = displayMetrics.heightPixels;
+                        DisplayMetrics displayMetrics =
+                                getResources().getDisplayMetrics();
+                        int height = displayMetrics.heightPixels;
 
-                    listviewIdeas.setSelectionFromTop(
-                            currentPosition, height - 220);
+                        listviewIdeas.setSelectionFromTop(
+                                currentPosition, height - 220);
 
-                    listviewIdeas
-                            .setOnScrollListener(new AbsListView.OnScrollListener() {
+                        listviewIdeas
+                                .setOnScrollListener(new AbsListView.OnScrollListener() {
 
-                                private int currentScrollState;
-                                private int currentFirstVisibleItem;
-                                private int currentVisibleItemCount;
-                                private int totalItemCount;
-                                private int mLastFirstVisibleItem;
-                                private boolean mIsScrollingUp;
+                                    private int currentScrollState;
+                                    private int currentFirstVisibleItem;
+                                    private int currentVisibleItemCount;
+                                    private int totalItemCount;
+                                    private int mLastFirstVisibleItem;
+                                    private boolean mIsScrollingUp;
 
-                                @Override
-                                public void onScrollStateChanged(
-                                        AbsListView view, int scrollState) {
-                                    // TODO Auto-generated method stub
-                                    this.currentScrollState = scrollState;
-                                    pDialogBtm.setVisibility(View.INVISIBLE);
-                                    if (view.getId() == listviewIdeas
-                                            .getId()) {
-                                        final int currentFirstVisibleItem = listviewIdeas
-                                                .getFirstVisiblePosition();
-
-                                        if (currentFirstVisibleItem > mLastFirstVisibleItem) {
-                                            mIsScrollingUp = false;
-
-                                        } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
-
-                                            mIsScrollingUp = true;
-                                        }
-
-                                        mLastFirstVisibleItem = currentFirstVisibleItem;
-                                    }
-                                    this.isScrollCompleted();
-                                }
-
-                                @Override
-                                public void onScroll(AbsListView view,
-                                                     int firstVisibleItem,
-                                                     int visibleItemCount,
-                                                     int totalItemCount) {
-                                    // TODO Auto-generated method stub
-                                    pDialogBtm.setVisibility(View.INVISIBLE);
-                                    this.currentFirstVisibleItem = firstVisibleItem;
-                                    this.currentVisibleItemCount = visibleItemCount;
-                                    this.totalItemCount = totalItemCount;
-
-                                }
-
-                                private void isScrollCompleted() {
-                                    pDialogBtm.setVisibility(View.VISIBLE);
-                                    if (this.currentVisibleItemCount > 0
-                                            && this.currentScrollState == SCROLL_STATE_IDLE
-                                            && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
-                                        offset = offset + 10;
-                                        progressShow = false;
-                                        imPagination = false;
-                                        callEventsList(searchStr);
+                                    @Override
+                                    public void onScrollStateChanged(
+                                            AbsListView view, int scrollState) {
+                                        // TODO Auto-generated method stub
+                                        this.currentScrollState = scrollState;
                                         pDialogBtm.setVisibility(View.INVISIBLE);
+                                        if (view.getId() == listviewIdeas
+                                                .getId()) {
+                                            final int currentFirstVisibleItem = listviewIdeas
+                                                    .getFirstVisiblePosition();
+
+                                            if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+                                                mIsScrollingUp = false;
+
+                                            } else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+
+                                                mIsScrollingUp = true;
+                                            }
+
+                                            mLastFirstVisibleItem = currentFirstVisibleItem;
+                                        }
+                                        this.isScrollCompleted();
                                     }
-                                }
-                            });
+
+                                    @Override
+                                    public void onScroll(AbsListView view,
+                                                         int firstVisibleItem,
+                                                         int visibleItemCount,
+                                                         int totalItemCount) {
+                                        // TODO Auto-generated method stub
+                                        pDialogBtm.setVisibility(View.INVISIBLE);
+                                        this.currentFirstVisibleItem = firstVisibleItem;
+                                        this.currentVisibleItemCount = visibleItemCount;
+                                        this.totalItemCount = totalItemCount;
+
+                                    }
+
+                                    private void isScrollCompleted() {
+                                        pDialogBtm.setVisibility(View.VISIBLE);
+                                        if (this.currentVisibleItemCount > 0
+                                                && this.currentScrollState == SCROLL_STATE_IDLE
+                                                && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
+                                            offset = offset + 10;
+                                            progressShow = false;
+                                            imPagination = false;
+                                            callEventsList(searchStr);
+                                            pDialogBtm.setVisibility(View.INVISIBLE);
+                                        }
+                                    }
+                                });
+                    }
                 }
             }
         }, new Response.ErrorListener() {
@@ -479,7 +488,11 @@ public class PhotosVideosListFragment extends Fragment {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            holder.titleTxt.setText(eventsPojos.get(position).getTitle());
+            try {
+                holder.titleTxt.setText(Constants.decodeString(eventsPojos.get(position).getTitle()));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             if (eventsPojos.get(position).getEvent_images().size() > 0) {
                 holder.attchCountTxt.setText(String.valueOf(eventsPojos.get(position).getEvent_images().size()));
             }
@@ -703,9 +716,6 @@ public class PhotosVideosListFragment extends Fragment {
         }
     }
 
-
-
-
     // Can be triggered by a view event such as a button press
     public void onShareItem(View v, ImageView ivImage) {
         // Get access to bitmap image from view
@@ -766,6 +776,7 @@ public class PhotosVideosListFragment extends Fragment {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -780,6 +791,8 @@ public class PhotosVideosListFragment extends Fragment {
     @Override
     public void onStop() {
         EventBus.getDefault().unregister(this);
+        FlurryAgent.onEndSession(getActivity().getApplicationContext());
         super.onPause();
     }
+
 }

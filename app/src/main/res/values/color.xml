@@ -8,5 +8,6 @@
     <color name="blue">#000099</color>
     <color name="orange">#FF9900</color>
     <color name="background_tab_pressed">#6633B5E5</color>
-
+    <color name="colorAccent">#00A081</color>
+    <color name="cursor_color">#8000A051</color>
 </resources>
