@@ -117,4 +117,19 @@
     <string name="search_frds">Search your friends</string>
     <string name="cancel_upload">Cancel file upload</string>
     <string name="cancel_upload_desc">This action will cancel the file upload</string>
+
+    <string name="went_wrong">Oops! Something went wrong.Please check internet connection!</string>
+    <string name="no_further_content">Search result not found, please try with another search criteria!</string>
+    <string name="liked_it">Oops! You already liked it!</string>
+    <string name="deleted">Deleted!</string>
+    <string name="loading">Please wait! Societies are loading...!</string>
+    <string name="frds_not_found">Searched friend details are not found, please try with another search criteria!</string>
+    <string name="no_frds_avaibale">No further Friends content is available!</string>
+    <string name="imp_contacts_not_found">Searched Important contact details are not found, please try with another search criteria!</string>
+    <string name="no_contacts">No further Contacts content is available!</string>
+    <string name="sms_failed">Your sms has failed...!</string>
+    <string name="mail_has_sent">Mail has sent!</string>
+    <string name="oops_no_members">Oops! There is no members!</string>
+    <string name="rejected">Rejected!</string>
+    <string name="approved">Approved!</string>
 </resources>

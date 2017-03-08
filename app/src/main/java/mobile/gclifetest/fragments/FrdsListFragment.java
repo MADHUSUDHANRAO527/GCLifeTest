@@ -236,8 +236,7 @@ public class FrdsListFragment extends Fragment {
 
                 if (jsonResultArry == null
                         || jsonResultArry.toString() == "null") {
-                    Constants.showSnack(v,
-                            "Please wait! Societies are loading...!", "OK");
+                    Constants.showToast(context,R.string.loading);
                 } else {
                     final Dialog m_dialog = new Dialog(getActivity());
                     m_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -515,13 +514,11 @@ public class FrdsListFragment extends Fragment {
                         pDialog.setVisibility(View.GONE);
                         progressBar.setVisibility(View.GONE);
                         if (searchStr.length() > 0) {
-                            Constants.showSnack(v,
-                                    "Searched friend details are not found, please try with another search criteria!", "");
+                            Constants.showToast(context,R.string.frds_not_found);
+
                         } else {
-                            Constants.showSnack(v, "No further Friends content is available!", "OK");
+                            Constants.showToast(context,R.string.no_frds_avaibale);
                         }
-
-
                         userListPojo.clear();
                         adapterfrds.notifyDataSetChanged();
                         currentPosition = listviewIdeas
@@ -630,9 +627,8 @@ public class FrdsListFragment extends Fragment {
 
                 Log.d("Error = ", volleyError.toString());
                 pDialog.setVisibility(View.GONE);
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(context,R.string.went_wrong);
+
             }
         });
         MyApplication.queue.add(request);
@@ -809,9 +805,7 @@ public class FrdsListFragment extends Fragment {
                 }
 
             } else {
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(context,R.string.went_wrong);
             }
         }
     }

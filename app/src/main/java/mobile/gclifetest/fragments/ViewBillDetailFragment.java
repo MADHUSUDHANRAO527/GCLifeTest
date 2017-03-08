@@ -412,9 +412,7 @@ public class ViewBillDetailFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 m_dialog.dismiss();
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please wait a moment!",
-                        "OK");
+                Constants.showToast(context,R.string.went_wrong);
             }
         }
     }

@@ -202,9 +202,7 @@ public class MemsListFragment extends Fragment {
                             || response.toString().equals("")) {
                         pDialog.setVisibility(View.GONE);
                         pDialogBtm.setVisibility(View.INVISIBLE);
-                        Constants.showSnack(v,
-                                "Oops! There is no members!",
-                                "OK");
+                        Constants.showToast(getActivity(),R.string.oops_no_members);
                     } else {
                         userList = gson.fromJson(response.toString(), new TypeToken<List<UserDetailsPojo>>() {
                         }.getType());
@@ -305,9 +303,7 @@ public class MemsListFragment extends Fragment {
                 Log.d("Error = ", volleyError.toString());
 
                 pDialog.setVisibility(View.GONE);
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(getActivity(),R.string.oops_no_members);
             }
         });
         MyApplication.queue.add(request);
@@ -537,21 +533,13 @@ public class MemsListFragment extends Fragment {
             submitTxt.setVisibility(View.INVISIBLE);
             if (veriJson != null) {
                 if (status == "Reject" || status.equals("Reject")) {
-                    Constants.showSnack(v,
-                            "Rejected!",
-                            "OK");
+                    Constants.showToast(getActivity(),R.string.rejected);
                 } else if (status == "Delete" || status.equals("status")) {
-                    Constants.showSnack(v,
-                            "Deleted!",
-                            "OK");
+                    Constants.showToast(getActivity(),R.string.deleted);
                 } else if (status == "Approve" || status.equals("Approve")) {
-                    Constants.showSnack(v,
-                            "Approved!",
-                            "OK");
+                    Constants.showToast(getActivity(),R.string.approved);
                 } else {
-                    Constants.showSnack(v,
-                            "Oops! Something went wrong!",
-                            "OK");
+                    Constants.showToast(getActivity(),R.string.went_wrong);
                 }
                 if (db.getEventNews(eventName) != "null") {
                     Log.d("DB NOT NULL: " + eventName, db.getEventNews(eventName));
@@ -568,9 +556,7 @@ public class MemsListFragment extends Fragment {
 
                 }
             } else {
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(getActivity(),R.string.went_wrong);
             }
 
             dataTaskGrpAdapter.notifyDataSetChanged();

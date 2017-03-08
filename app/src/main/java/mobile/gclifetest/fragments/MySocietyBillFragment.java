@@ -281,7 +281,7 @@ public class MySocietyBillFragment extends Fragment {
         protected void onPostExecute(Void unused) {
             if (jsonViewBill == null || jsonViewBill.toString() == "null"
                     || jsonViewBill.equals("null")) {
-                Constants.showSnack(v, "Oops! Something went wrong. Please wait a moment!", "OK");
+                Constants.showToast(getActivity(),R.string.went_wrong);
                 pDialog.setVisibility(View.GONE);
             } else {
                 try {
@@ -624,9 +624,7 @@ public class MySocietyBillFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 m_dialog.dismiss();
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please wait a moment!",
-                        "OK");
+                Constants.showToast(getActivity(),R.string.went_wrong);
             }
         }
     }

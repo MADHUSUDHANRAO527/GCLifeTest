@@ -40,7 +40,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.0'
     compile 'com.android.support:design:24.2.0'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
-    compile 'com.android.support:support-v4:24.2.0'
+    compile 'com.android.support:support-v4:25.2.0'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.parse:parse-android:1.13.0'
     compile 'org.apache.httpcomponents:httpclient-android:4.3.5'

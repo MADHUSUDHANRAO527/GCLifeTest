@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.cloudinary.utils.ObjectUtils;
@@ -445,9 +446,7 @@ public class IdeasCreateFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 finishTxt.setVisibility(View.VISIBLE);
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please wait a moment!",
-                        "OK");
+                Constants.showToast(context,R.string.went_wrong);
                 apiProgress = false;
             }
         }
@@ -545,10 +544,7 @@ public class IdeasCreateFragment extends Fragment {
                 }
 
             } else {
-
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please wait a moment!",
-                        "OK");
+                Constants.showToast(context,R.string.went_wrong);
             }
         }
     }
@@ -576,9 +572,9 @@ public class IdeasCreateFragment extends Fragment {
                 selectedMediaTxt.setText("Attaching images....");
                 finishTxt.setEnabled(false);
             }
-            System.out.println(all_path);
-            Constants.showSnack(v, "You have Selected " + all_path.length
-                    + " images", "OK");
+
+            Toast.makeText(context, "You have Selected " + all_path.length
+                    + " images", Toast.LENGTH_SHORT).show();
 
             ArrayList<CustomGallery> dataT = new ArrayList<CustomGallery>();
 

@@ -91,6 +91,7 @@ public class IdeasListFragment extends Fragment {
     int limit = 10, currentPosition, offset = 0;
     ProgressBarCircularIndeterminate pDialog, pDialogBtm;
     RelativeLayout snackLay;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -107,7 +108,7 @@ public class IdeasListFragment extends Fragment {
         mSwipeRefreshLayout.setColorSchemeResources(R.color.orange,
                 android.R.color.holo_green_dark, R.color.blue);
         clearImg = (ImageView) v.findViewById(R.id.clearImg);
-        pDialogBtm = (ProgressBarCircularIndeterminate)v.findViewById(R.id.pDialogBtm);
+        pDialogBtm = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialogBtm);
         snackLay = (RelativeLayout) v.findViewById(R.id.snackLay);
         userPref = context.getSharedPreferences("USER", context.MODE_PRIVATE);
         Bundle bundle = this.getArguments();
@@ -124,7 +125,7 @@ public class IdeasListFragment extends Fragment {
             eventsPojo = gson.fromJson(db.getEventNews(eventName), new TypeToken<List<EventsPojo>>() {
             }.getType());
             adapter = new ListIdeasAdapter(
-                    context, eventsPojo, flats,eventName);
+                    context, eventsPojo, flats, eventName);
             listviewIdeas.setAdapter(adapter);
             progressShow = false;
             callEventsList(searchStr);
@@ -165,12 +166,14 @@ public class IdeasListFragment extends Fragment {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                offset=0;
+                                offset = 0;
                                 globalEventsPojo = new ArrayList<EventsPojo>();
                                 callEventsList(searchStr);
-                                getActivity().runOnUiThread(run);
-                                mSwipeRefreshLayout
-                                        .setRefreshing(false);
+                                if(getActivity()!=null && run !=null){
+                                    getActivity().runOnUiThread(run);
+                                    mSwipeRefreshLayout
+                                            .setRefreshing(false);
+                                }
                             }
                         }, 2500);
                     }
@@ -214,9 +217,9 @@ public class IdeasListFragment extends Fragment {
                         searchStr = searchEdit.getText().toString();
                         progressShow = false;
                         callEventsList(searchStr);
-                        InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(searchEdit.getWindowToken(), 0);
-                    }else {
+                    } else {
                         Toast.makeText(getActivity(), "Type atleast three characters", Toast.LENGTH_LONG).show();
                     }
 
@@ -255,13 +258,10 @@ public class IdeasListFragment extends Fragment {
                 Log.d("Response", response.toString());
                 if (response.toString() == "[]" || response.length() == 0) {
                     if (searchStr.length() > 0) {
-                        Toast.makeText(getActivity(), "Search result not found, please try with another search criteria!", Toast.LENGTH_SHORT).show();
-                      /*  Constants.showSnack(snackLay,
-                                "Search result not found, please try with another search criteria!", "");*/
+                        Constants.showToast(context, R.string.no_further_content);
                     } else {
-                        Toast.makeText(getActivity(), "No further " + eventName + " content is available!", Toast.LENGTH_SHORT).show();
-                      /*  Constants.showSnack(snackLay,
-                                "No further " + eventName + " content is available!", "");*/
+                        if (eventName != null)
+                            Toast.makeText(getActivity(), "No further " + eventName + " content is available!", Toast.LENGTH_SHORT).show();
                     }
                     if (imPagination) {
                         listviewIdeas.setAdapter(null);
@@ -362,10 +362,7 @@ public class IdeasListFragment extends Fragment {
                 volleyError.printStackTrace();
                 Log.d("Error = ", volleyError.toString());
                 pDialog.setVisibility(View.GONE);
-                Constants.showSnack(snackLay,
-                        "Oops! Something went wrong.    Please check internet connection!",
-                        "OK");
-                Toast.makeText(getActivity(), "Oops! Something went wrong.Please check internet connection!", Toast.LENGTH_SHORT).show();
+                Constants.showToast(context, R.string.went_wrong);
             }
         });
         MyApplication.queue.add(request);

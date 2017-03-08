@@ -35,6 +35,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -100,6 +101,7 @@ public class InboxFragment extends Fragment {
     Gson gson;
     View v;
     int limit = 10, currentPosition, offset = 0;
+
     public static InboxFragment newInstance(int position) {
         InboxFragment f = new InboxFragment();
         Bundle b = new Bundle();
@@ -193,8 +195,8 @@ public class InboxFragment extends Fragment {
                                         "");
 
                             } else {
-                                Constants.showSnack(v, uname
-                                        + " is not registered!", "OK");
+                                Toast.makeText(getActivity(), uname
+                                        + " is not registered!", Toast.LENGTH_SHORT).show();
                                 break;
                             }
                             if (i < myList.size() - 1) {
@@ -327,9 +329,11 @@ public class InboxFragment extends Fragment {
                                     callSentListMail();
                                     // setupAdapter();
                                     // adapter.notifyDataSetChanged();
-                                    getActivity().runOnUiThread(run);
-                                    mSwipeRefreshLayout
-                                            .setRefreshing(false);
+                                    if(getActivity()!=null && run !=null){
+                                        getActivity().runOnUiThread(run);
+                                        mSwipeRefreshLayout
+                                                .setRefreshing(false);
+                                    }
                                 }
                             }, 2500);
                         }
@@ -498,8 +502,8 @@ public class InboxFragment extends Fragment {
                     toEdit.setThreshold(1);
                 }
             } else {
-                Constants.showSnack(v, "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(getActivity(),
+                        R.string.went_wrong);
             }
         }
     }
@@ -702,8 +706,8 @@ public class InboxFragment extends Fragment {
         @Override
         protected void onPostExecute(Void unused) {
             if (msgJObj != null) {
-                Constants.showSnack(
-                        v, "Mail has sent!", "OK");
+                Constants.showToast(getActivity(),
+                        R.string.mail_has_sent);
                 subEdit.setText("");
                 discriptionEdit.setText("");
                 toEdit.setText("");
@@ -712,17 +716,15 @@ public class InboxFragment extends Fragment {
             } else {
                 sendTxt.setVisibility(View.VISIBLE);
                 pDialog1.setVisibility(View.GONE);
-                Constants.showSnack(
-                        v,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(getActivity(),
+                        R.string.went_wrong);
             }
         }
     }
 
     private void callSentListMail() {
         String hostt = MyApplication.HOSTNAME + "messages.json?user_id=" + userPref.getString("USERID", "NV") + "&type="
-                + msgType+ "&limit=" + limit + "&offset=" + offset;
+                + msgType + "&limit=" + limit + "&offset=" + offset;
 
         JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, hostt.replaceAll(" ", "%20"),
                 (String) null, new Response.Listener<JSONArray>() {
@@ -740,11 +742,6 @@ public class InboxFragment extends Fragment {
                             || sentMailsJArr.toString() == ""
                             || sentMailsJArr.toString().equals("")) {
                         pDialog.setVisibility(View.GONE);
-                        if (msgType == "receive") {
-                            listviewSent.setAdapter(null);
-                        } else {
-                            listviewSent.setAdapter(null);
-                        }
 
                     } else {
                         adapterSentRcv = new ListSendMailBaseAdapter(
@@ -782,7 +779,7 @@ public class InboxFragment extends Fragment {
                                             AbsListView view, int scrollState) {
                                         // TODO Auto-generated method stub
                                         this.currentScrollState = scrollState;
-                                  //      pDialogBtm.setVisibility(View.GONE);
+                                        //      pDialogBtm.setVisibility(View.GONE);
                                         pDialog.setVisibility(View.GONE);
                                         if (view.getId() == listviewSent
                                                 .getId()) {
@@ -820,7 +817,7 @@ public class InboxFragment extends Fragment {
                                                 && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
                                             offset = offset + 10;
                                             Log.d("Offset :", offset + "");
-                                         //   pDialogBtm.setVisibility(View.VISIBLE);
+                                            //   pDialogBtm.setVisibility(View.VISIBLE);
                                             callSentListMail();
                                         }
                                     }
@@ -988,10 +985,8 @@ public class InboxFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void unused) {
-            Constants.showSnack(
-                    v,
-                    "Deleted!",
-                    "OK");
+            Constants.showToast(getActivity(),
+                    R.string.deleted);
             adapterSentRcv.notifyDataSetChanged();
             callSentListMail();
         }

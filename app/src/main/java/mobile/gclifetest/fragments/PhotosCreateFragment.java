@@ -446,9 +446,7 @@ public class PhotosCreateFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 finishTxt.setVisibility(View.VISIBLE);
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please wait a moment!",
-                        "OK");
+                Constants.showToast(getActivity(),R.string.went_wrong);
             }
         }
     }
@@ -559,10 +557,7 @@ public class PhotosCreateFragment extends Fragment {
                 }
 
             } else {
-
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please wait a moment!",
-                        "OK");
+                Constants.showToast(getActivity(),R.string.went_wrong);
             }
         }
     }
@@ -597,9 +592,9 @@ public class PhotosCreateFragment extends Fragment {
             }
             System.out.println(all_path);
             if (eventName == "Photos" || eventName.equals("Photos")) {
-                Constants.showSnack(v,
-                        "You have Selected " + all_path.length + " images",
-                        "OK");
+                Toast.makeText(context, "You have Selected " + all_path.length
+                        + " images", Toast.LENGTH_SHORT).show();
+
                 for (String selectedPath1 : all_path) {
                     CustomGallery item = new CustomGallery();
                     item.sdcardPath = selectedPath1;
@@ -632,9 +627,7 @@ public class PhotosCreateFragment extends Fragment {
                 }
             } else {
                 selectedMediaTxt.setText("You have Selected " + all_path.length + " videos");
-              /*  Constants.showSnack(v,
-                        "You have Selected " + all_path.length + " videos",
-                        "OK");*/
+
                 if (!userPref.getString("youtube_name", "NV").equals("NV")) {
                     new FetchYouTubeTokenTask().execute();
                 } else {

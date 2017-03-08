@@ -294,11 +294,14 @@ public class SocietyBillManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                ViewBillDetailFragment fragment = new ViewBillDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("TOT_DATA", totalDataArr.toString());
-                fragment.setArguments(bundle);
-                ((HomeActivity) context).addFragment(fragment);
+                if(totalDataArr!=null && totalDataArr.length()>0){
+                    ViewBillDetailFragment fragment = new ViewBillDetailFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("TOT_DATA", totalDataArr.toString());
+                    fragment.setArguments(bundle);
+                    ((HomeActivity) context).addFragment(fragment);
+                }
+
             }
         });
         dueStatusLay.setOnClickListener(new View.OnClickListener() {
@@ -306,11 +309,14 @@ public class SocietyBillManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                ViewBillDetailFragment fragment = new ViewBillDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("TOT_DATA", dueStatusDataArr.toString());
-                fragment.setArguments(bundle);
-                ((HomeActivity) context).addFragment(fragment);
+                if(dueStatusDataArr!=null && dueStatusDataArr.length()>0){
+                    ViewBillDetailFragment fragment = new ViewBillDetailFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("TOT_DATA", dueStatusDataArr.toString());
+                    fragment.setArguments(bundle);
+                    ((HomeActivity) context).addFragment(fragment);
+                }
+
             }
         });
         paidStatusCountLay.setOnClickListener(new View.OnClickListener() {
@@ -318,11 +324,13 @@ public class SocietyBillManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                ViewBillDetailFragment fragment = new ViewBillDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("TOT_DATA", paidStatusDataArr.toString());
-                fragment.setArguments(bundle);
-                ((HomeActivity) context).addFragment(fragment);
+                if(paidStatusDataArr!=null && paidStatusDataArr.length()>0){
+                    ViewBillDetailFragment fragment = new ViewBillDetailFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("TOT_DATA", paidStatusDataArr.toString());
+                    fragment.setArguments(bundle);
+                    ((HomeActivity) context).addFragment(fragment);
+                }
             }
         });
         paidStatusCountLay.setOnClickListener(new View.OnClickListener() {
@@ -330,11 +338,15 @@ public class SocietyBillManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                ViewBillDetailFragment fragment = new ViewBillDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("TOT_DATA", paidStatusDataArr.toString());
-                fragment.setArguments(bundle);
-                ((HomeActivity) context).addFragment(fragment);
+
+                if(paidStatusDataArr!=null && paidStatusDataArr.length()>0){
+                    ViewBillDetailFragment fragment = new ViewBillDetailFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("TOT_DATA", paidStatusDataArr.toString());
+                    fragment.setArguments(bundle);
+                    ((HomeActivity) context).addFragment(fragment);
+                }
+
             }
         });
         confrmLay.setOnClickListener(new View.OnClickListener() {
@@ -342,11 +354,13 @@ public class SocietyBillManagementFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                ViewBillDetailFragment fragment = new ViewBillDetailFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("TOT_DATA", confirmedStatusDataArr.toString());
-                fragment.setArguments(bundle);
-                ((HomeActivity) context).addFragment(fragment);
+                if(confirmedStatusDataArr!=null && confirmedStatusDataArr.length()>0) {
+                    ViewBillDetailFragment fragment = new ViewBillDetailFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("TOT_DATA", confirmedStatusDataArr.toString());
+                    fragment.setArguments(bundle);
+                    ((HomeActivity) context).addFragment(fragment);
+                }
             }
         });
         return v;
@@ -421,9 +435,7 @@ public class SocietyBillManagementFragment extends Fragment {
         protected void onPostExecute(Void unused) {
             if (jsonBill == null || jsonBill.toString() == "null"
                     || jsonBill.equals("null")) {
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please wait a moment!",
-                        "OK");
+                Constants.showToast(context,R.string.went_wrong);
                 pDialog.setVisibility(View.GONE);
                 fileNameTxt.setVisibility(View.GONE);
             } else {
@@ -464,9 +476,7 @@ public class SocietyBillManagementFragment extends Fragment {
 
             if (jsonViewBill == null || jsonViewBill.toString() == "null"
                     || jsonViewBill.equals("null")) {
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please wait a moment!",
-                        "OK");
+                Constants.showToast(context,R.string.went_wrong);
                 pDialog.setVisibility(View.GONE);
             } else {
                 try {

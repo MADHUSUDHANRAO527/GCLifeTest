@@ -277,12 +277,9 @@ public class ImpContactsFragment extends Fragment {
                             progressBar.setVisibility(View.GONE);
                             pDialogBtm.setVisibility(View.INVISIBLE);
                             if (searchStr.length() > 0) {
-                                Constants.showSnack(snackLay,
-                                        "Searched Important contact details are not found, please try with another search criteria!", "");
+                                 Constants.showToast(context, R.string.imp_contacts_not_found);
                             } else {
-                                Constants.showSnack(snackLay,
-                                        "No further Contacts content is available!",
-                                        "OK");
+                                Constants.showToast(context, R.string.no_contacts);
                             }
 
                             impContactPojo.clear();
@@ -391,9 +388,7 @@ public class ImpContactsFragment extends Fragment {
 
                     if (getActivity() != null) {
                         pDialog.setVisibility(View.GONE);
-                        Constants.showSnack(snackLay,
-                                "Oops! Something went wrong. Please check internet connection!",
-                                "OK");
+                        Constants.showToast(context, R.string.went_wrong);
                     }
                     //   pDialog.hide();
                 }
@@ -552,9 +547,8 @@ public class ImpContactsFragment extends Fragment {
                     try {
                         startActivity(smsVIntent);
                     } catch (Exception ex) {
-                        Constants.showSnack(snackLay,
-                                "Your sms has failed...!",
-                                "OK");
+                        Constants.showToast(context,
+                                R.string.sms_failed);
                         ex.printStackTrace();
                     }
                 }

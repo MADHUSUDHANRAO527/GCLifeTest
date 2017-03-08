@@ -120,6 +120,7 @@ public class PhotosVideosListFragment extends Fragment {
     DisplayImageOptions options;
     int limit = 10, currentPosition, offset = 0;
     View v;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -212,9 +213,11 @@ public class PhotosVideosListFragment extends Fragment {
                                 offset = 0;
                                 globalEventsPojo = new ArrayList<EventsPojo>();
                                 callEventsList(searchStr);
-                                getActivity().runOnUiThread(run);
-                                mSwipeRefreshLayout
-                                        .setRefreshing(false);
+                                if (getActivity() != null && run != null) {
+                                    getActivity().runOnUiThread(run);
+                                    mSwipeRefreshLayout
+                                            .setRefreshing(false);
+                                }
                             }
                         }, 2500);
                     }
@@ -298,14 +301,11 @@ public class PhotosVideosListFragment extends Fragment {
                 Log.d("Response", response.toString());
                 if (response.toString() == "[]" || response.length() == 0) {
                     if (searchStr.length() > 0) {
-                        Toast.makeText(getActivity(), "Search result not found, please try with another search criteria!", Toast.LENGTH_SHORT).show();
-                      /*  Constants.showSnack(v,
-                                "Search result not found, please try with another search criteria!", "");*/
+                        Constants.showToast(context, R.string.no_further_content);
                     } else {
-                       /* Constants.showSnack(v,
-                                "No further " + eventName + " content is available!", "");*/
-                        Toast.makeText(getActivity(), "No further " + eventName + " content is available!", Toast.LENGTH_SHORT).show();
-
+                        if (eventName != null)
+                            if (getActivity() != null)
+                                Toast.makeText(getActivity(), "No further " + eventName + " content is available!", Toast.LENGTH_SHORT).show();
                     }
 
                     if (imPagination) {
@@ -321,15 +321,15 @@ public class PhotosVideosListFragment extends Fragment {
                     currentPosition = listviewIdeas
                             .getLastVisiblePosition();
                     if (getActivity() != null) {
-                    adapter = new ListIdeasBaseAdapter(
-                            getActivity(), globalEventsPojo);
-                    listviewIdeas.setAdapter(adapter);
-                    pDialog.setVisibility(View.GONE);
-                    pDialogBtm.setVisibility(View.INVISIBLE);
-                    // Storing in DB
-                    db.addEventNews(response, eventName);
-                    //for updating new data
-                    db.updateEventNews(response, eventName);
+                        adapter = new ListIdeasBaseAdapter(
+                                getActivity(), globalEventsPojo);
+                        listviewIdeas.setAdapter(adapter);
+                        pDialog.setVisibility(View.GONE);
+                        pDialogBtm.setVisibility(View.INVISIBLE);
+                        // Storing in DB
+                        db.addEventNews(response, eventName);
+                        //for updating new data
+                        db.updateEventNews(response, eventName);
 
 
                         DisplayMetrics displayMetrics =
@@ -410,9 +410,7 @@ public class PhotosVideosListFragment extends Fragment {
                 Log.d("Error = ", volleyError.toString());
 
                 pDialog.setVisibility(View.GONE);
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(context, R.string.went_wrong);
             }
         });
         MyApplication.queue.add(request);
@@ -593,8 +591,7 @@ public class PhotosVideosListFragment extends Fragment {
                     // TODO Auto-generated method stub
 
                     if (likeCheckArr.contains(userPref.getString("USERID", "NV"))) {
-                        Constants.showSnack(v, "Oops! You already liked it!",
-                                "OK");
+                        Constants.showToast(context, R.string.liked_it);
                     } else {
                         eid = String.valueOf(eventsPojos.get(position).getId());
                         int likes = Integer.valueOf(String.valueOf(eventsPojos.get(position).getEvent_likes().size()));
@@ -653,13 +650,10 @@ public class PhotosVideosListFragment extends Fragment {
 
             if (jsonLike != null) {
                 if (jsonLike.has("errors")) {
-                    Constants.showSnack(v, "Oops! You already liked it!",
-                            "OK");
+                    Constants.showToast(context, R.string.liked_it);
                 }
             } else {
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(context, R.string.went_wrong);
             }
         }
     }
@@ -709,9 +703,7 @@ public class PhotosVideosListFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void unused) {
-            Constants.showSnack(v,
-                    "Deleted!",
-                    "OK");
+            Constants.showToast(context, R.string.deleted);
             adapter.notifyDataSetChanged();
         }
     }
@@ -790,9 +782,9 @@ public class PhotosVideosListFragment extends Fragment {
 
     @Override
     public void onStop() {
+        super.onPause();
         EventBus.getDefault().unregister(this);
         FlurryAgent.onEndSession(getActivity().getApplicationContext());
-        super.onPause();
     }
 
 }

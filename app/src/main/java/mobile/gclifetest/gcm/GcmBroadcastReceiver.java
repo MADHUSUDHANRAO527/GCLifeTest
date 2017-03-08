@@ -32,16 +32,22 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     String eid, notiId;
     SharedPreferences userPref;
     SharedPreferences.Editor editor;
+    String msg = "", postedBy = "";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         mContext = context;
         category = intent.getExtras().getString("category");
         title = intent.getExtras().getString("tittle");
         message = intent.getExtras().getString("message");
+        if (!message.contains("Mail") && message!=null) {
+            String[] totMsg = message.split("-");
+            postedBy = totMsg[0];
+            msg = totMsg[1];
+        }else {
+            msg = message;
+        }
 
-        String[] totMsg = message.split("-");
-        String postedBy = totMsg[0];
-        String msg = totMsg[1];
 
         eid = intent.getExtras().getString("event");
         userPref = mContext.getSharedPreferences("USER", MODE_PRIVATE);
@@ -53,7 +59,7 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
             editor = userPref.edit();
             editor.putString("EventId", eid);
             editor.apply();
-            System.out.println(eid + " ID: " + category + " CAT: " + title + " TIT: " + message + " : MSG " + " " + " NOTI ID" + notiId);
+         //   System.out.println(eid + " ID: " + category + " CAT: " + title + " TIT: " + message + " : MSG " + " " + " NOTI ID" + notiId);
             Intent notificationIntent;
             if (category.equals("News") || category.equals("Notice") ||
                     category.equals("Ideas") || category.equals("Photos") || category.equals("Videos")) {
@@ -68,7 +74,10 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
             }
             notificationIntent.setAction(notiId);
             try {
-                generateNotification(context, title, postedBy+"-"+Constants.decodeString(msg), notiId, notificationIntent);
+                if (!msg.contains("Mail"))
+                    generateNotification(context, title, postedBy + "-" + Constants.decodeString(msg), notiId, notificationIntent);
+                else
+                    generateNotification(context, title, msg, notiId, notificationIntent);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -112,7 +121,7 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         //wake up screen
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
         boolean isScreenOn = pm.isScreenOn();
-        if (isScreenOn == false) {
+        if (!isScreenOn) {
             PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyLock");
             wl.acquire(10000);
             PowerManager.WakeLock wl_cpu = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyCpuLock");

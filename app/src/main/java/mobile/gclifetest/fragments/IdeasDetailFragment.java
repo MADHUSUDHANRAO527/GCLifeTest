@@ -346,9 +346,7 @@ public class IdeasDetailFragment extends Fragment {
                 progrLay.setVisibility(View.GONE);
             } else {
                 progrLay.setVisibility(View.GONE);
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(context, R.string.went_wrong);
             }
         }
     }
@@ -399,9 +397,7 @@ public class IdeasDetailFragment extends Fragment {
                 ListViewUtils.setDynamicHeight(commentsListview);
                 sendBtn.setText("ADD THIS COMMENT");
             } else {
-                Constants.showSnack(v,
-                        "Oops! Something went wrong. Please check internet connection!",
-                        "OK");
+                Constants.showToast(context, R.string.went_wrong);
             }
         }
     }
