@@ -50,7 +50,8 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
 
 
         eid = intent.getExtras().getString("event");
-        userPref = mContext.getSharedPreferences("USER", MODE_PRIVATE);
+        if (mContext != null)
+            userPref = mContext.getSharedPreferences("USER", MODE_PRIVATE);
         notiId = intent.getExtras().getString("notId");
         String eventId = userPref.getString("EventId", "NV");
         if (eventId.equals(intent.getExtras().getString("event"))) {

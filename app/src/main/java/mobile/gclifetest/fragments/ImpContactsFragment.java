@@ -69,7 +69,7 @@ import mobile.gclifetest.utils.MyApplication;
 public class ImpContactsFragment extends Fragment {
     Context context;
     FloatingActionButton addBtn;
-    ProgressBarCircularIndeterminate pDialog,pDialogBtm;
+    ProgressBarCircularIndeterminate pDialog, pDialogBtm;
     ListView listviewImp;
     SharedPreferences userPref;
     Typeface typefaceLight;
@@ -89,6 +89,7 @@ public class ImpContactsFragment extends Fragment {
     ImageView clearImg;
     int limit = 15, currentPosition, offset = 0;
     RelativeLayout snackLay;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -97,7 +98,7 @@ public class ImpContactsFragment extends Fragment {
         context = getActivity();
         addBtn = (FloatingActionButton) v.findViewById(R.id.addBtn);
         pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
-        pDialogBtm = (ProgressBarCircularIndeterminate)v.findViewById(R.id.pDialogBtm);
+        pDialogBtm = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialogBtm);
         mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.activity_main_swipe_refresh_layout);
         searchEdit = (EditText) v.findViewById(R.id.searchEdit);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
@@ -121,9 +122,12 @@ public class ImpContactsFragment extends Fragment {
                                 offset = 0;
                                 impContactPojo = new ArrayList<ImpContactsPojo>();
                                 callImpContsList(searchStr);
-                                getActivity().runOnUiThread(run);
-                                mSwipeRefreshLayout
-                                        .setRefreshing(false);
+                                if (getActivity() != null){
+                                    getActivity().runOnUiThread(run);
+                                    mSwipeRefreshLayout
+                                            .setRefreshing(false);
+                                }
+
                             }
                         }, 2500);
                     }
@@ -161,7 +165,7 @@ public class ImpContactsFragment extends Fragment {
                         callImpContsList(searchStr);
                         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(searchEdit.getWindowToken(), 0);
-                    }else{
+                    } else {
                         Toast.makeText(getActivity(), "Type atleast three characters", Toast.LENGTH_LONG).show();
                     }
                     return true;
@@ -223,7 +227,7 @@ public class ImpContactsFragment extends Fragment {
         m_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
         ListView listviewConts = (ListView) m_dialog
                 .findViewById(R.id.listview);
-        if(impContsPojo.size()>0){
+        if (impContsPojo.size() > 0) {
             phNo = impContsPojo.get(position).getPhno();
 
             String[] phNoArray = phNo.split(",");
@@ -258,7 +262,7 @@ public class ImpContactsFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
             }
-            String hostt = MyApplication.HOSTNAME + "important_contacts.json?limit=" + limit + "&offset=" + offset +"&search_key=" + searchStr;
+            String hostt = MyApplication.HOSTNAME + "important_contacts.json?limit=" + limit + "&offset=" + offset + "&search_key=" + searchStr;
             hostt = hostt.replace(" ", "%20");
             JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, hostt,
                     (String) null, new Response.Listener<JSONArray>() {
@@ -297,16 +301,16 @@ public class ImpContactsFragment extends Fragment {
                             currentPosition = listviewImp
                                     .getLastVisiblePosition();
                             if (getActivity() != null) {
-                            adapterConts = new ListImpContsBaseAdapter(
-                                    getActivity(), globalImpContactPojo);
-                            listviewImp.setAdapter(adapterConts);
-                            adapterConts.notifyDataSetChanged();
-                            pDialog.setVisibility(View.GONE);
-                            pDialogBtm.setVisibility(View.INVISIBLE);
-                            progressBar.setVisibility(View.GONE);
-                            db.addEventNews(response, "ImpContacts");
-                            //for updating new data
-                            db.updateEventNews(response, "ImpContacts");
+                                adapterConts = new ListImpContsBaseAdapter(
+                                        getActivity(), globalImpContactPojo);
+                                listviewImp.setAdapter(adapterConts);
+                                adapterConts.notifyDataSetChanged();
+                                pDialog.setVisibility(View.GONE);
+                                pDialogBtm.setVisibility(View.INVISIBLE);
+                                progressBar.setVisibility(View.GONE);
+                                db.addEventNews(response, "ImpContacts");
+                                //for updating new data
+                                db.updateEventNews(response, "ImpContacts");
                                 DisplayMetrics displayMetrics =
                                         getResources().getDisplayMetrics();
                                 int height = displayMetrics.heightPixels;

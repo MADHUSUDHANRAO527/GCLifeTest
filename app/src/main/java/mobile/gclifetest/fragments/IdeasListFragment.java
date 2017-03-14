@@ -169,7 +169,7 @@ public class IdeasListFragment extends Fragment {
                                 offset = 0;
                                 globalEventsPojo = new ArrayList<EventsPojo>();
                                 callEventsList(searchStr);
-                                if(getActivity()!=null && run !=null){
+                                if (getActivity() != null) {
                                     getActivity().runOnUiThread(run);
                                     mSwipeRefreshLayout
                                             .setRefreshing(false);

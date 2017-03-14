@@ -327,9 +327,7 @@ public class InboxFragment extends Fragment {
 
                                     listSent = new ArrayList<HashMap<String, String>>();
                                     callSentListMail();
-                                    // setupAdapter();
-                                    // adapter.notifyDataSetChanged();
-                                    if(getActivity()!=null && run !=null){
+                                    if (getActivity() != null) {
                                         getActivity().runOnUiThread(run);
                                         mSwipeRefreshLayout
                                                 .setRefreshing(false);

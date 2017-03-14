@@ -515,12 +515,14 @@ public class PhotosVideosListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-                    IdeasDetailFragment fragment = new IdeasDetailFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("EventName", eventName);
-                    bundle.putString("id", String.valueOf(globalEventsPojo.get(position).getId()));
-                    fragment.setArguments(bundle);
-                    ((HomeActivity) context).addFragment(fragment);
+                    if (globalEventsPojo.size() > 0) {
+                        IdeasDetailFragment fragment = new IdeasDetailFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("EventName", eventName);
+                        bundle.putString("id", String.valueOf(globalEventsPojo.get(position).getId()));
+                        fragment.setArguments(bundle);
+                        ((HomeActivity) context).addFragment(fragment);
+                    }
                 }
             });
             if (String.valueOf(eventsPojos.get(position).getUser_id()) == userPref.getString("USERID", "NV") || String.valueOf(eventsPojos.get(position).getUser_id()).equals(userPref.getString("USERID", "NV"))) {

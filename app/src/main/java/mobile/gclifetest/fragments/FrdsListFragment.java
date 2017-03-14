@@ -159,9 +159,11 @@ public class FrdsListFragment extends Fragment {
                                 offset = 0;
                                 globalUserListPojo = new ArrayList<UserDetailsPojo>();
                                 callFrdsList();
-                                getActivity().runOnUiThread(run);
-                                mSwipeRefreshLayout
-                                        .setRefreshing(false);
+                                if (getActivity() != null) {
+                                    getActivity().runOnUiThread(run);
+                                    mSwipeRefreshLayout
+                                            .setRefreshing(false);
+                                }
                             }
                         }, 2500);
                     }
