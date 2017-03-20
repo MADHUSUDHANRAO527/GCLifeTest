@@ -94,7 +94,7 @@ public class MemsListFragment extends Fragment {
         editor = userPref.edit();
         gson = new Gson();
 
-        filter_dialog = new Dialog(getActivity());
+        filter_dialog = new Dialog(context);
         filter_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         filter_dialog.setContentView(R.layout.mem_filter_popup);
         filter_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
@@ -102,7 +102,7 @@ public class MemsListFragment extends Fragment {
         listviewMem.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Intent i = new Intent(getActivity(), UserProfile.class);
+                Intent i = new Intent(context, UserProfile.class);
                 Gson gsonn = new Gson();
                 String json = gsonn.toJson(globalUsersList.get(position));
                 editor.putString("activityName", "mems_activity");
@@ -116,8 +116,8 @@ public class MemsListFragment extends Fragment {
             pDialog.setVisibility(View.GONE);
             userList = gson.fromJson(db.getEventNews(eventName), new TypeToken<List<UserDetailsPojo>>() {
             }.getType());
-            if (getActivity() != null) {
-                dataTaskGrpAdapter = new UserModelAdapter(getActivity(), R.layout.member_row, userList);
+            if (context != null) {
+                dataTaskGrpAdapter = new UserModelAdapter(context, R.layout.member_row, userList);
                 listviewMem.setAdapter(dataTaskGrpAdapter);
                 callListMems(filter);
             }
@@ -202,7 +202,7 @@ public class MemsListFragment extends Fragment {
                             || response.toString().equals("")) {
                         pDialog.setVisibility(View.GONE);
                         pDialogBtm.setVisibility(View.INVISIBLE);
-                        Constants.showToast(getActivity(),R.string.oops_no_members);
+                        Constants.showToast(context, R.string.oops_no_members);
                     } else {
                         userList = gson.fromJson(response.toString(), new TypeToken<List<UserDetailsPojo>>() {
                         }.getType());
@@ -211,8 +211,8 @@ public class MemsListFragment extends Fragment {
                         Log.d("SIZE", globalUsersList.size() + "");
                         currentPosition = listviewMem
                                 .getLastVisiblePosition();
-                        if (getActivity() != null) {
-                            dataTaskGrpAdapter = new UserModelAdapter(getActivity(), R.layout.member_row, globalUsersList);
+                        if (context != null) {
+                            dataTaskGrpAdapter = new UserModelAdapter(context, R.layout.member_row, globalUsersList);
 
                             listviewMem.setAdapter(dataTaskGrpAdapter);
 
@@ -224,15 +224,14 @@ public class MemsListFragment extends Fragment {
                             db.addEventNews(response, eventName);
                             //        //for updating new data
                             db.updateEventNews(response, eventName);
+                            if (getActivity() != null) {
+                                DisplayMetrics displayMetrics =
+                                        getResources().getDisplayMetrics();
+                                int height = displayMetrics.heightPixels;
 
-
-                            DisplayMetrics displayMetrics =
-                                    getResources().getDisplayMetrics();
-                            int height = displayMetrics.heightPixels;
-
-                            listviewMem.setSelectionFromTop(
-                                    currentPosition, height - 220);
-
+                                listviewMem.setSelectionFromTop(
+                                        currentPosition, height - 220);
+                            }
                             listviewMem
                                     .setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -303,7 +302,7 @@ public class MemsListFragment extends Fragment {
                 Log.d("Error = ", volleyError.toString());
 
                 pDialog.setVisibility(View.GONE);
-                Constants.showToast(getActivity(),R.string.oops_no_members);
+                Constants.showToast(context, R.string.oops_no_members);
             }
         });
         MyApplication.queue.add(request);
@@ -367,7 +366,7 @@ public class MemsListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-                    Intent i = new Intent(getActivity(), UserProfile.class);
+                    Intent i = new Intent(context, UserProfile.class);
                     Gson gsonn = new Gson();
                     String json = gsonn.toJson(usersList.get(position));
                     i.putExtra("EACH_USER_DET", json);
@@ -379,7 +378,7 @@ public class MemsListFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-                    m_dialog = new Dialog(getActivity());
+                    m_dialog = new Dialog(context);
                     m_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     m_dialog.setContentView(R.layout.mem_approval_popup);
                     m_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
@@ -533,13 +532,13 @@ public class MemsListFragment extends Fragment {
             submitTxt.setVisibility(View.INVISIBLE);
             if (veriJson != null) {
                 if (status == "Reject" || status.equals("Reject")) {
-                    Constants.showToast(getActivity(),R.string.rejected);
+                    Constants.showToast(context, R.string.rejected);
                 } else if (status == "Delete" || status.equals("status")) {
-                    Constants.showToast(getActivity(),R.string.deleted);
+                    Constants.showToast(context, R.string.deleted);
                 } else if (status == "Approve" || status.equals("Approve")) {
-                    Constants.showToast(getActivity(),R.string.approved);
+                    Constants.showToast(context, R.string.approved);
                 } else {
-                    Constants.showToast(getActivity(),R.string.went_wrong);
+                    Constants.showToast(context, R.string.went_wrong);
                 }
                 if (db.getEventNews(eventName) != "null") {
                     Log.d("DB NOT NULL: " + eventName, db.getEventNews(eventName));
@@ -556,7 +555,7 @@ public class MemsListFragment extends Fragment {
 
                 }
             } else {
-                Constants.showToast(getActivity(),R.string.went_wrong);
+                Constants.showToast(context, R.string.went_wrong);
             }
 
             dataTaskGrpAdapter.notifyDataSetChanged();
@@ -586,12 +585,12 @@ public class MemsListFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+        FlurryAgent.onStartSession(context.getApplicationContext(), Constants.flurryApiKey);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        FlurryAgent.onEndSession(getActivity().getApplicationContext());
+        FlurryAgent.onEndSession(context.getApplicationContext());
     }
 }

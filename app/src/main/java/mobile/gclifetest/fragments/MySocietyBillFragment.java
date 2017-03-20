@@ -95,7 +95,7 @@ public class MySocietyBillFragment extends Fragment {
         List<String> sociList = new ArrayList<String>();
         //  ArrayList<String> listSociety = new ArrayList<String>();
         final Map<String, ArrayList<String>> listSocietyBuildingFlats = new HashMap<>();
-       // final Map<String, String> societyMap = new HashMap<String, String>();
+        // final Map<String, String> societyMap = new HashMap<String, String>();
         for (int i = 0; i < flatsList.size(); i++) {
             ArrayList<String> buildingFlatList = new ArrayList<>();
             FlatDetailsPojo flatsListt = user
@@ -167,7 +167,7 @@ public class MySocietyBillFragment extends Fragment {
                             System.out.println(buildingList);
                         } else {
                             if (!buildingList.contains(buildingName)) {
-                                buildingList=listSocietyBuildingFlats.get(societyName);
+                                buildingList = listSocietyBuildingFlats.get(societyName);
                             }
                             System.out.println(buildingList);
 
@@ -281,7 +281,7 @@ public class MySocietyBillFragment extends Fragment {
         protected void onPostExecute(Void unused) {
             if (jsonViewBill == null || jsonViewBill.toString() == "null"
                     || jsonViewBill.equals("null")) {
-                Constants.showToast(getActivity(),R.string.went_wrong);
+                Constants.showToast(context, R.string.went_wrong);
                 pDialog.setVisibility(View.GONE);
             } else {
                 try {
@@ -624,7 +624,7 @@ public class MySocietyBillFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 m_dialog.dismiss();
-                Constants.showToast(getActivity(),R.string.went_wrong);
+                Constants.showToast(context, R.string.went_wrong);
             }
         }
     }

@@ -122,7 +122,7 @@ public class ImpContactsFragment extends Fragment {
                                 offset = 0;
                                 impContactPojo = new ArrayList<ImpContactsPojo>();
                                 callImpContsList(searchStr);
-                                if (getActivity() != null){
+                                if (getActivity() != null) {
                                     getActivity().runOnUiThread(run);
                                     mSwipeRefreshLayout
                                             .setRefreshing(false);
@@ -281,20 +281,21 @@ public class ImpContactsFragment extends Fragment {
                             progressBar.setVisibility(View.GONE);
                             pDialogBtm.setVisibility(View.INVISIBLE);
                             if (searchStr.length() > 0) {
-                                 Constants.showToast(context, R.string.imp_contacts_not_found);
+                                Constants.showToast(context, R.string.imp_contacts_not_found);
                             } else {
                                 Constants.showToast(context, R.string.no_contacts);
                             }
 
                             impContactPojo.clear();
-
                             currentPosition = listviewImp
                                     .getLastVisiblePosition();
-                            DisplayMetrics displayMetrics =
-                                    getResources().getDisplayMetrics();
-                            int height = displayMetrics.heightPixels;
-                            listviewImp.setSelectionFromTop(
-                                    currentPosition, height - 220);
+                            if (getActivity() != null) {
+                                DisplayMetrics displayMetrics =
+                                        getResources().getDisplayMetrics();
+                                int height = displayMetrics.heightPixels;
+                                listviewImp.setSelectionFromTop(
+                                        currentPosition, height - 220);
+                            }
                         } else {
                             globalImpContactPojo.addAll(impContactPojo);
                             Log.d("SIZE", globalImpContactPojo.size() + "");
@@ -311,13 +312,13 @@ public class ImpContactsFragment extends Fragment {
                                 db.addEventNews(response, "ImpContacts");
                                 //for updating new data
                                 db.updateEventNews(response, "ImpContacts");
-                                DisplayMetrics displayMetrics =
-                                        getResources().getDisplayMetrics();
-                                int height = displayMetrics.heightPixels;
-
-                                listviewImp.setSelectionFromTop(
-                                        currentPosition + 1, height - 220);
-
+                                if (getActivity() != null) {
+                                    DisplayMetrics displayMetrics =
+                                            getResources().getDisplayMetrics();
+                                    int height = displayMetrics.heightPixels;
+                                    listviewImp.setSelectionFromTop(
+                                            currentPosition + 1, height - 220);
+                                }
                                 listviewImp
                                         .setOnScrollListener(new AbsListView.OnScrollListener() {
 

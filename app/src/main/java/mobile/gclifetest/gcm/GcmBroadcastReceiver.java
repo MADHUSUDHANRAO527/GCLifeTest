@@ -40,15 +40,13 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         category = intent.getExtras().getString("category");
         title = intent.getExtras().getString("tittle");
         message = intent.getExtras().getString("message");
-        if (!message.contains("Mail") && message!=null) {
+        if (!message.contains("Mail") && message.contains("-") && message != null) {
             String[] totMsg = message.split("-");
             postedBy = totMsg[0];
             msg = totMsg[1];
         }else {
             msg = message;
         }
-
-
         eid = intent.getExtras().getString("event");
         if (mContext != null)
             userPref = mContext.getSharedPreferences("USER", MODE_PRIVATE);
@@ -105,7 +103,7 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
         Resources res = context.getResources();
         Notification.Builder builder = new Notification.Builder(context);
         builder.setAutoCancel(true);
-        builder.setContentTitle(title);
+        builder.setContentTitle(title.replace("-", ""));
         builder.setContentText(message);
         builder.setSmallIcon(icon);
         builder.setContentIntent(intent);

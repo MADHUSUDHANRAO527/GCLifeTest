@@ -451,7 +451,7 @@ public class EditProfile extends BaseActivity {
 
     };
 
-    public class ProrfileLoadImage extends AsyncTask<Void, Void, Void> {
+    private class ProrfileLoadImage extends AsyncTask<Void, Void, Void> {
         File filePhoto;
 
         ProrfileLoadImage(File filee) {
@@ -485,10 +485,10 @@ public class EditProfile extends BaseActivity {
         }
         @Override
         protected void onPostExecute(Void unused) {
-            mediaUrl = response.get("url").toString().trim();// live url
-            System.err.println(mediaUrl
-                    + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            uploadingTxt.setVisibility(View.GONE);
+            if (response != null) {
+                mediaUrl = response.get("url").toString().trim();// live url
+                uploadingTxt.setVisibility(View.GONE);
+            }
         }
     }
 }

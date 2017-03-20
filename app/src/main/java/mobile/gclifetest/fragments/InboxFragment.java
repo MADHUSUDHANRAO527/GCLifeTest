@@ -1,6 +1,5 @@
 package mobile.gclifetest.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -98,6 +96,7 @@ public class InboxFragment extends Fragment {
     ArrayList<String> strngArr = new ArrayList<String>();
     JSONObject jsonDelete;
     List<InboxPojo> inboxPojo;
+    Context mContext;
     Gson gson;
     View v;
     int limit = 10, currentPosition, offset = 0;
@@ -115,18 +114,18 @@ public class InboxFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         position = getArguments().getInt(ARG_POSITION);
-
+        mContext = getActivity();
     }
 
     @Override
     public View onCreateView(final LayoutInflater infaltor,
                              final ViewGroup container, Bundle savedInstanceState) {
-        typefaceLight = Typeface.createFromAsset(getActivity().getAssets(),
+        typefaceLight = Typeface.createFromAsset(mContext.getAssets(),
                 "fonts/RobotoLight.ttf");
 
-        userPref = getActivity().getSharedPreferences("USER", 0);
+        userPref = mContext.getSharedPreferences("USER", 0);
         gson = new Gson();
-        db = new DatabaseHandler(getActivity());
+        db = new DatabaseHandler(mContext);
 
 
         if (position == 0) {
@@ -195,7 +194,7 @@ public class InboxFragment extends Fragment {
                                         "");
 
                             } else {
-                                Toast.makeText(getActivity(), uname
+                                Toast.makeText(mContext, uname
                                         + " is not registered!", Toast.LENGTH_SHORT).show();
                                 break;
                             }
@@ -251,7 +250,7 @@ public class InboxFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-                    final Dialog m_dialog = new Dialog(getActivity());
+                    final Dialog m_dialog = new Dialog(mContext);
                     m_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                     m_dialog.setContentView(R.layout.imp_contacts_popup_listview);
                     m_dialog.getWindow().getAttributes().windowAnimations = R.style.popup_login_dialog_animation;
@@ -259,7 +258,7 @@ public class InboxFragment extends Fragment {
                             .findViewById(R.id.listview);
 
                     adapterUnames = new ListUnamesBaseAdapter(
-                            getActivity(), listUnames);
+                            mContext, listUnames);
                     listviewUsernames.setAdapter(adapterUnames);
 
                     listviewUsernames
@@ -310,7 +309,7 @@ public class InboxFragment extends Fragment {
                                         int position, long id) {
                     // TODO Auto-generated method stub
 
-                    Intent i = new Intent(getActivity(), InboxDetail.class);
+                    Intent i = new Intent(mContext, InboxDetail.class);
                     i.putExtra("position", position);
                     i.putExtra("mailType", msgType);
                     startActivity(i);
@@ -327,7 +326,7 @@ public class InboxFragment extends Fragment {
 
                                     listSent = new ArrayList<HashMap<String, String>>();
                                     callSentListMail();
-                                    if (getActivity() != null) {
+                                    if (mContext != null) {
                                         getActivity().runOnUiThread(run);
                                         mSwipeRefreshLayout
                                                 .setRefreshing(false);
@@ -359,7 +358,7 @@ public class InboxFragment extends Fragment {
                 inboxPojo = gson.fromJson(db.getEventNews(dbNameRcv), new TypeToken<List<InboxPojo>>() {
                 }.getType());
                 adapterSentRcv = new ListSendMailBaseAdapter(
-                        getActivity(), inboxPojo);
+                        mContext, inboxPojo);
                 listviewSent.setAdapter(adapterSentRcv);
                 pDialog.setVisibility(View.GONE);
                 callSentListMail();
@@ -392,7 +391,7 @@ public class InboxFragment extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view,
                                         int position, long id) {
                     // TODO Auto-generated method stub
-                    Intent i = new Intent(getActivity(), InboxDetail.class);
+                    Intent i = new Intent(mContext, InboxDetail.class);
                     i.putExtra("position", position);
                     i.putExtra("mailType", msgType);
                     startActivity(i);
@@ -405,7 +404,7 @@ public class InboxFragment extends Fragment {
                 inboxPojo = gson.fromJson(db.getEventNews(dbNameSent), new TypeToken<List<InboxPojo>>() {
                 }.getType());
                 adapterSentRcv = new ListSendMailBaseAdapter(
-                        getActivity(), inboxPojo);
+                        mContext, inboxPojo);
                 listviewSent.setAdapter(adapterSentRcv);
                 pDialog.setVisibility(View.GONE);
                 //    progressShow = false;
@@ -487,10 +486,10 @@ public class InboxFragment extends Fragment {
                     }
 
                 }
-                if (getActivity() == null) {
+                if (mContext == null) {
 
                 } else {
-                    adapter = new AutoCompleteAdapter(getActivity(),
+                    adapter = new AutoCompleteAdapter(mContext,
                             R.layout.auto_suggestion_row, R.id.autoSugg,
                             listUnames);
                     toEdit.setAdapter(adapter);// setting the adapter data
@@ -500,7 +499,7 @@ public class InboxFragment extends Fragment {
                     toEdit.setThreshold(1);
                 }
             } else {
-                Constants.showToast(getActivity(),
+                Constants.showToast(mContext,
                         R.string.went_wrong);
             }
         }
@@ -513,7 +512,7 @@ public class InboxFragment extends Fragment {
         private ArrayList<String> mOriginalValues;
         private ArrayFilter mFilter;
 
-        public AutoCompleteAdapter(FragmentActivity context, int resource,
+        public AutoCompleteAdapter(Context context, int resource,
                                    int autosugg, ArrayList<String> fullList) {
 
             super(context, resource, autosugg, fullList);
@@ -612,7 +611,7 @@ public class InboxFragment extends Fragment {
         private LayoutInflater inflator;
         private Context context;
 
-        public ListUnamesBaseAdapter(Activity activity,
+        public ListUnamesBaseAdapter(Context activity,
                                      ArrayList<String> listArticles) {
             // TODO Auto-generated constructor stub
             this.context = activity;
@@ -704,7 +703,7 @@ public class InboxFragment extends Fragment {
         @Override
         protected void onPostExecute(Void unused) {
             if (msgJObj != null) {
-                Constants.showToast(getActivity(),
+                Constants.showToast(mContext,
                         R.string.mail_has_sent);
                 subEdit.setText("");
                 discriptionEdit.setText("");
@@ -714,7 +713,7 @@ public class InboxFragment extends Fragment {
             } else {
                 sendTxt.setVisibility(View.VISIBLE);
                 pDialog1.setVisibility(View.GONE);
-                Constants.showToast(getActivity(),
+                Constants.showToast(mContext,
                         R.string.went_wrong);
             }
         }
@@ -743,7 +742,7 @@ public class InboxFragment extends Fragment {
 
                     } else {
                         adapterSentRcv = new ListSendMailBaseAdapter(
-                                getActivity(), inboxPojo);
+                                mContext, inboxPojo);
                         listviewSent.setAdapter(adapterSentRcv);
                         pDialog.setVisibility(View.GONE);
                         if (msgType == "receive") {
@@ -983,7 +982,7 @@ public class InboxFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void unused) {
-            Constants.showToast(getActivity(),
+            Constants.showToast(mContext,
                     R.string.deleted);
             adapterSentRcv.notifyDataSetChanged();
             callSentListMail();
@@ -993,12 +992,12 @@ public class InboxFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        FlurryAgent.onStartSession(getActivity().getApplicationContext(), Constants.flurryApiKey);
+        FlurryAgent.onStartSession(mContext.getApplicationContext(), Constants.flurryApiKey);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        FlurryAgent.onEndSession(getActivity().getApplicationContext());
+        FlurryAgent.onEndSession(mContext.getApplicationContext());
     }
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GC Life Test</string>
+    <string name="app_name">GC Life Beta</string>
     <string-array name="avenueArray">
         <item> </item>
     </string-array>

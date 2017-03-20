@@ -396,6 +396,7 @@ public class IdeasDetailFragment extends Fragment {
                 commentsAdapter.notifyDataSetChanged();
                 ListViewUtils.setDynamicHeight(commentsListview);
                 sendBtn.setText("ADD THIS COMMENT");
+                EventBus.getDefault().post(new AddIdeasEvent(true));
             } else {
                 Constants.showToast(context, R.string.went_wrong);
             }
@@ -433,7 +434,7 @@ public class IdeasDetailFragment extends Fragment {
             ((HomeActivity) context).changeToolbarTitle(R.string.nb_detail);
         }
         ((HomeActivity) context).setHomeAsEnabled(true);
-        if(getView() == null){
+       /* if(getView() == null){
             return;
         }
 
@@ -450,7 +451,7 @@ public class IdeasDetailFragment extends Fragment {
                 }
                 return false;
             }
-        });
+        });*/
     }
     @Override
     public void onStart() {

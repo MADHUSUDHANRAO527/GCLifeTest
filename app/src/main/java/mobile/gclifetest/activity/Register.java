@@ -413,9 +413,9 @@ public class Register extends BaseActivity {
 				else {
 
 					if (isInternetPresent) {
-						if(liscenseDateStr==""||liscenseDateStr.equals("")){
-							liscenseDateStr="12-12-2015";
-						}
+						/*if(liscenseDateStr==""||liscenseDateStr.equals("")){
+						//	liscenseDateStr="12-12-2015";
+						}*/
 						new SignUp().execute();
 					} else {
                         Constants.showSnack(v,

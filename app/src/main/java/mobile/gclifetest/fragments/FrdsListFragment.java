@@ -149,6 +149,16 @@ public class FrdsListFragment extends Fragment {
             callFrdsList();
             Log.d("DB NULL: " + eventName, "");
         }
+        run = new Runnable() {
+            public void run() {
+                if (userListPojo.toString().equals("[]") || userListPojo.size() == 0) {
+
+                } else {
+                    adapterfrds.notifyDataSetChanged();
+                    listviewIdeas.invalidateViews();
+                }
+            }
+        };
         mSwipeRefreshLayout
                 .setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                     @Override
@@ -159,7 +169,7 @@ public class FrdsListFragment extends Fragment {
                                 offset = 0;
                                 globalUserListPojo = new ArrayList<UserDetailsPojo>();
                                 callFrdsList();
-                                if (getActivity() != null) {
+                                if (getActivity() != null && run != null) {
                                     getActivity().runOnUiThread(run);
                                     mSwipeRefreshLayout
                                             .setRefreshing(false);
@@ -168,16 +178,7 @@ public class FrdsListFragment extends Fragment {
                         }, 2500);
                     }
                 });
-        run = new Runnable() {
-            public void run() {
-                if (userListPojo.toString() == "[]" || userListPojo.size() == 0) {
 
-                } else {
-                    adapterfrds.notifyDataSetChanged();
-                    listviewIdeas.invalidateViews();
-                }
-            }
-        };
         searchEdit.addTextChangedListener(new TextWatcher() {
 
             @Override

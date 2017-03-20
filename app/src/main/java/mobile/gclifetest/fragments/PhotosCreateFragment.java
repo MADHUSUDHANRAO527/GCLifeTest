@@ -446,7 +446,7 @@ public class PhotosCreateFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
                 finishTxt.setVisibility(View.VISIBLE);
-                Constants.showToast(getActivity(),R.string.went_wrong);
+                Constants.showToast(context,R.string.went_wrong);
             }
         }
     }
@@ -557,7 +557,7 @@ public class PhotosCreateFragment extends Fragment {
                 }
 
             } else {
-                Constants.showToast(getActivity(),R.string.went_wrong);
+                Constants.showToast(context,R.string.went_wrong);
             }
         }
     }
