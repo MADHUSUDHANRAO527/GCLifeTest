@@ -442,6 +442,14 @@ public class PhotosCreateFragment extends Fragment {
                     pDialog.setVisibility(View.GONE);
                     EventBus.getDefault().post(new AddIdeasEvent(true));
                     ((HomeActivity) context).onBackpressed();
+                } else if (jsonResult.has("error")) {
+                    pDialog.setVisibility(View.GONE);
+                    finishTxt.setVisibility(View.VISIBLE);
+                    try {
+                        Toast.makeText(context, jsonResult.getString("error"), Toast.LENGTH_SHORT).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 pDialog.setVisibility(View.GONE);
