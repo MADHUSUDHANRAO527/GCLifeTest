@@ -79,6 +79,7 @@ public class MemsListFragment extends Fragment {
     FloatingActionButton filterBtn;
     String filter = "Inactive";
     RadioGroup radioGroup;
+    boolean isPagintation;
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -203,6 +204,9 @@ public class MemsListFragment extends Fragment {
                         pDialog.setVisibility(View.GONE);
                         pDialogBtm.setVisibility(View.INVISIBLE);
                         Constants.showToast(context, R.string.oops_no_members);
+                        if (!isPagintation)
+                            listviewMem.setAdapter(null);
+
                     } else {
                         userList = gson.fromJson(response.toString(), new TypeToken<List<UserDetailsPojo>>() {
                         }.getType());
@@ -285,7 +289,9 @@ public class MemsListFragment extends Fragment {
                                                     && this.totalItemCount == (currentFirstVisibleItem + currentVisibleItemCount)) {
                                                 offset = offset + 10;
                                                 pDialogBtm.setVisibility(View.VISIBLE);
+                                                isPagintation = true;
                                                 callListMems(filter);
+
                                                 //  pDialogBtm.setVisibility(View.GONE);
                                             }
                                         }

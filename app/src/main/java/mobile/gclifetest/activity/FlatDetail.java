@@ -122,7 +122,7 @@ public class FlatDetail extends BaseActivity {
             relationShipWithOwner.setText(flats.getRelationshipid());
         }
      //   Log.d("END DATE", flats.getTenurestart());
-        if (flats.getTenurestart() == null || flats.getTenurestart().equals("")) {
+        if (flats.getTenurestart() == null || flats.getTenurestart().equals("")||flats.getTenurestart().equals("2015-12-12")) {
             licenceEndDateLay.setVisibility(View.GONE);
         } else {
             licenceEndDateLay.setVisibility(View.VISIBLE);

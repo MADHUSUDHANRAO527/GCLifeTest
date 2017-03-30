@@ -34,6 +34,7 @@ import mobile.gclifetest.adapters.HomeAdapter;
 import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.http.MemsPost;
 import mobile.gclifetest.http.SignUpPost;
+import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
@@ -54,7 +55,7 @@ public class HomeFragment extends Fragment {
     JSONObject jsonLatestusers, logOutJson;
     ProgressDialog pDialogLogout;
     View v;
-
+    ProgressBarCircularIndeterminate pDialog;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -67,6 +68,7 @@ public class HomeFragment extends Fragment {
                 R.layout.home, container, false);
         context = getActivity();
         gv = (GridView) v.findViewById(R.id.grid);
+        pDialog = (ProgressBarCircularIndeterminate)v.findViewById(R.id.pDialog);
         gv.setAdapter(new HomeAdapter(context, Constants.homeMenuList, Constants.homeMenuImages));
         netConn = new InternetConnectionDetector(getActivity());
         isInternetPresent = netConn.isConnectingToInternet();
@@ -195,6 +197,7 @@ public class HomeFragment extends Fragment {
     public class LatestUserDetails extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
+            pDialog.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -213,8 +216,8 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void unused) {
-
             if (jsonLatestusers != null) {
+                pDialog.setVisibility(View.GONE);
                 Gson gson = new GsonBuilder().create();
                 MyApplication.user = gson.fromJson(jsonLatestusers.toString(),
                         UserDetailsPojo.class);
@@ -222,6 +225,9 @@ public class HomeFragment extends Fragment {
                 String json = gsonn.toJson(MyApplication.user);
                 editor.putString("USER_DATA", json);
                 editor.commit();
+            } else {
+                pDialog.setVisibility(View.GONE);
+                Constants.showToast(context,R.string.went_wrong);
             }
         }
     }

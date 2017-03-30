@@ -109,13 +109,17 @@ public class Constants {
     }
 
     public static String encodeString(String str) throws UnsupportedEncodingException {
-     //   byte[] encodeValue = Base64.encode(str.getBytes(), Base64.DEFAULT);
-        return str;
+       byte[] encodeValue = Base64.encode(str.getBytes(), Base64.DEFAULT);
+        return  new String(encodeValue);
     }
 
     public static String decodeString(String str) throws UnsupportedEncodingException {
-      //  byte[] decodeValue = Base64.decode(str, Base64.DEFAULT);
-        return str;
+        try{
+            byte[] decodeValue = Base64.decode(str, Base64.DEFAULT);
+            return new String(decodeValue);
+        }catch (IllegalArgumentException e){
+            return new String(e.toString());
+        }
     }
 
     public static boolean isFileSizeAcceptable(String videoPath) {

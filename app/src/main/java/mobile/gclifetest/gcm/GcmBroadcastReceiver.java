@@ -93,7 +93,7 @@ public class GcmBroadcastReceiver extends WakefulBroadcastReceiver {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @SuppressWarnings("deprecation")
     public void generateNotification(Context context, String title, String message, String notiId,
-                                     Intent notificationIntent) {
+                                     Intent notificationIntent) throws UnsupportedEncodingException {
         // TODO Auto-generated method stub
         int icon = R.drawable.app_icon;
         PendingIntent intent = PendingIntent.getActivity(context, Integer.parseInt(notiId),

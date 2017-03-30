@@ -100,6 +100,7 @@ public class InboxFragment extends Fragment {
     Gson gson;
     View v;
     int limit = 10, currentPosition, offset = 0;
+    boolean firstTimeRecvMsgs = true, firstTimeSentMsgs = true;
 
     public static InboxFragment newInstance(int position) {
         InboxFragment f = new InboxFragment();
@@ -731,25 +732,29 @@ public class InboxFragment extends Fragment {
 
                 Log.d("Reponse", response.toString());
                 sentMailsJArr = response;
-                if (response != null) {
                     inboxPojo = gson.fromJson(sentMailsJArr.toString(), new TypeToken<List<InboxPojo>>() {
                     }.getType());
                     if (sentMailsJArr.length() == 0
-                            || sentMailsJArr.toString() == "[]"
-                            || sentMailsJArr.toString() == ""
+                            || sentMailsJArr.toString().equals("[]")
                             || sentMailsJArr.toString().equals("")) {
                         pDialog.setVisibility(View.GONE);
-
+                        if (msgType.equals("receive") && firstTimeRecvMsgs)
+                            listviewSent.setAdapter(null);
+                        if (msgType.equals("sent") && firstTimeSentMsgs)
+                            listviewSent.setAdapter(null);
                     } else {
+
                         adapterSentRcv = new ListSendMailBaseAdapter(
                                 mContext, inboxPojo);
                         listviewSent.setAdapter(adapterSentRcv);
                         pDialog.setVisibility(View.GONE);
                         if (msgType == "receive") {
+                            firstTimeRecvMsgs = false;
                             db.addEventNews(sentMailsJArr, dbNameRcv);
                             //for updating new data
                             db.updateEventNews(response, dbNameRcv);
                         } else {
+                            firstTimeSentMsgs = false;
                             db.addEventNews(sentMailsJArr, dbNameSent);
                             //for updating new data
                             db.updateEventNews(response, dbNameSent);
@@ -820,7 +825,7 @@ public class InboxFragment extends Fragment {
                                     }
                                 });
                     }
-                }
+
             }
 
         }, new Response.ErrorListener() {
