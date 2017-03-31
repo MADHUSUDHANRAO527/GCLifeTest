@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -366,7 +365,7 @@ public class IdeasDetailFragment extends Fragment {
                 json.put("event_id", eid);
                 json.put("user_id", userPref.getString("USERID", "NV"));
                 json.put("username", user.getUsername());
-                json.put("comment", comntEdit.getText().toString());
+                json.put("comment", Constants.encodeString(comntEdit.getText().toString()));
 
                 jsonComment.put("event_comment", json);
                 jsonPushComment = MemsPost.PostComment(jsonComment, MyApplication.HOSTNAME);

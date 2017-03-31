@@ -8,12 +8,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import mobile.gclifetest.activity.R;
 import mobile.gclifetest.pojoGson.EventComments;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.MyApplication;
-import mobile.gclifetest.activity.R;
 
 /**
  * Created by MRaoKorni on 8/2/2016.
@@ -83,8 +84,11 @@ public class EventsCommentsAdapter extends BaseAdapter {
         holder.comntDetailTxt.setTag(position);
 
         holder.dpNameTxt.setText(eventComntsPojo.get(position).getUsername());
-        holder.comntDetailTxt.setText(Html.fromHtml(eventComntsPojo.get(position).getComment()));
-
+        try {
+            holder.comntDetailTxt.setText(Html.fromHtml(Constants.decodeString(eventComntsPojo.get(position).getComment())));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         String createdAt =eventComntsPojo.get(position).getCreated_at();
         MyApplication app = new MyApplication();
         createdAt = app.convertDateEmail(createdAt);
