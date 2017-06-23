@@ -49,7 +49,7 @@ import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -187,13 +187,13 @@ public class MemsListFragment extends Fragment {
     }
 
     private void callListMems(final String filter) {
-        JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, MyApplication.HOSTNAME + "get_registered_users.json?user_id=" +
+        JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, GclifeApplication.HOSTNAME + "get_registered_users.json?user_id=" +
                 userPref.getString("USERID", "NV").replaceAll(" ", "%20") + "&limit=" + limit + "&offset=" + offset + "&filter_type=" + filter,
                 (String) null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 //    pDialog.hide();
-                Log.d("MEMS LIST REQUEST : ", MyApplication.HOSTNAME + "get_registered_users.json?user_id=" +
+                Log.d("MEMS LIST REQUEST : ", GclifeApplication.HOSTNAME + "get_registered_users.json?user_id=" +
                         userPref.getString("USERID", "NV").replaceAll(" ", "%20") + "&limit=" + limit + "&offset=" + offset + "&filter_type=" + filter);
                 Log.d("Response", response.toString());
                 if (response != null) {
@@ -311,7 +311,7 @@ public class MemsListFragment extends Fragment {
                 Constants.showToast(context, R.string.oops_no_members);
             }
         });
-        MyApplication.queue.add(request);
+        GclifeApplication.queue.add(request);
     }
     private class UserModelAdapter extends ArrayAdapter<UserDetailsPojo> {
 
@@ -522,7 +522,7 @@ public class MemsListFragment extends Fragment {
             // TODO Auto-generated method stub
             try {
                 Log.d("STATUS", status);
-                veriJson = MemsPost.activateMem(MyApplication.HOSTNAME, memId, status, statusReason, recordId);
+                veriJson = MemsPost.activateMem(GclifeApplication.HOSTNAME, memId, status, statusReason, recordId);
                 Log.d("MEM RESPONSE", veriJson.toString());
             } catch (Exception e) {
                 // TODO Auto-generated catch block

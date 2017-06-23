@@ -49,7 +49,7 @@ import mobile.gclifetest.http.SignUpPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 public class EditProfile extends BaseActivity {
 	RelativeLayout dateToLay;
@@ -300,7 +300,7 @@ public class EditProfile extends BaseActivity {
 
 				try {
 					jsonSignupResult = SignUpPost.updateProfile(jsonSignUp,
-							MyApplication.HOSTNAME);
+							GclifeApplication.HOSTNAME);
 
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -332,11 +332,11 @@ public class EditProfile extends BaseActivity {
 					submitTxt.setVisibility(View.VISIBLE);
 
 					Gson gson = new GsonBuilder().create();
-					MyApplication.user = gson.fromJson(
+					GclifeApplication.user = gson.fromJson(
 							jsonSignupResult.toString(), UserDetailsPojo.class);
 
 					Gson gsonn = new Gson();
-					String json = gsonn.toJson(MyApplication.user);
+					String json = gsonn.toJson(GclifeApplication.user);
 
 					editor.putString("USER_DATA", json);
 					editor.commit();
@@ -466,7 +466,7 @@ public class EditProfile extends BaseActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                 response = MyApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
+                 response = GclifeApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
                 System.out.println(response + "  IMAGE  RESULT ");
 
                 JSONObject jsonMedia = new JSONObject();

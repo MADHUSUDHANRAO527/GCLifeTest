@@ -39,7 +39,7 @@ import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.FilePicker;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 
 /**
@@ -422,7 +422,7 @@ public class SocietyBillManagementFragment extends Fragment {
             try {
                 jsonBill = SocietyBillPost.makeBillPost(
                         userPref.getString("USERID", "NV"), societyName,
-                        monthName, financialYr, selectedFile, MyApplication.HOSTNAME);
+                        monthName, financialYr, selectedFile, GclifeApplication.HOSTNAME);
 
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -463,7 +463,7 @@ public class SocietyBillManagementFragment extends Fragment {
 
                 jsonViewBill = SocietyBillPost.callBillView(
                         userPref.getString("USERID", "NV"), societyName,
-                        monthName, financialYr, MyApplication.HOSTNAME);
+                        monthName, financialYr, GclifeApplication.HOSTNAME);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

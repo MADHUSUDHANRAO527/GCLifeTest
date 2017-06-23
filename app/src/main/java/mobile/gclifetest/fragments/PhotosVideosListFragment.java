@@ -82,7 +82,7 @@ import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/19/2016.
@@ -290,7 +290,7 @@ public class PhotosVideosListFragment extends Fragment {
         } else {
             pDialog.setVisibility(View.GONE);
         }
-        String host = MyApplication.HOSTNAME + "events.json?user_id=" + userPref.getString("USERID", "NV")
+        String host = GclifeApplication.HOSTNAME + "events.json?user_id=" + userPref.getString("USERID", "NV")
                 + "&event_type=" + eventName + "&society_master_name="
                 + flats.getSocietyid() + "&association_name=" + flats.getAvenue_name() + "&limit=" + limit + "&offset=" + offset + "&search_text=" + searchStr;
         JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, host.replaceAll(" ", "%20"),
@@ -413,7 +413,7 @@ public class PhotosVideosListFragment extends Fragment {
                 Constants.showToast(context, R.string.went_wrong);
             }
         });
-        MyApplication.queue.add(request);
+        GclifeApplication.queue.add(request);
 
     }
 
@@ -635,7 +635,7 @@ public class PhotosVideosListFragment extends Fragment {
                 json.put("event_id", eid);
                 json.put("user_id", userPref.getString("USERID", "NV"));
                 jsonLik.put("event_like", json);
-                jsonLike = MemsPost.PostLike(jsonLik, MyApplication.HOSTNAME);
+                jsonLike = MemsPost.PostLike(jsonLik, GclifeApplication.HOSTNAME);
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -695,7 +695,7 @@ public class PhotosVideosListFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                jsonDelete = EvenstPost.makeDelete(MyApplication.HOSTNAME, deleteEveId, "events");
+                jsonDelete = EvenstPost.makeDelete(GclifeApplication.HOSTNAME, deleteEveId, "events");
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

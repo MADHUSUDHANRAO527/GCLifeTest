@@ -26,7 +26,7 @@ import org.json.JSONObject;
 import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 public class FlatDetail extends BaseActivity {
     TextView avenueNameTxt, societyNameTxt, buidlingNameTxt, flatNumtxt,
@@ -171,7 +171,7 @@ public class FlatDetail extends BaseActivity {
     }
 
     private void activateUsers(int userId, String swicthState) {
-        String host = MyApplication.HOSTNAME + "reset_user.json?flat_id=" + userId + "&status=" + swicthState;
+        String host = GclifeApplication.HOSTNAME + "reset_user.json?flat_id=" + userId + "&status=" + swicthState;
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, host.replaceAll(" ", "%20"), (String) null, new Response.Listener<JSONObject>() {
             @Override
@@ -201,7 +201,7 @@ public class FlatDetail extends BaseActivity {
                         "OK");
             }
         });
-        MyApplication.queue.add(request);
+        GclifeApplication.queue.add(request);
 
     }
 

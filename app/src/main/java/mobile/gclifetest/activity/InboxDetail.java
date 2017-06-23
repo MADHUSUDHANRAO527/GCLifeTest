@@ -14,7 +14,7 @@ import java.util.List;
 
 import mobile.gclifetest.pojoGson.InboxPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.db.DatabaseHandler;
 
 public class InboxDetail extends BaseActivity {
@@ -59,7 +59,7 @@ public class InboxDetail extends BaseActivity {
                 }
                 tounameTxt.setText(pojo.getTo_users());
                 String createdAt = pojo.getCreated_at();
-                MyApplication app = new MyApplication();
+                GclifeApplication app = new GclifeApplication();
                 createdAt = app.convertDateEmail(createdAt);
 
                 String time = pojo.getCreated_at().substring(11, 19);
@@ -88,7 +88,7 @@ public class InboxDetail extends BaseActivity {
             }
             tounameTxt.setText(pojo.getTo_users());
             String createdAt = pojo.getCreated_at();
-            MyApplication app = new MyApplication();
+            GclifeApplication app = new GclifeApplication();
             createdAt = app.convertDateEmail(createdAt);
 
             String time = pojo.getCreated_at().substring(11, 19);

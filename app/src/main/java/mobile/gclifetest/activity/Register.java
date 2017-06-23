@@ -28,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -48,17 +49,17 @@ import mobile.gclifetest.http.SocietyNameGet;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.utils.InternetConnectionDetector;
-import mobile.gclifetest.utils.MyApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 
 public class Register extends BaseActivity {
 	TextView nextTxt;
 	Typeface typefaceLight;
 	EditText userNameEdit, emailEdit, passwordEdit, mobileNumEdit;
-	SharedPreferences userPref;
+	SharedPreferences userPref,fcmPref;
 	Editor editor;
-	String userName, email, password, mobileNum;
+	String userName, email, password, mobileNum,fcmToken;
 	String checkPatternId = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
 			+ "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 	LinearLayout loginTab, flatTab, flatLay;
@@ -111,6 +112,18 @@ public class Register extends BaseActivity {
 		datewithOwnerEdit = (EditText) findViewById(R.id.datewithOwnerEdit);
 		pDialog = (ProgressBarCircularIndeterminate) findViewById(R.id.progressBarCircularIndetermininate);
 		lisecnseEndsOntxtEdit = (EditText) findViewById(R.id.lisecnseEndsOntxtEdit);
+
+		fcmPref = getSharedPreferences("FCM_TOKEN",MODE_PRIVATE);
+
+		fcmToken = fcmPref.getString("fcm_token","NV");
+		if(fcmToken.equals("NV"))
+		{
+			fcmToken = FirebaseInstanceId.getInstance().getToken();
+			SharedPreferences pref = getApplicationContext().getSharedPreferences("FCM_TOKEN", 0);
+			SharedPreferences.Editor editor = pref.edit();
+			editor.putString("fcm_token", fcmToken);
+			editor.apply();
+		}
 
 		// setting Action Bar
 
@@ -794,7 +807,7 @@ public class Register extends BaseActivity {
 		protected Void doInBackground(Void... params) {
 			// TODO Auto-generated method stub
 			try {
-				jsonResultArry = SocietyNameGet.callSocietyList(MyApplication.HOSTNAME);
+				jsonResultArry = SocietyNameGet.callSocietyList(GclifeApplication.HOSTNAME);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -971,7 +984,7 @@ public class Register extends BaseActivity {
 						.put("username", userPref.getString("username", "NV"));
 				jsonSignUp
 						.put("password", userPref.getString("password", "NV"));
-				jsonSignUp.put("device_token",MyApplication.gcmTokenid);
+				jsonSignUp.put("device_token", fcmToken);
 				jsonSignUp.put("password_confirmation",
 						userPref.getString("password", "NV"));
 				JSONObject jsonFlat = new JSONObject();
@@ -993,7 +1006,7 @@ public class Register extends BaseActivity {
 				System.out.println(userJson + "PUSHHHHHHHHHHHHHHHHHHHHHhh");
 				try {
 					jsonSignupResult = SignUpPost.makeRequestRegister(userJson,
-							MyApplication.HOSTNAME);
+							GclifeApplication.HOSTNAME);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -1048,12 +1061,12 @@ public class Register extends BaseActivity {
 						finishTxt.setVisibility(View.VISIBLE);
 
 						Gson gson = new GsonBuilder().create();
-						MyApplication.user = gson.fromJson(
+						GclifeApplication.user = gson.fromJson(
 								jsonSignupResult.toString(),
 								UserDetailsPojo.class);
 
 						Gson gsonn = new Gson();
-						String json = gsonn.toJson(MyApplication.user);
+						String json = gsonn.toJson(GclifeApplication.user);
 
 						try {
 							editor.putString("USER_DATA", json);

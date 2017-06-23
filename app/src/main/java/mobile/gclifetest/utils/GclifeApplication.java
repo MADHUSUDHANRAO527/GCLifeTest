@@ -37,8 +37,8 @@ import java.util.TimeZone;
 
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 
-public class MyApplication extends Application {
-    public static MyApplication instance;
+public class GclifeApplication extends Application {
+    public static GclifeApplication instance;
     public static UserDetailsPojo user;
     SharedPreferences userPref;
     public static String actiobarColor = "#000000";
@@ -84,7 +84,7 @@ public class MyApplication extends Application {
         cloudinarySetup();
         setUpFlurry();
     }
-    public static synchronized MyApplication getInstance() {
+    public static synchronized GclifeApplication getInstance() {
         return instance;
     }
 

@@ -1,25 +1,35 @@
 {
   "project_info": {
-    "project_number": "874207551772",
-    "project_id": "gclife-1353"
+    "project_number": "1063094038106",
+    "firebase_url": "https://gclifeproduciton.firebaseio.com",
+    "project_id": "gclifeproduciton",
+    "storage_bucket": "gclifeproduciton.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:874207551772:android:06bf86c709ce63ef",
+        "mobilesdk_app_id": "1:1063094038106:android:67eae8842240854e",
         "android_client_info": {
-          "package_name": "mobile.gclifetest.activity"
+          "package_name": "activity.gclifetest.mobile.gclifetest"
         }
       },
       "oauth_client": [
         {
-          "client_id": "874207551772-3itlnasnq34d01l1tqv1l5rs32jtl8ns.apps.googleusercontent.com",
+          "client_id": "1063094038106-p2sm8muu8hqv18obn1deq91ui6l5e66u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "activity.gclifetest.mobile.gclifetest",
+            "certificate_hash": "1e54d6bf125813d15a4cc659884b84bd9f8086bf"
+          }
+        },
+        {
+          "client_id": "1063094038106-eakcbga16276b8r61k7ujt9skkf34482.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAlF5mRoq4s-iQINv8ET1Q6lJKA0OPoWRw"
+          "current_key": "AIzaSyBLBS0h4VJDrX824k65fyIREwh_QPJzM28"
         }
       ],
       "services": {
@@ -27,11 +37,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063094038106-eakcbga16276b8r61k7ujt9skkf34482.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

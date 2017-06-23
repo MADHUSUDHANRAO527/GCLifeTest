@@ -61,7 +61,7 @@ import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.ImpContactsPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -262,7 +262,7 @@ public class ImpContactsFragment extends Fragment {
             } else {
                 pDialog.setVisibility(View.GONE);
             }
-            String hostt = MyApplication.HOSTNAME + "important_contacts.json?limit=" + limit + "&offset=" + offset + "&search_key=" + searchStr;
+            String hostt = GclifeApplication.HOSTNAME + "important_contacts.json?limit=" + limit + "&offset=" + offset + "&search_key=" + searchStr;
             hostt = hostt.replace(" ", "%20");
             JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, hostt,
                     (String) null, new Response.Listener<JSONArray>() {
@@ -398,7 +398,7 @@ public class ImpContactsFragment extends Fragment {
                     //   pDialog.hide();
                 }
             });
-            MyApplication.queue.add(request);
+            GclifeApplication.queue.add(request);
 
         } catch (Exception e) {
             // TODO Auto-generated catch block

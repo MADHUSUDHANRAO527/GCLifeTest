@@ -42,7 +42,7 @@ import mobile.gclifetest.http.SocietyNameGet;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 
 public class AddFlats extends BaseActivity {
@@ -569,7 +569,7 @@ public class AddFlats extends BaseActivity {
 				System.out.println(jsonAddFlat + "PUSHHHHHHHHHHHHHHHHHHHHHhh");
 				try {
 					jsonFlatResults = SignUpPost
-							.addFlats(jsonAddFlat, MyApplication.HOSTNAME);
+							.addFlats(jsonAddFlat, GclifeApplication.HOSTNAME);
 					System.out.println("RESPONSE :::::::::::::::::::::"
 							+ jsonFlatResults);
 				} catch (Exception e) {
@@ -609,11 +609,11 @@ public class AddFlats extends BaseActivity {
 					finishTxt.setVisibility(View.VISIBLE);
 
 					Gson gson = new GsonBuilder().create();
-					MyApplication.user = gson.fromJson(
+					GclifeApplication.user = gson.fromJson(
 							jsonFlatResults.toString(), UserDetailsPojo.class);
 
 					Gson gsonn = new Gson();
-					String json = gsonn.toJson(MyApplication.user);
+					String json = gsonn.toJson(GclifeApplication.user);
 
 					editor.putString("USER_DATA", json);
 
@@ -648,7 +648,7 @@ public class AddFlats extends BaseActivity {
 		protected Void doInBackground(Void... params) {
 			// TODO Auto-generated method stub
 			try {
-				jsonResultArry = SocietyNameGet.callSocietyList(MyApplication.HOSTNAME);
+				jsonResultArry = SocietyNameGet.callSocietyList(GclifeApplication.HOSTNAME);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

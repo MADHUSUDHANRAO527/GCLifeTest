@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 import java.util.Stack;
 
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by goodworklabs on 04/03/2016.
@@ -41,7 +41,7 @@ public class BaseActivity extends AppCompatActivity {
         actionBar.setIcon(android.R.color.transparent);
         actionBar.setTitle(title);
         actionBar.setBackgroundDrawable(new ColorDrawable(Color
-                .parseColor(MyApplication.actiobarColor)));
+                .parseColor(GclifeApplication.actiobarColor)));
     }
     public static void closeSoftKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);

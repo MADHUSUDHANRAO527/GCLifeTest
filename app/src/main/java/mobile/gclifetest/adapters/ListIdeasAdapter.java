@@ -32,7 +32,7 @@ import mobile.gclifetest.http.MemsPost;
 import mobile.gclifetest.pojoGson.EventsPojo;
 import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/2/2016.
@@ -280,7 +280,7 @@ public class ListIdeasAdapter extends BaseAdapter {
                 json.put("event_id", eid);
                 json.put("user_id", userPref.getString("USERID", "NV"));
                 jsonLik.put("event_like", json);
-                jsonLike = MemsPost.PostLike(jsonLik, MyApplication.HOSTNAME);
+                jsonLike = MemsPost.PostLike(jsonLik, GclifeApplication.HOSTNAME);
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -318,7 +318,7 @@ public class ListIdeasAdapter extends BaseAdapter {
             // TODO Auto-generated method stub
             try {
 
-                jsonDelete = EvenstPost.makeDelete(MyApplication.HOSTNAME, deleteEveId, "events");
+                jsonDelete = EvenstPost.makeDelete(GclifeApplication.HOSTNAME, deleteEveId, "events");
                 System.out.println(jsonDelete + " **************");
             } catch (Exception e) {
                 // TODO Auto-generated catch block

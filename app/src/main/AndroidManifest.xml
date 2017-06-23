@@ -19,7 +19,6 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <!-- GCM requires a Google account. -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!-- Permission to vibrate -->
@@ -29,7 +28,6 @@
         android:name="mobile.gclifetest.activity.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="mobile.gclife.activity.permission.C2D_MESSAGE" />
 
     <uses-permission android:name="com.google.android.permission.PROVIDE_BACKGROUND" />
 
@@ -39,7 +37,7 @@
         android:name="android.permission.STATUS_BAR_SERVICE"
         android:protectionLevel="signature" />
     <application
-        android:name="mobile.gclifetest.utils.MyApplication"
+        android:name="mobile.gclifetest.utils.GclifeApplication"
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
@@ -121,7 +119,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <receiver
+       <!-- <receiver
             android:name="mobile.gclifetest.gcm.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
@@ -131,7 +129,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="mobile.gclifetest.gcm.GcmMessagerHandler" />
+        <service android:name="mobile.gclifetest.gcm.GcmMessagerHandler" />-->
 
         <!--NEW INTENTS-->
         <activity
@@ -151,6 +149,19 @@
             android:name="mobile.gclifetest.activity.YoutubeUpload"
             android:screenOrientation="portrait">
         </activity>
+        <service
+            android:name="mobile.gclifetest.Fcm.FirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name="mobile.gclifetest.Fcm.FirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

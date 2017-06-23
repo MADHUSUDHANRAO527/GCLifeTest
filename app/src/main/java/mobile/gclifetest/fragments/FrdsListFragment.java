@@ -70,7 +70,7 @@ import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 
 /**
@@ -495,7 +495,7 @@ public class FrdsListFragment extends Fragment {
     }
 
     private void callFrdsList() {
-        String host = MyApplication.HOSTNAME + "search_users.json?limit=" + "&limit=" + limit + "&offset=" + offset + "&search_key=" + searchStr;
+        String host = GclifeApplication.HOSTNAME + "search_users.json?limit=" + "&limit=" + limit + "&offset=" + offset + "&search_key=" + searchStr;
         host = host.replaceAll(" ", "%20");
         JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, host,
                 (String) null, new Response.Listener<JSONArray>() {
@@ -634,7 +634,7 @@ public class FrdsListFragment extends Fragment {
 
             }
         });
-        MyApplication.queue.add(request);
+        GclifeApplication.queue.add(request);
 
     }
 
@@ -716,7 +716,7 @@ public class FrdsListFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                jsonResultArry = SocietyNameGet.callSocietyList(MyApplication.HOSTNAME);
+                jsonResultArry = SocietyNameGet.callSocietyList(GclifeApplication.HOSTNAME);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

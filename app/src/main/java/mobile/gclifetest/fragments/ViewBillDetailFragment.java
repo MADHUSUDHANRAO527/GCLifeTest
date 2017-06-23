@@ -37,7 +37,7 @@ import mobile.gclifetest.event.AddIdeasEvent;
 import mobile.gclifetest.http.SocietyBillPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 
 /**
@@ -343,7 +343,7 @@ public class ViewBillDetailFragment extends Fragment {
             // TODO Auto-generated method stub
             try {
                 jsonConfrm = SocietyBillPost.updateStatusBill(
-                        MyApplication.HOSTNAME, billId, paymentType, narration,
+                        GclifeApplication.HOSTNAME, billId, paymentType, narration,
                         spnrVal, billAmountPaidEdit.getText().toString());
                 System.out.println(billAmountPaid + " !!!!!!!!!!!!!!!!!!!!!!!! " + jsonConfrm);
             } catch (Exception e) {

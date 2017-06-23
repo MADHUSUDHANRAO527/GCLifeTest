@@ -38,7 +38,7 @@ import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/1/2016.
@@ -204,7 +204,7 @@ public class HomeFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                jsonLatestusers = MemsPost.latestUsersDetails(MyApplication.HOSTNAME,
+                jsonLatestusers = MemsPost.latestUsersDetails(GclifeApplication.HOSTNAME,
                         userPref.getString("USERID", "NV"));
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -219,10 +219,10 @@ public class HomeFragment extends Fragment {
             if (jsonLatestusers != null) {
                 pDialog.setVisibility(View.GONE);
                 Gson gson = new GsonBuilder().create();
-                MyApplication.user = gson.fromJson(jsonLatestusers.toString(),
+                GclifeApplication.user = gson.fromJson(jsonLatestusers.toString(),
                         UserDetailsPojo.class);
                 Gson gsonn = new Gson();
-                String json = gsonn.toJson(MyApplication.user);
+                String json = gsonn.toJson(GclifeApplication.user);
                 editor.putString("USER_DATA", json);
                 editor.commit();
             } else {
@@ -274,7 +274,7 @@ public class HomeFragment extends Fragment {
             // TODO Auto-generated method stub
 
             try {
-                logOutJson = SignUpPost.logOut(MyApplication.HOSTNAME,
+                logOutJson = SignUpPost.logOut(GclifeApplication.HOSTNAME,
                         userPref.getString("USERID", "NV"));
             } catch (Exception e) {
                 // TODO Auto-generated catch block

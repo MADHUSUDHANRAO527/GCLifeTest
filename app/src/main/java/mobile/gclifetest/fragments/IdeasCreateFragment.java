@@ -64,7 +64,7 @@ import mobile.gclifetest.http.SocietyNameGet;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.AvenuesFilter;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/2/2016.
@@ -419,7 +419,7 @@ public class IdeasCreateFragment extends Fragment {
                 JSONObject eventJson = new JSONObject();
                 eventJson.put("event", jsonIdeas);
                 try {
-                    jsonResult = EvenstPost.makeRequest(eventJson, MyApplication.HOSTNAME);
+                    jsonResult = EvenstPost.makeRequest(eventJson, GclifeApplication.HOSTNAME);
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -470,7 +470,7 @@ public class IdeasCreateFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                jsonResultArry = SocietyNameGet.callSocietyList(MyApplication.HOSTNAME);
+                jsonResultArry = SocietyNameGet.callSocietyList(GclifeApplication.HOSTNAME);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -1188,7 +1188,7 @@ public class IdeasCreateFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Map response = MyApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
+                Map response = GclifeApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
                 System.out.println(response + "  IMAGE  RESULT ");
 
                 JSONObject jsonMedia = new JSONObject();

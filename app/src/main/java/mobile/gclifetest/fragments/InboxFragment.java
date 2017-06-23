@@ -62,7 +62,7 @@ import mobile.gclifetest.http.EvenstPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.InboxPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -465,7 +465,7 @@ public class InboxFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                userNamesArr = EvenstPost.makeRequestUserNamesList(MyApplication.HOSTNAME);
+                userNamesArr = EvenstPost.makeRequestUserNamesList(GclifeApplication.HOSTNAME);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -689,7 +689,7 @@ public class InboxFragment extends Fragment {
                 jsonMsgs.put("message", jsonMsg);
                 jsonMsgs.put("names", unamesList);
                 msgJObj = EvenstPost.makeRequestForPostMsg(jsonMsgs,
-                        MyApplication.HOSTNAME);
+                        GclifeApplication.HOSTNAME);
 
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
@@ -721,7 +721,7 @@ public class InboxFragment extends Fragment {
     }
 
     private void callSentListMail() {
-        String hostt = MyApplication.HOSTNAME + "messages.json?user_id=" + userPref.getString("USERID", "NV") + "&type="
+        String hostt = GclifeApplication.HOSTNAME + "messages.json?user_id=" + userPref.getString("USERID", "NV") + "&type="
                 + msgType + "&limit=" + limit + "&offset=" + offset;
 
         JsonArrayRequest request = new JsonArrayRequest(JsonRequest.Method.GET, hostt.replaceAll(" ", "%20"),
@@ -835,7 +835,7 @@ public class InboxFragment extends Fragment {
                 Log.d("Error = ", volleyError.toString());
             }
         });
-        MyApplication.queue.add(request);
+        GclifeApplication.queue.add(request);
     }
 
     public class ListSendMailBaseAdapter extends BaseAdapter {
@@ -949,7 +949,7 @@ public class InboxFragment extends Fragment {
             });
             String createdAt = inboxPojos.get(position)
                     .getCreated_at();
-            MyApplication app = new MyApplication();
+            GclifeApplication app = new GclifeApplication();
             createdAt = app.convertDateEmail(createdAt);
             String time = inboxPojos.get(position)
                     .getCreated_at().substring(11, 19);
@@ -975,7 +975,7 @@ public class InboxFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                jsonDelete = EvenstPost.makeDeleteInbox(MyApplication.HOSTNAME, mailid, "messages", userPref.getString("USERID", "NV"));
+                jsonDelete = EvenstPost.makeDeleteInbox(GclifeApplication.HOSTNAME, mailid, "messages", userPref.getString("USERID", "NV"));
                 Log.d("DELETE RESULT : ", jsonDelete + "");
             } catch (Exception e) {
                 // TODO Auto-generated catch block

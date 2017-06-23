@@ -58,7 +58,7 @@ import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 import mobile.gclifetest.utils.ListViewUtils;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 import static mobile.gclifetest.activity.R.id.titleNameTxt;
 
@@ -264,7 +264,7 @@ public class IdeasDetailFragment extends Fragment {
             // TODO Auto-generated method stub
             try {
 
-                jsonDetails = EvenstPost.makeReqeventDetails(MyApplication.HOSTNAME, eid);
+                jsonDetails = EvenstPost.makeReqeventDetails(GclifeApplication.HOSTNAME, eid);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -294,9 +294,9 @@ public class IdeasDetailFragment extends Fragment {
                         }
 
                     }
-                    String createdAt = MyApplication.convertDateEmail(jsonDetails.getString("created_at"));
+                    String createdAt = GclifeApplication.convertDateEmail(jsonDetails.getString("created_at"));
                     String time = jsonDetails.getString("created_at").substring(11, 19);
-                    time = MyApplication.convertTimeEmail(time);
+                    time = GclifeApplication.convertTimeEmail(time);
 
                     if (jsonDetails.has("username")) {
                         if (jsonDetails.getString("username") != null) {
@@ -368,7 +368,7 @@ public class IdeasDetailFragment extends Fragment {
                 json.put("comment", Constants.encodeString(comntEdit.getText().toString()));
 
                 jsonComment.put("event_comment", json);
-                jsonPushComment = MemsPost.PostComment(jsonComment, MyApplication.HOSTNAME);
+                jsonPushComment = MemsPost.PostComment(jsonComment, GclifeApplication.HOSTNAME);
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

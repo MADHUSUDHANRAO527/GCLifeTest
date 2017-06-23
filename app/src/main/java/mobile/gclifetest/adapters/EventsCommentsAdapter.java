@@ -14,7 +14,7 @@ import java.util.List;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.pojoGson.EventComments;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/2/2016.
@@ -23,14 +23,14 @@ public class EventsCommentsAdapter extends BaseAdapter {
     List<EventComments> eventComntsPojo;
     private LayoutInflater inflator;
     private Context context;
-    MyApplication app;
+    GclifeApplication app;
 
     public EventsCommentsAdapter(Context context2,
                                  List<EventComments> eventComntsPoj) {
         // TODO Auto-generated constructor stub
         this.context = context2;
         this.eventComntsPojo = eventComntsPoj;
-        app = new MyApplication();
+        app = new GclifeApplication();
         inflator = (LayoutInflater) context2
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -90,7 +90,7 @@ public class EventsCommentsAdapter extends BaseAdapter {
             e.printStackTrace();
         }
         String createdAt =eventComntsPojo.get(position).getCreated_at();
-        MyApplication app = new MyApplication();
+        GclifeApplication app = new GclifeApplication();
         createdAt = app.convertDateEmail(createdAt);
         String time = eventComntsPojo.get(position)
                 .getCreated_at().substring(11, 19);

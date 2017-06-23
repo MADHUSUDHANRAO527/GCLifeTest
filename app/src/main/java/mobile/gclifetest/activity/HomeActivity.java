@@ -22,7 +22,7 @@ import java.util.Stack;
 import mobile.gclifetest.fragments.HomeFragment;
 import mobile.gclifetest.fragments.IdeasDetailFragment;
 import mobile.gclifetest.fragments.InboxActivity;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/1/2016.
@@ -129,7 +129,7 @@ public class HomeActivity extends BaseActivity {
     private long mBackPressed;
 
     public void onBackpressed() {
-        if (MyApplication.getInstance().isUploading()) {
+        if (GclifeApplication.getInstance().isUploading()) {
             showUploadAlertOnBackPress();
         } else if (mFragmentStack.size() >= 2) {
             FragmentTransaction ft = mFragmentManager.beginTransaction();
@@ -201,7 +201,7 @@ public class HomeActivity extends BaseActivity {
                     ft.show(mFragmentStack.lastElement());
                     ft.commitAllowingStateLoss();
                 }
-                MyApplication.getInstance().setUploadingMedia(false);
+                GclifeApplication.getInstance().setUploadingMedia(false);
             }
         });
         alertDialogBuilder.setNegativeButton("NO", new DialogInterface.OnClickListener() {

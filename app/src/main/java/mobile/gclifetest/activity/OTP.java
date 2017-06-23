@@ -18,7 +18,7 @@ import org.json.JSONObject;
 import mobile.gclifetest.http.SignUpPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 public class OTP extends BaseActivity implements OnClickListener {
 	TextView resendOtpTxt, submitTxt, otpTxt;
@@ -112,7 +112,7 @@ public class OTP extends BaseActivity implements OnClickListener {
 			// TODO Auto-generated method stub
 
 			try {
-				jsonResult = SignUpPost.sendOtp(MyApplication.HOSTNAME,
+				jsonResult = SignUpPost.sendOtp(GclifeApplication.HOSTNAME,
 						userPref.getString("USERID", "NV"), otpStr);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -180,7 +180,7 @@ public class OTP extends BaseActivity implements OnClickListener {
 			// TODO Auto-generated method stub
 
 			try {
-				jsonResult = SignUpPost.resendOtp(MyApplication.HOSTNAME,
+				jsonResult = SignUpPost.resendOtp(GclifeApplication.HOSTNAME,
 						userPref.getString("USERID", "NV"));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

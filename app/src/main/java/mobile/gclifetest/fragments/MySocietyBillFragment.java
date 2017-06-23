@@ -44,7 +44,7 @@ import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.ListViewUtils;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 
 /**
@@ -268,7 +268,7 @@ public class MySocietyBillFragment extends Fragment {
 
                 jsonViewBill = SocietyBillPost.callSociMyBill(
                         userPref.getString("USERID", "NV"), societyName,
-                        buildingName, flatNum, financialYr, MyApplication.HOSTNAME);
+                        buildingName, flatNum, financialYr, GclifeApplication.HOSTNAME);
                 System.out.println(jsonViewBill + " !!!!!!!!!!!!!!!!!!!!*");
             } catch (Exception e) {
                 // TODO Auto-generated catch block
@@ -606,7 +606,7 @@ public class MySocietyBillFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                jsonConfrm = SocietyBillPost.updateMyBill(MyApplication.HOSTNAME, billId,
+                jsonConfrm = SocietyBillPost.updateMyBill(GclifeApplication.HOSTNAME, billId,
                         paymentType, refNum, billAmountPaid);
                 new ViewMySociBill().execute();
             } catch (Exception e) {

@@ -60,7 +60,7 @@ import mobile.gclifetest.pojoGson.EventsPojo;
 import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 /**
  * Created by MRaoKorni on 8/1/2016.
@@ -247,7 +247,7 @@ public class IdeasListFragment extends Fragment {
         } else {
             pDialog.setVisibility(View.GONE);
         }
-        String host = MyApplication.HOSTNAME + "events.json?user_id=" + userPref.getString("USERID", "NV")
+        String host = GclifeApplication.HOSTNAME + "events.json?user_id=" + userPref.getString("USERID", "NV")
                 + "&event_type=" + eventName + "&society_master_name="
                 + flats.getSocietyid() + "&association_name=" + flats.getAvenue_name() + "&limit=" + limit + "&offset=" + offset + "&search_text=" + searchStr;
         Log.d("HOSTNAME :", host.replaceAll(" ", "%20"));
@@ -365,7 +365,7 @@ public class IdeasListFragment extends Fragment {
                 Constants.showToast(context, R.string.went_wrong);
             }
         });
-        MyApplication.queue.add(request);
+        GclifeApplication.queue.add(request);
     }
 
     @Override

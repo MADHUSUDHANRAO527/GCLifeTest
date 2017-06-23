@@ -83,7 +83,7 @@ import mobile.gclifetest.http.SocietyNameGet;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.AvenuesFilter;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 
 import static mobile.gclifetest.utils.Constants.isFileSizeAcceptable;
 import static mobile.gclifetest.youtube.IntentRequestCode.REQUEST_AUTHORIZATION;
@@ -418,7 +418,7 @@ public class PhotosCreateFragment extends Fragment {
                 JSONObject eventJson = new JSONObject();
                 eventJson.put("event", jsonIdeas);
                 try {
-                    jsonResult = EvenstPost.makeRequest(eventJson, MyApplication.HOSTNAME);
+                    jsonResult = EvenstPost.makeRequest(eventJson, GclifeApplication.HOSTNAME);
                     System.out.println("RESPONSE :::::::::::::::::::::"
                             + jsonResult);
                 } catch (Exception e) {
@@ -469,7 +469,7 @@ public class PhotosCreateFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                jsonResultArry = SocietyNameGet.callSocietyList(MyApplication.HOSTNAME);
+                jsonResultArry = SocietyNameGet.callSocietyList(GclifeApplication.HOSTNAME);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -1145,7 +1145,7 @@ public class PhotosCreateFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
-            MyApplication.getInstance().setUploadingMedia(true);
+            GclifeApplication.getInstance().setUploadingMedia(true);
         }
 
         public YouTube.Videos.Insert prepareUpload() {
@@ -1351,7 +1351,7 @@ public class PhotosCreateFragment extends Fragment {
                             + videoPathsArr.length + " videos");
                     pDialogImg.setVisibility(View.GONE);
                     //     finishTxt.setEnabled(true);
-                    MyApplication.getInstance().setUploadingMedia(false);
+                    GclifeApplication.getInstance().setUploadingMedia(false);
                     new CreatePhotosVideos().execute();
                 } else {
                     pDialogImg.setVisibility(View.VISIBLE);
@@ -1382,13 +1382,13 @@ public class PhotosCreateFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
-            MyApplication.getInstance().setUploadingMedia(true);
+            GclifeApplication.getInstance().setUploadingMedia(true);
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Map response = MyApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
+                Map response = GclifeApplication.cloudinary.uploader().upload(filePhoto, ObjectUtils.emptyMap());
                 System.out.println(response + "  IMAGE  RESULT ");
 
                 JSONObject jsonMedia = new JSONObject();
@@ -1416,7 +1416,7 @@ public class PhotosCreateFragment extends Fragment {
                         + allPhotopaths.length + " images");
                 pDialogImg.setVisibility(View.GONE);
                 //     finishTxt.setEnabled(true);
-                MyApplication.getInstance().setUploadingMedia(false);
+                GclifeApplication.getInstance().setUploadingMedia(false);
             } else {
                 selectedMediaTxt.setText("Attaching images...."
                         + (String.valueOf(eventImages.length())));

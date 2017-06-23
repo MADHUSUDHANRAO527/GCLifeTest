@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -13,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -23,15 +25,15 @@ import mobile.gclifetest.http.SignUpPost;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.utils.InternetConnectionDetector;
-import mobile.gclifetest.utils.MyApplication;
 
 public class Login extends BaseActivity {
 	TextView login, signUp, loginwithEmailTxt;
 	String email, password;
 	EditText emailEdit, passwordEdit;
 	JSONObject jsonSignInResult;
-	SharedPreferences userPref;
+	SharedPreferences userPref,fcmPref;
 	SharedPreferences.Editor editor;
 	android.support.v7.app.ActionBar actionBar;
 	Typeface typefaceLight;
@@ -40,7 +42,7 @@ public class Login extends BaseActivity {
 	Boolean isInternetPresent = false;
 	RelativeLayout snackLay;
     public static boolean clearLogs = true;
-
+	String fcmToken;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -54,11 +56,20 @@ public class Login extends BaseActivity {
 		pDialog = (ProgressBarCircularIndeterminate) findViewById(R.id.progressBarCircularIndetermininate);
 		snackLay=(RelativeLayout)findViewById(R.id.snackLay);
 		userPref = getSharedPreferences("USER", MODE_PRIVATE);
+		fcmPref = getSharedPreferences("FCM_TOKEN",MODE_PRIVATE);
 		editor = userPref.edit();
 
 		typefaceLight = Typeface.createFromAsset(getAssets(),
 				"fonts/RobotoLight.ttf");
-
+		fcmToken = fcmPref.getString("fcm_token","NV");
+		if(fcmToken.equals("NV"))
+		{
+			fcmToken = FirebaseInstanceId.getInstance().getToken();
+			SharedPreferences pref = getApplicationContext().getSharedPreferences("FCM_TOKEN", 0);
+			SharedPreferences.Editor editor = pref.edit();
+			editor.putString("fcm_token", fcmToken);
+			editor.apply();
+		}
 		login.setTypeface(typefaceLight);
 		signUp.setTypeface(typefaceLight);
 		emailEdit.setTypeface(typefaceLight);
@@ -129,6 +140,7 @@ public class Login extends BaseActivity {
 
 			}
 		});
+
 	}
 
 	public class SignIn extends AsyncTask<Void, Void, Void> {
@@ -145,12 +157,13 @@ public class Login extends BaseActivity {
 			try {
 				jsonSignUp.put("email", email);
 				jsonSignUp.put("password", password);
-				jsonSignUp.put("device_token", MyApplication.gcmTokenid);
+				jsonSignUp.put("device_token", fcmToken);
+				Log.d("FCM_TOKEN", "LoginCall: "+fcmToken);
 				JSONObject userJson = new JSONObject();
 				userJson.put("user", jsonSignUp);
 				try {
 					jsonSignInResult = SignUpPost.makeRequestLogin(userJson,
-							MyApplication.HOSTNAME);
+							GclifeApplication.HOSTNAME);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -181,11 +194,11 @@ public class Login extends BaseActivity {
 							R.anim.slide_out_left);
 
 					Gson gson = new GsonBuilder().create();
-					MyApplication.user = gson.fromJson(
+					GclifeApplication.user = gson.fromJson(
 							jsonSignInResult.toString(), UserDetailsPojo.class);
 
 					Gson gsonn = new Gson();
-					String json = gsonn.toJson(MyApplication.user);
+					String json = gsonn.toJson(GclifeApplication.user);
 					editor.putString("USER_DATA", json);
 					editor.commit();
 

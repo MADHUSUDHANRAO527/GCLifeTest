@@ -60,7 +60,7 @@ import mobile.gclifetest.http.SocietyNameGet;
 import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.AvenuesFilter;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.MyApplication;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.youtube.dialog.ConfirmUploadVideoDialogBuilder;
 import mobile.gclifetest.youtube.handler.FetchTokenHandler;
 import mobile.gclifetest.youtube.handler.UploadProgressHandler;
@@ -429,7 +429,7 @@ public class PhotosCreateFrag extends Fragment {
                 JSONObject eventJson = new JSONObject();
                 eventJson.put("event", jsonIdeas);
                 try {
-                    jsonResult = EvenstPost.makeRequest(eventJson, MyApplication.HOSTNAME);
+                    jsonResult = EvenstPost.makeRequest(eventJson, GclifeApplication.HOSTNAME);
                     System.out.println("RESPONSE :::::::::::::::::::::"
                             + jsonResult);
                 } catch (Exception e) {
@@ -472,7 +472,7 @@ public class PhotosCreateFrag extends Fragment {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             try {
-                jsonResultArry = SocietyNameGet.callSocietyList(MyApplication.HOSTNAME);
+                jsonResultArry = SocietyNameGet.callSocietyList(GclifeApplication.HOSTNAME);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
