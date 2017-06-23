@@ -44,7 +44,7 @@ public class MyApplication extends Application {
     public static String actiobarColor = "#000000";
     Gson gson;
     GoogleCloudMessaging gcm;
-    String PROJECT_NUMBER = "682888148825";
+    String PROJECT_NUMBER = "874207551772";
     public static String gcmTokenid;
     public static RequestQueue queue;
     public static Cloudinary cloudinary;
@@ -79,7 +79,7 @@ public class MyApplication extends Application {
         EventBus.builder().logNoSubscriberMessages(false)
                 .sendNoSubscriberEvent(false).installDefaultEventBus();
         // get GCM token
-        getRegId();
+        //getRegId();
         //cloudinary setup
         cloudinarySetup();
         setUpFlurry();
@@ -209,6 +209,6 @@ public class MyApplication extends Application {
     public void setUpFlurry(){
         new FlurryAgent.Builder()
                 .withLogEnabled(false)
-                .build(this, Constants.flurryApiKey);
+                .build(this, mobile.gclifetest.utils.Constants.flurryApiKey);
     }
 }

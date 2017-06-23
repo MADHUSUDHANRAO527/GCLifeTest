@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "874207551772",
+    "project_id": "gclife-1353"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:874207551772:android:06bf86c709ce63ef",
+        "android_client_info": {
+          "package_name": "mobile.gclifetest.activity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "874207551772-3itlnasnq34d01l1tqv1l5rs32jtl8ns.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlF5mRoq4s-iQINv8ET1Q6lJKA0OPoWRw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
