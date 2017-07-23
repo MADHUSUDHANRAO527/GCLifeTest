@@ -15,9 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonFactory;
-import com.google.android.gms.auth.GoogleAuthException;
+/*import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.auth.UserRecoverableAuthException;*/
 import com.google.android.gms.common.AccountPicker;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -129,7 +129,7 @@ public class YoutubeUpload extends AppCompatActivity {
     public class FetchYouTubeTokenTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            try {
+            /*try {
                 token = GoogleAuthUtil.getToken(YoutubeUpload.this, selectedGoogleAccount, scope);
             } catch (UserRecoverableAuthException userAuthEx) {
                 // In case Android complains that Access not Configured, refer to comment of this class for how to configure OAuth client ID for this app.
@@ -138,7 +138,7 @@ public class YoutubeUpload extends AppCompatActivity {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
             return null;
         }
 

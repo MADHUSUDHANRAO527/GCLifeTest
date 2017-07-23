@@ -32,9 +32,9 @@ import android.widget.ViewSwitcher;
 
 import com.cloudinary.utils.ObjectUtils;
 import com.flurry.android.FlurryAgent;
-import com.google.android.gms.auth.GoogleAuthException;
+/*import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.auth.UserRecoverableAuthException;*/
 import com.google.android.gms.common.AccountPicker;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -80,7 +80,6 @@ import mobile.gclifetest.custom.GalleryImgAdapter;
 import mobile.gclifetest.event.AddIdeasEvent;
 import mobile.gclifetest.http.EvenstPost;
 import mobile.gclifetest.http.SocietyNameGet;
-import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.AvenuesFilter;
 import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.utils.GclifeApplication;
@@ -102,7 +101,7 @@ public class PhotosCreateFragment extends Fragment {
     SharedPreferences userPref;
     Map<String, ArrayList<String>> societyMap = new HashMap<String, ArrayList<String>>();
     JSONArray jsonResultArry;
-    ProgressBarCircularIndeterminate pDialog, pDialogImg;
+    mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate pDialog, pDialogImg;
     ImageView attachImg;
     int SELECT_FILE1 = 1;
     byte[] bytes;
@@ -150,8 +149,8 @@ public class PhotosCreateFragment extends Fragment {
         avenueLay = (RelativeLayout) v.findViewById(R.id.avenueLay);
         sociLay = (RelativeLayout) v.findViewById(R.id.societyLay);
         memLay = (RelativeLayout) v.findViewById(R.id.memberLay);
-        pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
-        pDialogImg = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialogImg);
+        pDialog = (mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
+        pDialogImg = (mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialogImg);
         finishTxt = (TextView) v.findViewById(R.id.finishTxt);
         attachImg = (ImageView) v.findViewById(R.id.attachImg);
         mProgressBar = (ProgressBar) v.findViewById(R.id.upload_progress);
@@ -637,7 +636,7 @@ public class PhotosCreateFragment extends Fragment {
                 selectedMediaTxt.setText("You have Selected " + all_path.length + " videos");
 
                 if (!userPref.getString("youtube_name", "NV").equals("NV")) {
-                    new FetchYouTubeTokenTask().execute();
+                   // new FetchYouTubeTokenTask().execute();
                 } else {
                     pickUserAccount();
                 }
@@ -654,7 +653,7 @@ public class PhotosCreateFragment extends Fragment {
                         editor.putString("youtube_name", accountName);
                         editor.commit();
                         editor.apply();
-                        new FetchYouTubeTokenTask().execute();
+                        //new FetchYouTubeTokenTask().execute();
 
                     } else {
                         //   DialogUtil.showExceptionAlertDialog(this, getString(R.string.googleAccountNotSelected), getString(R.string.googleAccountNotSupported));
@@ -663,7 +662,7 @@ public class PhotosCreateFragment extends Fragment {
             } else if (requestCode == REQUEST_AUTHORIZATION && resultCode == Activity.RESULT_OK) {
                 // Account has been chosen and permissions have been granted. You can upload video
                 Toast.makeText(getActivity(), "APP AUTHORIZED!", Toast.LENGTH_LONG).show();
-                new FetchYouTubeTokenTask().execute();
+              //  new FetchYouTubeTokenTask().execute();
             }
         }
     }
@@ -1070,7 +1069,7 @@ public class PhotosCreateFragment extends Fragment {
         startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
     }
 
-    public class FetchYouTubeTokenTask extends AsyncTask<Void, Void, Void> {
+   /* public class FetchYouTubeTokenTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
             try {
@@ -1094,7 +1093,7 @@ public class PhotosCreateFragment extends Fragment {
                 Toast.makeText(getActivity(), "Couldn't able to fetch token from youtube!Try again!", Toast.LENGTH_LONG).show();
             }
         }
-    }
+    }*/
 
     private void uploaddToServer() {
         selectedMediaTxt.setText("Attaching videos....");

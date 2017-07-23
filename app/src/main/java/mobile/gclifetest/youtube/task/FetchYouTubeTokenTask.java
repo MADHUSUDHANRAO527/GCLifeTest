@@ -2,20 +2,14 @@ package mobile.gclifetest.youtube.task;
 
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.util.Log;
 
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAuthIOException;
-
-import java.io.IOException;
-
-import mobile.gclifetest.youtube.IntentRequestCode;
 import mobile.gclifetest.youtube.PhotosCreateFrag;
 import mobile.gclifetest.youtube.handler.HandlerMessage;
 import mobile.gclifetest.youtube.util.MessageUtil;
-import mobile.gclifetest.youtube.util.SharedPreferenceUtil;
+
+/*import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;*/
 
 public class FetchYouTubeTokenTask extends AsyncTask<Void, Void, Void> {
 	private static final String LOG_TAG = "FetchYouTubeTokenTask";
@@ -35,7 +29,7 @@ public class FetchYouTubeTokenTask extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected Void doInBackground(Void... voids)
 	{
-		try
+		/*try
 		{
 			token = GoogleAuthUtil.getToken(activity.getActivity(), selectedGoogleAccount, YouTubeUploadTask.scope);
 			SharedPreferenceUtil.savePreferenceItemByName(activity.getActivity(), SharedPreferenceUtil.selectedGoogleAccount, selectedGoogleAccount);
@@ -55,7 +49,7 @@ public class FetchYouTubeTokenTask extends AsyncTask<Void, Void, Void> {
 		catch (GoogleAuthException e)
 		{
 			Log.e(LOG_TAG, e.getMessage());
-		}
+		}*/
 		return null;
 	}
 

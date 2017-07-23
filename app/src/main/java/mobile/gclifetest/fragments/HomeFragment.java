@@ -150,11 +150,13 @@ public class HomeFragment extends Fragment {
                         fragment.setArguments(bundle);
                         ((HomeActivity) context).addFragment(fragment);
                     } else if (position == 6) {
-                        PhotosVideosListFragment fragment = new PhotosVideosListFragment();
+                        Constants.showSnack(v, "Coming soon!",
+                                "OK");
+                        /*PhotosVideosListFragment fragment = new PhotosVideosListFragment();
                         Bundle bundle = new Bundle();
                         bundle.putString("EventName", "Videos");
                         fragment.setArguments(bundle);
-                        ((HomeActivity) context).addFragment(fragment);
+                        ((HomeActivity) context).addFragment(fragment);*/
                     } else if (position == 7) {
                         ((HomeActivity) context).addFragment(new FrdsListFragment());
                     } else if (position == 8) {
