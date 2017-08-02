@@ -50,15 +50,14 @@ import mobile.gclifetest.db.DatabaseHandler;
 import mobile.gclifetest.event.AddIdeasEvent;
 import mobile.gclifetest.http.EvenstPost;
 import mobile.gclifetest.http.MemsPost;
-import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.EventComments;
 import mobile.gclifetest.pojoGson.EventImages;
 import mobile.gclifetest.pojoGson.EventsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
+import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 import mobile.gclifetest.utils.ListViewUtils;
-import mobile.gclifetest.utils.GclifeApplication;
 
 import static mobile.gclifetest.activity.R.id.titleNameTxt;
 
@@ -86,7 +85,7 @@ public class IdeasDetailFragment extends Fragment {
     JSONObject jsonPushComment;
     SharedPreferences userPref;
     UserDetailsPojo user;
-    ProgressBarCircularIndeterminate pDialog;
+    mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate pDialog;
     LinearLayout progrLay, photosCountLay;
     JSONObject jsonDetails;
     EventsCommentsAdapter commentsAdapter;
@@ -113,7 +112,7 @@ public class IdeasDetailFragment extends Fragment {
                 .showImageForEmptyUri(R.drawable.no_media)
                 .showImageOnFail(R.drawable.no_media)
                 .showImageOnLoading(R.drawable.no_media).build();
-        pDialog = (ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
+        pDialog = (mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate) v.findViewById(R.id.pDialog);
         progrLay = (LinearLayout) v.findViewById(R.id.progrLay);
         photosCountLay = (LinearLayout) v.findViewById(R.id.photos_lay);
         titleTxt = (TextView) v.findViewById(titleNameTxt);
@@ -346,6 +345,7 @@ public class IdeasDetailFragment extends Fragment {
             } else {
                 progrLay.setVisibility(View.GONE);
                 Constants.showToast(context, R.string.went_wrong);
+                ((HomeActivity) context).onBackpressed();
             }
         }
     }
