@@ -111,6 +111,7 @@ public class FrdsListFragment extends Fragment {
     ImageView clearImg;
     int limit = 15, currentPosition, offset = 0;
     View v;
+
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -239,7 +240,7 @@ public class FrdsListFragment extends Fragment {
 
                 if (jsonResultArry == null
                         || jsonResultArry.toString() == "null") {
-                    Constants.showToast(context,R.string.loading);
+                    Constants.showToast(context, R.string.loading);
                 } else {
                     final Dialog m_dialog = new Dialog(getActivity());
                     m_dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -482,10 +483,14 @@ public class FrdsListFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
                 // TODO Auto-generated method stub
-                Intent i = new Intent(getActivity(), FrdsDetail.class);
-                i.putExtra("jsonDetails", gson.toJson(globalUserListPojo.get(position)));
+                if (globalUserListPojo.get(position).getPrivacy()) {
+                    Toast.makeText(context,"Privacy is enabled for this user!",Toast.LENGTH_LONG).show();
+                } else {
+                    Intent i = new Intent(getActivity(), FrdsDetail.class);
+                    i.putExtra("jsonDetails", gson.toJson(globalUserListPojo.get(position)));
+                    startActivity(i);
+                }
 
-                startActivity(i);
             }
         });
 
@@ -517,10 +522,10 @@ public class FrdsListFragment extends Fragment {
                         pDialog.setVisibility(View.GONE);
                         progressBar.setVisibility(View.GONE);
                         if (searchStr.length() > 0) {
-                            Constants.showToast(context,R.string.frds_not_found);
+                            Constants.showToast(context, R.string.frds_not_found);
 
                         } else {
-                            Constants.showToast(context,R.string.no_frds_avaibale);
+                            Constants.showToast(context, R.string.no_frds_avaibale);
                         }
                         userListPojo.clear();
                         adapterfrds.notifyDataSetChanged();
@@ -630,7 +635,7 @@ public class FrdsListFragment extends Fragment {
 
                 Log.d("Error = ", volleyError.toString());
                 pDialog.setVisibility(View.GONE);
-                Constants.showToast(context,R.string.went_wrong);
+                Constants.showToast(context, R.string.went_wrong);
 
             }
         });
@@ -808,7 +813,7 @@ public class FrdsListFragment extends Fragment {
                 }
 
             } else {
-                Constants.showToast(context,R.string.went_wrong);
+                Constants.showToast(context, R.string.went_wrong);
             }
         }
     }
