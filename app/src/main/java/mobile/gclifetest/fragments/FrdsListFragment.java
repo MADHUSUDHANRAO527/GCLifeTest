@@ -484,7 +484,7 @@ public class FrdsListFragment extends Fragment {
                                     int position, long id) {
                 // TODO Auto-generated method stub
                 if (globalUserListPojo.get(position).getPrivacy()) {
-                    Toast.makeText(context,"Privacy is enabled for this user!",Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Privacy is enabled for this user!", Toast.LENGTH_LONG).show();
                 } else {
                     Intent i = new Intent(getActivity(), FrdsDetail.class);
                     i.putExtra("jsonDetails", gson.toJson(globalUserListPojo.get(position)));
@@ -700,9 +700,15 @@ public class FrdsListFragment extends Fragment {
             holder.unameTxt.setText(userListPojo.get(position).getUsername());
             Log.d("POS :", position + "");
             if (userListPojo.size() > 0) {
-                holder.avaneuNameTxt.setText(userListPojo.get(position).getGclife_registration_flatdetails().get(0).getAvenue_name()
-                        + "," + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getBuildingid() + ","
-                        + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getFlat_number());
+                if (userListPojo.get(position).getPrivacy()) {
+                    holder.avaneuNameTxt.setVisibility(View.GONE);
+                } else {
+                    holder.avaneuNameTxt.setVisibility(View.VISIBLE);
+
+                    holder.avaneuNameTxt.setText(userListPojo.get(position).getGclife_registration_flatdetails().get(0).getAvenue_name()
+                            + "," + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getBuildingid() + ","
+                            + userListPojo.get(position).getGclife_registration_flatdetails().get(0).getFlat_number());
+                }
             }
             return convertView;
         }
