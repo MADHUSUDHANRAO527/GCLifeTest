@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1063094038106-lk6ueiil50dubau56sr4gejbhcf6jr9c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "activity.gclifetest.mobile.gclifetest",
+            "certificate_hash": "cc543dd25733b7a2593a5cd150c410aac3f7d5db"
+          }
+        },
+        {
           "client_id": "1063094038106-p2sm8muu8hqv18obn1deq91ui6l5e66u.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

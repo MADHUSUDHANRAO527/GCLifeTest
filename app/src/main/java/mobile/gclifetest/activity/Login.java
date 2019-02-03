@@ -3,6 +3,7 @@ package mobile.gclifetest.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,7 +30,7 @@ import mobile.gclifetest.utils.GclifeApplication;
 import mobile.gclifetest.utils.InternetConnectionDetector;
 
 public class Login extends BaseActivity {
-	TextView login, signUp, loginwithEmailTxt;
+	TextView login, signUp, loginwithEmailTxt,forgotPasswordTxt;
 	String email, password;
 	EditText emailEdit, passwordEdit;
 	JSONObject jsonSignInResult;
@@ -50,6 +51,8 @@ public class Login extends BaseActivity {
 		setContentView(R.layout.login);
 		login = (TextView) findViewById(R.id.loginTxt);
 		signUp = (TextView) findViewById(R.id.signUpTxt);
+		forgotPasswordTxt = (TextView) findViewById(R.id.forgot_password_txt);
+
 		loginwithEmailTxt = (TextView) findViewById(R.id.loginwithEmailTxt);
 		emailEdit = (EditText) findViewById(R.id.emailSignIn);
 		passwordEdit = (EditText) findViewById(R.id.passwordSignIn);
@@ -140,7 +143,13 @@ public class Login extends BaseActivity {
 
 			}
 		});
-
+		forgotPasswordTxt.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://meljol.tech:3000/users/password/new"));
+                startActivity(browserIntent);
+			}
+		});
 	}
 
 	public class SignIn extends AsyncTask<Void, Void, Void> {

@@ -18,11 +18,14 @@ import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
+import mobile.gclifetest.event.AthidiRefreshEvent;
 import mobile.gclifetest.fragments.InboxActivity;
 import mobile.gclifetest.utils.Constants;
 
@@ -33,7 +36,7 @@ import mobile.gclifetest.utils.Constants;
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
     String message, title, category;
     Context mContext;
-    String eid, notiId="100";
+    String eid, notiId = "100";
     SharedPreferences userPref;
     SharedPreferences.Editor editor;
     String msg = "", postedBy = "";
@@ -45,6 +48,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
         Log.e(TAG, "From: " + remoteMessage.getFrom());
+        EventBus.getDefault().post(new AthidiRefreshEvent(true));
 
         if (remoteMessage == null)
             return;
@@ -60,13 +64,14 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             Log.e(TAG, "Data Payload: " + remoteMessage.getData().toString());
 
             try {
-               // JSONObject json = new JSONObject(remoteMessage.getData().toString().trim());
+                // JSONObject json = new JSONObject(remoteMessage.getData().toString().trim());
                 handleDataMessage(remoteMessage.getData());
             } catch (Exception e) {
                 Log.e(TAG, "Exception: " + e.getMessage());
             }
         }
     }
+
     private void handleNotification(String message) {
         if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
             // app is in foreground, broadcast the push message
@@ -77,7 +82,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             // play notification sound
             NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
             notificationUtils.playNotificationSound();
-        }else{
+        } else {
             // If the app is in background, firebase itself handles the notification
         }
     }
@@ -86,10 +91,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         Log.e(TAG, "push json: " + json.toString());
 
         try {
-           // JSONObject data = json.getJSONObject("data");
+            // JSONObject data = json.getJSONObject("data");
 
-             title = json.get("tittle");
-             message = json.get("message");
+            title = json.get("tittle");
+            message = json.get("message");
             category = json.get("category");
             eid = json.get("event");
             Log.e(TAG, "title: " + title);
@@ -99,13 +104,11 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 String[] totMsg = message.split("-");
                 postedBy = totMsg[0];
                 msg = totMsg[1];
-            }else {
+            } else {
                 msg = message;
             }
 
-
-
-            Intent notificationIntent;
+            Intent notificationIntent = null;
             if (category.equals("News") || category.equals("Notice") ||
                     category.equals("Ideas") || category.equals("Photos") || category.equals("Videos")) {
                 notificationIntent = new Intent(getApplicationContext(), HomeActivity.class);
@@ -114,6 +117,9 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
             } else if (category == "Inbox" || category.equals("Inbox")) {
                 notificationIntent = new Intent(getApplicationContext(), InboxActivity.class);
+            } else if (category.equals("Suvidha_13_3") || category.equals("Suvidha_10_2") || category.equals("Suvidha_11_1")) {
+                // notificationIntent = new Intent(getApplicationContext(), AthidiFragment.class);
+                EventBus.getDefault().post(new AthidiRefreshEvent(true));
             } else {
                 notificationIntent = new Intent(getApplicationContext(), HomeActivity.class);
             }
@@ -165,7 +171,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                     showNotificationMessageWithBigImage(getApplicationContext(), title, message, timestamp, resultIntent, imageUrl);
                 }*//*
             }*/
-        }  catch (Exception e) {
+        } catch (Exception e) {
             Log.e(TAG, "Exception: " + e.getMessage());
         }
     }
@@ -242,7 +248,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
             startWakefulService(context, (intent.setComponent(comp)));
             setResultCode(Activity.RESULT_OK);
         }*/
-
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

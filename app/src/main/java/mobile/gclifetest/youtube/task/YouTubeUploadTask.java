@@ -1,44 +1,20 @@
 package mobile.gclifetest.youtube.task;
 
-import android.content.Context;
-import android.os.AsyncTask;
-
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.media.MediaHttpUploader;
-import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.InputStreamContent;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.ExponentialBackOff;
-import com.google.api.services.youtube.YouTube;
+/*import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTube.Videos.Insert;
 import com.google.api.services.youtube.YouTubeScopes;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoSnippet;
-import com.google.api.services.youtube.model.VideoStatus;
-import com.google.common.collect.Lists;
+import com.google.api.services.youtube.model.VideoStatus;*/
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import mobile.gclifetest.youtube.handler.HandlerMessage;
-import mobile.gclifetest.youtube.handler.UploadProgressHandler;
-import mobile.gclifetest.youtube.util.DialogUtil;
-import mobile.gclifetest.youtube.util.MessageUtil;
-
+/*
 public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
 
-	private static final String VIDEO_FILE_FORMAT = "video/*";
+	private static final String VIDEO_FILE_FORMAT = "video*/
+/*";
 
 	public static final String scope = "oauth2:https://www.googleapis.com/auth/youtube";
-    private static final List<String> scopes = Lists.newArrayList(YouTubeScopes.YOUTUBE);
+   // private static final List<String> scopes = Lists.newArrayList(YouTubeScopes.YOUTUBE);
 
 	private Context activity = null;
 	private String videoFileName = null;
@@ -50,8 +26,9 @@ public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
 
 	private HttpTransport transport = AndroidHttp.newCompatibleTransport();
 	private JsonFactory jsonFactory = new GsonFactory();
-	
-	private MediaHttpUploader uploader = null;
+*/
+
+	/*private MediaHttpUploader uploader = null;
 
 	private Video youtubeVideo = null;
 
@@ -68,11 +45,11 @@ public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
 		this.uploadProgressHandler.setTask(this);
 	}
 	
-    /**
+    *//**
      * Prepare upload. Just leaves execute to be run in AsyncTask.
      *
      * @return video insert
-     */
+     *//*
     public Insert prepareUpload() {
         try {
         	File videoFile = new File(videoFileName);
@@ -110,11 +87,11 @@ public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
 
             uploader = videoInsert.getMediaHttpUploader();
 
-            /*
+            *//*
              * Sets whether direct media upload is enabled or disabled. True = whole media content is
              * uploaded in a single request. False (default) = resumable media upload protocol to upload
              * in data chunks.
-             */
+             *//*
             uploader.setDirectUploadEnabled(false);
 	        MediaHttpUploaderProgressListener progressListener = new MediaHttpUploaderProgressListener() {
                 public void progressChanged(MediaHttpUploader uploader) throws IOException {
@@ -158,9 +135,9 @@ public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
 		}
     }
     
-    /**
+    *//**
      * Build the credential to authorize the installed application to access user's protected data.
-     */
+     *//*
     private GoogleAccountCredential buildGoogleAccountCredential() throws Exception {
 	    GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(activity, scopes);
         credential.setBackOff(new ExponentialBackOff());
@@ -201,5 +178,5 @@ public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
     public MediaHttpUploader getUploader() {
     	return uploader;
     }
-    
-}
+    */
+//}

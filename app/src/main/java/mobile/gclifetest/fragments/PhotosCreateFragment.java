@@ -32,25 +32,7 @@ import android.widget.ViewSwitcher;
 
 import com.cloudinary.utils.ObjectUtils;
 import com.flurry.android.FlurryAgent;
-/*import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;*/
 import com.google.android.gms.common.AccountPicker;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.googleapis.media.MediaHttpUploader;
-import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.InputStreamContent;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.ExponentialBackOff;
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.YouTubeScopes;
-import com.google.api.services.youtube.model.Video;
-import com.google.api.services.youtube.model.VideoSnippet;
-import com.google.api.services.youtube.model.VideoStatus;
-import com.google.common.collect.Lists;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -63,7 +45,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -87,6 +68,15 @@ import mobile.gclifetest.utils.GclifeApplication;
 import static mobile.gclifetest.utils.Constants.isFileSizeAcceptable;
 import static mobile.gclifetest.youtube.IntentRequestCode.REQUEST_AUTHORIZATION;
 import static mobile.gclifetest.youtube.util.SharedPreferenceUtil.selectedGoogleAccount;
+
+/*import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;*/
+/*import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.YouTubeScopes;
+import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoSnippet;
+import com.google.api.services.youtube.model.VideoStatus;*/
 
 /**
  * Created by MRaoKorni on 8/19/2016.
@@ -125,7 +115,7 @@ public class PhotosCreateFragment extends Fragment {
     private CheckBox checkBox_header;
     static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
     public static final String scope = "oauth2:https://www.googleapis.com/auth/youtube";
-    private Video youtubeVideo = null;
+   // private Video youtubeVideo = null;
     View v;
     String[] videoPathsArr = new String[0];
     String[] allPhotopaths;
@@ -526,9 +516,9 @@ public class PhotosCreateFragment extends Fragment {
                                         .getJSONObject(k);
                                 String buildingName = jsonBuild
                                         .getString("buildinname");
-                                BigDecimal number = new BigDecimal(buildingName);
+                               /* BigDecimal number = new BigDecimal(buildingName);
                                 buildingName = number.stripTrailingZeros()
-                                        .toPlainString();
+                                        .toPlainString();*/
 
                                 listbuilddata.add(buildingName);
 
@@ -1112,14 +1102,14 @@ public class PhotosCreateFragment extends Fragment {
         } else {
             pDialog.setVisibility(View.VISIBLE);
             finishTxt.setVisibility(View.INVISIBLE);
-            new YouTubeUploadTask(videoPathvideo, i).execute();
+          //  new YouTubeUploadTask(videoPathvideo, i).execute();
         }
     }
 
 
-    public class YouTubeUploadTask extends AsyncTask<Void, Integer, Void> {
+   /* public class YouTubeUploadTask extends AsyncTask<Void, Integer, Void> {
         String videoPathvideo;
-        private static final String VIDEO_FILE_FORMAT = "video/*";
+        private static final String VIDEO_FILE_FORMAT = "video*//*";
         int fileNumber;
         public static final String scope = "oauth2:https://www.googleapis.com/auth/youtube";
         private final List<String> scopes = Lists.newArrayList(YouTubeScopes.YOUTUBE);
@@ -1189,8 +1179,8 @@ public class PhotosCreateFragment extends Fragment {
                 int chunkSize = 2000;
                 System.out.println(fileNumber);
                 int n = fileNumber++;
-           /*     selectedMediaTxt.setText("Attaching videos.... "
-                        + String.valueOf(fileNumber));*/
+           *//*     selectedMediaTxt.setText("Attaching videos.... "
+                        + String.valueOf(fileNumber));*//*
 
                 while (bytesTransferred < totalSize) {
                     int nextChunkSize = totalSize - bytesTransferred;
@@ -1216,11 +1206,11 @@ public class PhotosCreateFragment extends Fragment {
 
                 uploader = videoInsert.getMediaHttpUploader();
 
-            /*
+            *//*
              * Sets whether direct media upload is enabled or disabled. True = whole media content is
              * uploaded in a single request. False (default) = resumable media upload protocol to upload
              * in data chunks.
-             */
+             *//*
                 uploader.setDirectUploadEnabled(true);
                 MediaHttpUploaderProgressListener progressListener = new MediaHttpUploaderProgressListener() {
                     public void progressChanged(MediaHttpUploader uploader) throws IOException {
@@ -1289,9 +1279,9 @@ public class PhotosCreateFragment extends Fragment {
             return null;
         }
 
-        /**
+        *//**
          * Build the credential to authorize the installed application to access user's protected data.
-         */
+         *//*
         private GoogleAccountCredential buildGoogleAccountCredential() throws Exception {
             GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(getActivity(), scopes);
             credential.setBackOff(new ExponentialBackOff());
@@ -1369,7 +1359,7 @@ public class PhotosCreateFragment extends Fragment {
             return uploader;
         }
     }
-
+*/
     public class LoadImages extends AsyncTask<Void, Void, Void> {
         String[] allPhotopaths;
         File filePhoto;

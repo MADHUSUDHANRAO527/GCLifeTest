@@ -14,11 +14,11 @@ import android.widget.GridView;
 import com.flurry.android.FlurryAgent;
 import com.google.gson.Gson;
 
-import mobile.gclifetest.pojoGson.UserDetailsPojo;
-import mobile.gclifetest.utils.Constants;
 import mobile.gclifetest.activity.HomeActivity;
 import mobile.gclifetest.activity.R;
 import mobile.gclifetest.adapters.MySocietyAdapter;
+import mobile.gclifetest.pojoGson.UserDetailsPojo;
+import mobile.gclifetest.utils.Constants;
 
 /**
  * Created by MRaoKorni on 8/26/2016.
@@ -26,9 +26,9 @@ import mobile.gclifetest.adapters.MySocietyAdapter;
 public class MySocietyFragment extends Fragment {
     GridView gv;
     Context context;
-    public static String[] prgmNameList = {"Kys", "My bill", "Facilitator"};
+    public static String[] prgmNameList = {"Kys", "My bill", "Facilitator", "Atithi"};
     public static int[] prgmImages = {R.drawable.icon_news,
-            R.drawable.icon_noticeboard, R.drawable.icon_society};
+            R.drawable.icon_noticeboard, R.drawable.icon_society, R.drawable.icon_society};
     SharedPreferences userPref;
     Gson gson = new Gson();
     UserDetailsPojo user;
@@ -49,7 +49,10 @@ public class MySocietyFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 System.out.println(position + "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-                if (position == 1) {
+                if (position == 3) {
+                    ((HomeActivity) context).addFragment(new AthidiFragment());
+
+                } else if (position == 1) {
                     if (user.getGclife_registration_flatdetails().get(0).getMember_type().equals("Non_members")) {
                         Constants.showSnack(v, "You are not authorized person!", "OK");
                     } else {
@@ -62,6 +65,7 @@ public class MySocietyFragment extends Fragment {
         });
         return v;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -74,6 +78,7 @@ public class MySocietyFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -81,6 +86,7 @@ public class MySocietyFragment extends Fragment {
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.my_society);
     }
+
     @Override
     public void onStart() {
         super.onStart();

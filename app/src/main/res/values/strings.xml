@@ -53,6 +53,7 @@
     <string-array name="finaYr">
         <item>2016-2017</item>
         <item>2017-2018</item>
+        <item>2018-2019</item>
     </string-array>
     <string-array name="monthsArr">
         <item>Jan</item>
@@ -133,4 +134,8 @@
     <string name="oops_no_members">Oops! There is no members!</string>
     <string name="rejected">Rejected!</string>
     <string name="approved">Approved!</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="athidi">Atithi</string>
+    <string name="payment">Payment</string>
+    <string name="view_invoice">View Invoice</string>
 </resources>

@@ -36,7 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -863,9 +862,9 @@ public class Register extends BaseActivity {
 										.getJSONObject(k);
 								String buildingName = jsonBuild
 										.getString("buildinname");
-								BigDecimal number = new BigDecimal(buildingName);
+								/*BigDecimal number = new BigDecimal(buildingName);
 								buildingName = number.stripTrailingZeros()
-										.toPlainString();
+										.toPlainString();*/
 
 								listbuilddata.add(buildingName);
 

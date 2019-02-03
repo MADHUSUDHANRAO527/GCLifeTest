@@ -45,7 +45,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -527,9 +526,9 @@ public class IdeasCreateFragment extends Fragment {
                                         .getJSONObject(k);
                                 String buildingName = jsonBuild
                                         .getString("buildinname");
-                                BigDecimal number = new BigDecimal(buildingName);
+                              /*  BigDecimal number = new BigDecimal(buildingName);
                                 buildingName = number.stripTrailingZeros()
-                                        .toPlainString();
+                                        .toPlainString();*/
                                 listbuilddata.add(buildingName);
                             }
                         }

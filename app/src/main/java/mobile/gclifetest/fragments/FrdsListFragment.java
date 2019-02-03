@@ -53,7 +53,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,8 +68,8 @@ import mobile.gclifetest.materialDesign.ProgressBarCircularIndeterminate;
 import mobile.gclifetest.pojoGson.FlatDetailsPojo;
 import mobile.gclifetest.pojoGson.UserDetailsPojo;
 import mobile.gclifetest.utils.Constants;
-import mobile.gclifetest.utils.InternetConnectionDetector;
 import mobile.gclifetest.utils.GclifeApplication;
+import mobile.gclifetest.utils.InternetConnectionDetector;
 import mobile.gclifetest.utils.NothingSelectedSpinnerAdapter1;
 
 /**
@@ -783,9 +782,9 @@ public class FrdsListFragment extends Fragment {
                                         .getJSONObject(k);
                                 String buildingName = jsonBuild
                                         .getString("buildinname");
-                                BigDecimal number = new BigDecimal(buildingName);
+                               /* BigDecimal number = new BigDecimal(buildingName);
                                 buildingName = number.stripTrailingZeros()
-                                        .toPlainString();
+                                        .toPlainString();*/
 
                                 listbuilddata.add(buildingName);
 

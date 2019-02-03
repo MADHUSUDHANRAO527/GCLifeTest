@@ -2,34 +2,24 @@ package mobile.gclifetest.youtube.handler;
 
 import android.app.ProgressDialog;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.google.api.services.youtube.model.Video;
-
-import java.io.IOException;
-
-import mobile.gclifetest.activity.R;
 import mobile.gclifetest.youtube.PhotosCreateFrag;
-import mobile.gclifetest.youtube.task.YouTubeUploadTask;
-import mobile.gclifetest.youtube.util.DialogUtil;
-import mobile.gclifetest.youtube.util.SharedPreferenceUtil;
 
-import static mobile.gclifetest.activity.R.string.videoUploadCompleted;
+//import com.google.api.services.youtube.model.Video;
+//import mobile.gclifetest.youtube.task.YouTubeUploadTask;
 
 public class UploadProgressHandler extends Handler {
 
 	private PhotosCreateFrag activity = null;
 
 	private ProgressDialog progressDialog = null;
-	private YouTubeUploadTask youtubeUploadTask = null;
+	//private YouTubeUploadTask youtubeUploadTask = null;
 
 	public UploadProgressHandler(PhotosCreateFrag activity) {
 		this.activity = activity;
 	}
 
-	public void handleMessage(Message msg) {
+	/*public void handleMessage(Message msg) {
 		super.handleMessage(msg);
 
 		switch (msg.what) {
@@ -50,7 +40,7 @@ public class UploadProgressHandler extends Handler {
 				if(youtubeUploadTask != null) {
 					try {
 						int progress = (int)(youtubeUploadTask.getUploader().getProgress() * 100);
-						/*if(progress < 10) {
+						*//*if(progress < 10) {
 							activity.getTextViewProgress().setText(" 0" + progress + "%");
 						}
 						else if(progress < 100) {
@@ -59,7 +49,7 @@ public class UploadProgressHandler extends Handler {
 						else {
 							activity.getTextViewProgress().setText(progress + "%");
 						}
-						activity.getProgressBarUploadVideo().setProgress(progress);*/
+						activity.getProgressBarUploadVideo().setProgress(progress);*//*
 					}
 					catch (IOException e) {
 
@@ -87,8 +77,8 @@ public class UploadProgressHandler extends Handler {
 				break;
 		}
 	}
-
-	public void setTask(YouTubeUploadTask task) {
+*/
+	/*public void setTask(YouTubeUploadTask task) {
 		this.youtubeUploadTask = task;
-	}
+	}*/
 }

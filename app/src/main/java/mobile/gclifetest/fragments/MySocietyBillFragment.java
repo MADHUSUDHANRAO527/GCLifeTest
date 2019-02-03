@@ -57,12 +57,12 @@ public class MySocietyBillFragment extends Fragment {
     String societyName, buildingName, flatNum, financialYr;
     UserDetailsPojo user;
     TextView totBilAmountTxt, paidAmountTxt, balnceAmountTxt, submitTxt;
-    ProgressBarCircularIndeterminate pDialog;
-    JSONObject jsonViewBill, jsonConfrm;
+    public static ProgressBarCircularIndeterminate pDialog;
+    public static JSONObject jsonViewBill, jsonConfrm;
     ListView detailsListview;
     LinearLayout bill_sumryLay;
-    String refNum = "", spnrVal, billId, billAmountPaid, paymentType;
-    Dialog m_dialog;
+    public static String refNum = "", spnrVal, billId, billAmountPaid, paymentType;
+    public static Dialog m_dialog;
     View v;
 
     @Override
@@ -71,6 +71,7 @@ public class MySocietyBillFragment extends Fragment {
         v = inflater.inflate(
                 R.layout.mysocietybill, container, false);
         context = getActivity();
+        GclifeApplication.getInstance().setFromPaymentPage(false);
         societyNameSpinner = (Spinner) v.findViewById(R.id.societySpin);
         buildingSpinner = (Spinner) v.findViewById(R.id.buildingSpin);
         finaYrTypeSpinner = (Spinner) v.findViewById(R.id.finaYrTypeSpinner);
@@ -396,10 +397,14 @@ public class MySocietyBillFragment extends Fragment {
                         .findViewById(R.id.amountTxt);
                 holder.statusTxt = (TextView) convertView
                         .findViewById(R.id.statusTxt);
+                holder.payNowTxt = (TextView) convertView
+                        .findViewById(R.id.pay_txt);
                 holder.statusImg = (ImageView) convertView
                         .findViewById(R.id.statusImg);
                 holder.viewImg = (ImageView) convertView
                         .findViewById(R.id.view_img);
+                holder.viewInvoiceImg = (ImageView) convertView
+                        .findViewById(R.id.view_invoice_img);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -411,6 +416,11 @@ public class MySocietyBillFragment extends Fragment {
             holder.flatNumTxt.setText(listt.get(positionn).get("MONTH"));
             holder.amountTxt.setText(listt.get(positionn).get("AMOUNT"));
             holder.statusTxt.setText(listt.get(positionn).get("STATUS"));
+            if (listt.get(positionn).get("STATUS").equalsIgnoreCase("Due")) {
+                holder.payNowTxt.setVisibility(View.VISIBLE);
+            } else {
+                holder.payNowTxt.setVisibility(View.GONE);
+            }
             if (listt.get(positionn).get("STATUS").equalsIgnoreCase("Confirmed")) {
                 holder.statusImg.setVisibility(View.GONE);
                 holder.viewImg.setVisibility(View.VISIBLE);
@@ -418,7 +428,14 @@ public class MySocietyBillFragment extends Fragment {
                 holder.statusImg.setVisibility(View.VISIBLE);
                 holder.viewImg.setVisibility(View.GONE);
             }
+            holder.payNowTxt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    GclifeApplication.getInstance().setBillIdForPayment(listt.get(positionn).get("ID"));
 
+                    ((HomeActivity) context).addFragment(new PaymentFragment());
+                }
+            });
             holder.statusImg.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -435,6 +452,13 @@ public class MySocietyBillFragment extends Fragment {
                     // TODO Auto-generated method stub
 
                     popUp(holder, positionn, false);
+                }
+            });
+            holder.viewInvoiceImg.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    GclifeApplication.getInstance().setBillIdForPayment(listt.get(positionn).get("ID"));
+                    ((HomeActivity) context).addFragment(new ViewInvoiceFragment());
                 }
             });
             return convertView;
@@ -590,8 +614,8 @@ public class MySocietyBillFragment extends Fragment {
         }
 
         public class ViewHolder {
-            public TextView flatNumTxt, amountTxt, statusTxt;
-            ImageView statusImg, viewImg;
+            public TextView flatNumTxt, amountTxt, statusTxt, payNowTxt;
+            ImageView statusImg, viewImg, viewInvoiceImg;
             RelativeLayout line, line1;
         }
     }
@@ -620,10 +644,12 @@ public class MySocietyBillFragment extends Fragment {
         protected void onPostExecute(Void unused) {
             if (jsonConfrm != null) {
                 pDialog.setVisibility(View.GONE);
-                m_dialog.dismiss();
+                if (m_dialog != null)
+                    m_dialog.dismiss();
             } else {
                 pDialog.setVisibility(View.GONE);
-                m_dialog.dismiss();
+                if (m_dialog != null)
+                    m_dialog.dismiss();
                 Constants.showToast(context, R.string.went_wrong);
             }
         }
@@ -648,6 +674,9 @@ public class MySocietyBillFragment extends Fragment {
         setHasOptionsMenu(true);
         ((HomeActivity) context).setHomeAsEnabled(true);
         ((HomeActivity) context).changeToolbarTitle(R.string.my_Society_bill);
+        if (GclifeApplication.getInstance().isFromPaymentPage())
+            new UpdateMyBillStatus().execute();
+
     }
 
     @Override

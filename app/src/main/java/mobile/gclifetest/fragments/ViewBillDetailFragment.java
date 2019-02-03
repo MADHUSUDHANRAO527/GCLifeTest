@@ -315,7 +315,7 @@ public class ViewBillDetailFragment extends Fragment {
                                                                     billAmountPaidEdit.setText(billAmountPaidEdit.getText().toString());
                                                                     narration = narration.replaceAll(" ", "%20");
 
-                                                                    new UpdateBillStatus().execute();
+                                                                   // new UpdateBillStatus().execute();
                                                                 }
 
                                                             }

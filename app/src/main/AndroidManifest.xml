@@ -150,13 +150,17 @@
             android:screenOrientation="portrait">
         </activity>
         <service
-            android:name="mobile.gclifetest.Fcm.FirebaseMessagingService">
+            android:name="mobile.gclifetest.Fcm.FirebaseMessagingService"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
         <service
-            android:name="mobile.gclifetest.Fcm.FirebaseInstanceIDService">
+            android:name="mobile.gclifetest.Fcm.FirebaseInstanceIDService"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>

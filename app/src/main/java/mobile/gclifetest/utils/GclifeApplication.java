@@ -4,15 +4,12 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.support.multidex.MultiDex;
-import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.cloudinary.Cloudinary;
 import com.flurry.android.FlurryAgent;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -25,7 +22,6 @@ import com.parse.Parse;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -43,14 +39,26 @@ public class GclifeApplication extends Application {
     SharedPreferences userPref;
     public static String actiobarColor = "#000000";
     Gson gson;
-    GoogleCloudMessaging gcm;
+    //  GoogleCloudMessaging gcm;
     String PROJECT_NUMBER = "874207551772";
     public static String gcmTokenid;
     public static RequestQueue queue;
     public static Cloudinary cloudinary;
     boolean isUploading;
+    private String billIdForPayment;
     //HTTP Constants
-    public static String HOSTNAME="http://54.169.40.151:3000/";
+    //Production
+    //   public static String HOSTNAME="http://54.169.40.151:3000/";
+    //dev
+     public static String HOSTNAME="http://35.166.172.142:3000/";
+    //production
+    //public static String HOSTNAME = "http://meljol.tech:3000/";
+    private boolean isFromPaymentPage;
+
+    //payment Domain
+    public static String HOSTNAME_PAYMENT="http://35.166.172.142/";
+    //  public static String HOSTNAME_PAYMENT = "http://meljol.tech/";
+
     public void onCreate() {
         super.onCreate();
         instance = this;
@@ -84,11 +92,12 @@ public class GclifeApplication extends Application {
         cloudinarySetup();
         setUpFlurry();
     }
+
     public static synchronized GclifeApplication getInstance() {
         return instance;
     }
 
-    private void getRegId() {
+   /* private void getRegId() {
         // TODO Auto-generated method stub
         new AsyncTask<Void, Void, String>() {
             @Override
@@ -117,7 +126,7 @@ public class GclifeApplication extends Application {
                 // etRegId.setText(msg + "\n");
             }
         }.execute(null, null, null);
-    }
+    }*/
 
     public static String convertDateEmail(String createdAt) {
         String datee = createdAt.substring(0, 10);
@@ -200,15 +209,41 @@ public class GclifeApplication extends Application {
         config.put("api_secret", "QWqoKmbLPvHTH57uMdlbOkZF51Q");
         cloudinary = new Cloudinary(config);
     }
-    public void setUploadingMedia(boolean isUploading){
-        this.isUploading=isUploading;
+
+    public void setUploadingMedia(boolean isUploading) {
+        this.isUploading = isUploading;
     }
-    public boolean isUploading(){
+
+    public boolean isUploading() {
         return isUploading;
     }
-    public void setUpFlurry(){
+
+    public void setUpFlurry() {
         new FlurryAgent.Builder()
                 .withLogEnabled(false)
                 .build(this, mobile.gclifetest.utils.Constants.flurryApiKey);
     }
+
+    public String getBillIdForPayment() {
+        return billIdForPayment;
+    }
+
+    public void setBillIdForPayment(String billIdForPayment) {
+        this.billIdForPayment = billIdForPayment;
+    }
+
+    public boolean isFromPaymentPage() {
+        return isFromPaymentPage;
+    }
+
+    public void setFromPaymentPage(boolean fromPaymentPage) {
+        isFromPaymentPage = fromPaymentPage;
+    }
+    /*public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+        try {
+            chain[0].checkValidity();
+        } catch (Exception e) {
+            throw new CertificateException("Certificate not valid or trusted.");
+        }
+    }*/
 }

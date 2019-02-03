@@ -41,7 +41,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -65,8 +64,9 @@ import mobile.gclifetest.youtube.dialog.ConfirmUploadVideoDialogBuilder;
 import mobile.gclifetest.youtube.handler.FetchTokenHandler;
 import mobile.gclifetest.youtube.handler.UploadProgressHandler;
 import mobile.gclifetest.youtube.task.FetchYouTubeTokenTask;
-import mobile.gclifetest.youtube.task.YouTubeUploadTask;
 import mobile.gclifetest.youtube.util.DialogUtil;
+
+//import mobile.gclifetest.youtube.task.YouTubeUploadTask;
 
 /**
  * Created by MRaoKorni on 8/19/2016.
@@ -103,7 +103,7 @@ public class PhotosCreateFrag extends Fragment {
     SparseBooleanArray mChecked = new SparseBooleanArray();
     private static boolean isNotAdded = true;
     private CheckBox checkBox_header;
-    private YouTubeUploadTask youtubeUploadTask = null;
+  //  private YouTubeUploadTask youtubeUploadTask = null;
     private String selectedGoogleAccount;
     private FetchTokenHandler fetchTokenHandler = null;
     private UploadProgressHandler uploadProgressHandler = null;
@@ -530,9 +530,9 @@ public class PhotosCreateFrag extends Fragment {
                                         .getJSONObject(k);
                                 String buildingName = jsonBuild
                                         .getString("buildinname");
-                                BigDecimal number = new BigDecimal(buildingName);
+                              /*  BigDecimal number = new BigDecimal(buildingName);
                                 buildingName = number.stripTrailingZeros()
-                                        .toPlainString();
+                                        .toPlainString();*/
 
                                 listbuilddata.add(buildingName);
 
@@ -1126,11 +1126,11 @@ public class PhotosCreateFrag extends Fragment {
             ((HomeActivity) context).changeToolbarTitle(R.string.create_videos);
     }
 
-    public void uploadYouTubeVideo() {
+    /*public void uploadYouTubeVideo() {
         youtubeUploadTask = new YouTubeUploadTask(context, videoFileName, getString(R.string.app_name),  "Title",
                 "disc", selectedGoogleAccount, uploadProgressHandler);
         youtubeUploadTask.execute();
-    }
+    }*/
 
     public void chooseAccount() {
         String[] accountTypes = new String[]{"com.google"};

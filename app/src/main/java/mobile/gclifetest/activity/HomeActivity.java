@@ -19,6 +19,7 @@ import android.widget.Toast;
 import java.util.List;
 import java.util.Stack;
 
+import mobile.gclifetest.fragments.AthidiFragment;
 import mobile.gclifetest.fragments.HomeFragment;
 import mobile.gclifetest.fragments.IdeasDetailFragment;
 import mobile.gclifetest.fragments.InboxActivity;
@@ -59,6 +60,9 @@ public class HomeActivity extends BaseActivity {
                     Intent i = new Intent(this, InboxActivity.class);
                     i.putExtra("from_notification","true");
                     startActivity(i);
+                }else if (eventName.equals("Suvidha_13_3") || eventName.equals("Suvidha_10_2") || eventName.equals("Suvidha_11_1")){
+                    replaceFragment(new HomeFragment());
+                    ((HomeActivity) context).addFragment(new AthidiFragment());
                 }
                 bundle.putString("id", eid);
                 fragment.setArguments(bundle);

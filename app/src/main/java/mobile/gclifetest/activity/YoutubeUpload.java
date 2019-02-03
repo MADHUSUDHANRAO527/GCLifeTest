@@ -3,11 +3,9 @@ package mobile.gclifetest.activity;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,32 +13,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.google.android.gms.common.AccountPicker;
+
 /*import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;*/
-import com.google.android.gms.common.AccountPicker;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.googleapis.media.MediaHttpUploader;
-import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.InputStreamContent;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.client.util.ExponentialBackOff;
-import com.google.api.services.youtube.YouTube;
+/*import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.YouTubeScopes;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoSnippet;
-import com.google.api.services.youtube.model.VideoStatus;
-import com.google.common.collect.Lists;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.api.services.youtube.model.VideoStatus;*/
 
 public class YoutubeUpload extends AppCompatActivity {
     static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
@@ -53,8 +35,8 @@ public class YoutubeUpload extends AppCompatActivity {
     TextView userNameTxt, tokenTxt, localVideoUrlTxt, youtubeUrlTxt;
     EditText titleEdit;
     private String videoFileName = "/storage/emulated/0/Download/Sample.3gp";
-    private Video youtubeVideo = null;
-    private YouTubeUploadTask youtubeUploadTask = null;
+  //  private Video youtubeVideo = null;
+   // private YouTubeUploadTask youtubeUploadTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +57,7 @@ public class YoutubeUpload extends AppCompatActivity {
 
             }
         });
-        uploadVideobtn.setOnClickListener(new View.OnClickListener() {
+       /* uploadVideobtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (titleEdit.getText().toString().length() < 1) {
@@ -93,7 +75,7 @@ public class YoutubeUpload extends AppCompatActivity {
 
                 redirectAndPlayVideo();
             }
-        });
+        });*/
     }
 
 
@@ -151,9 +133,9 @@ public class YoutubeUpload extends AppCompatActivity {
         }
     }
 
-    public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
+  /*  public class YouTubeUploadTask extends AsyncTask<Void, Void, Void> {
 
-        private static final String VIDEO_FILE_FORMAT = "video/*";
+        private static final String VIDEO_FILE_FORMAT = "video*//*";
 
         public static final String scope = "oauth2:https://www.googleapis.com/auth/youtube";
         private final List<String> scopes = Lists.newArrayList(YouTubeScopes.YOUTUBE);
@@ -209,11 +191,11 @@ public class YoutubeUpload extends AppCompatActivity {
 
                 uploader = videoInsert.getMediaHttpUploader();
 
-            /*
+            *//*
              * Sets whether direct media upload is enabled or disabled. True = whole media content is
              * uploaded in a single request. False (default) = resumable media upload protocol to upload
              * in data chunks.
-             */
+             *//*
                 uploader.setDirectUploadEnabled(true);
                 MediaHttpUploaderProgressListener progressListener = new MediaHttpUploaderProgressListener() {
                     public void progressChanged(MediaHttpUploader uploader) throws IOException {
@@ -282,9 +264,9 @@ public class YoutubeUpload extends AppCompatActivity {
             return null;
         }
 
-        /**
+        *//**
          * Build the credential to authorize the installed application to access user's protected data.
-         */
+         *//*
         private GoogleAccountCredential buildGoogleAccountCredential() throws Exception {
             GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(YoutubeUpload.this, scopes);
             credential.setBackOff(new ExponentialBackOff());
@@ -340,7 +322,7 @@ public class YoutubeUpload extends AppCompatActivity {
     private void redirectAndPlayVideo() {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=" + youtubeVideo.getId())));
         Log.i("Video", "Video Playing....");
-    }
+    }*/
     public class UploadProgressHandler{
 
 

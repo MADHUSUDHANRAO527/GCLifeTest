@@ -445,6 +445,15 @@ public class SocietyBillManagementFragment extends Fragment {
                 pDialog.setVisibility(View.GONE);
                 fileNameTxt.setVisibility(View.GONE);
                 submitTxt.setEnabled(false);
+
+                try {
+
+                    SocietyBillPost.afterUploadBill_API(getActivity());
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
 
         }
